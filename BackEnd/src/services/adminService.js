@@ -1,0 +1,918 @@
+import { PrismaClient } from '@prisma/client';
+import { ConflictException, NotFoundException } from '../helpers/exception.helper.js';
+import { createSlug } from '../utils/createSlug.js';
+const prisma = new PrismaClient();
+
+export const adminService = {
+
+    // Tạo vị trí 
+    createLocation: async function (data, imageFile) {
+        const { city } = data;
+        if (!city) {
+            throw new ConflictException("Thiếu trường tên vị trí");
+        }
+
+        const existingLocation = await prisma.location.findFirst({ where: { city: city } });
+        if (existingLocation) {
+            throw new ConflictException("Vị trí đã tồn tại");
+        }
+        const newLocation = await prisma.location.create({
+            data: {
+                city: city,
+                imageLocation: imageFile
+            }
+        });
+        return {
+            newLocation: newLocation
+        }
+    },
+    // Cập nhật vị trí
+    updateLocaltion: async function (locationId, data, imageFile) {
+        const { city } = data;
+        const updateData = {};
+        if (city) updateData.city = city;
+        if (imageFile) updateData.imageLocation = imageFile;
+
+        const updatedLocation = await prisma.location.update({
+            where: { id: locationId },
+            data: updateData
+        });
+        return {
+            updatedLocation: updatedLocation
+        }
+    },
+
+    // Xoá vị trí
+    deleteLocation: async function (locationId) {
+        const location = await prisma.location.findUnique({
+            where: { id: locationId }
+        });
+        if (!location) {
+            throw new ConflictException("Vị trí không tồn tại");
+        }
+        const hotelCount = await prisma.hotel.count({
+            where: { locationId: locationId }
+        });
+        if (hotelCount > 0) {
+            throw new ConflictException("Không thể xoá vị trí vì có khách sạn ");
+        }
+        await prisma.location.delete({
+            where: { id: locationId }
+        });
+    },
+    // Lấy danh sách vị trí
+    getAllLocaltions: async function () {
+        const locations = await prisma.location.findMany();
+        return {
+            locations: locations
+        }
+
+    },
+    // Tạo tiện nghi 
+    createAmenity: async function (data) {
+        const { name } = data;
+        if (!name) {
+            throw new ConflictException("Thiếu trường tên tiện nghi");
+        }
+        const existingAmenity = await prisma.amenity.findFirst({ where: { name: name } });
+        if (existingAmenity) {
+            throw new ConflictException("Tiện nghi đã tồn tại");
+        }
+        const newAmenity = await prisma.amenity.create({
+            data: {
+                name: name
+            }
+        });
+        return {
+            newAmenity: newAmenity
+        }
+    },
+    // Lấy danh sách tiện nghi
+    getAllAmenities: async function () {
+        const amenities = await prisma.amenity.findMany();
+        return {
+            amenities: amenities
+        }
+    },
+    // Tạo khách sạn
+    createHotel: async function (data, imageFile) {
+        const { name, address, description, locationId, defaultRating, amenities } = data;
+
+        const amenitiesIds = Array.isArray(amenities)
+            ? amenities.map(id => parseInt(id))
+            : amenities
+                ? [parseInt(amenities)]
+                : [];
+
+        const existingHotel = await prisma.hotel.findFirst({ where: { name: name } });
+        if (existingHotel) {
+            throw new ConflictException("Khách sạn đã tồn tại với tên này");
+        }
+        if (!name || !address || !description || !locationId || !imageFile || !amenitiesIds.length) {
+            throw new BadrequestException("Thiếu trường nào đó");
+        }
+
+        const parsedLocationId = parseInt(locationId);
+        const parsedRating = defaultRating ? parseFloat(defaultRating) : 0;
+        const location = await prisma.location.findUnique({
+            where: { id: parsedLocationId }
+        });
+        console.log(location)
+        if (!location) {
+            throw new NotFoundException("Không tìm thấy vị trí");
+        }
+        const imageCover = imageFile[0];
+        const imageGallery = imageFile.slice(1);
+
+        const newHotel = await prisma.hotel.create({
+            data: {
+                name: name,
+                image: imageCover,
+                address: address,
+                description: description,
+                locationId: parsedLocationId,
+                defaultRating: parsedRating
+            }
+        });
+
+        if (imageGallery.length > 0) {
+            const hotelImages = imageGallery.map((image) => ({
+                hotelId: newHotel.id,
+                imageUrl: image
+            }));
+            await prisma.hotelImage.createMany({
+                data: hotelImages
+            });
+
+        }
+
+        if (amenitiesIds.length > 0) {
+            const hotelAmenities = amenitiesIds.map((amenityId) => ({
+                hotelId: newHotel.id,
+                amenityId: amenityId
+            }));
+            await prisma.hotelAmenity.createMany({
+                data: hotelAmenities,
+                skipDuplicates: true // Bỏ qua nếu đã tồn tại
+            });
+        }
+        return {
+            newHotel: newHotel
+        }
+    },
+
+    // Lấy danh sách khách sạn
+    getAllHotels: async function () {
+        const hotels = await prisma.hotel.findMany({
+            include: {
+                location: true,
+                reviews: true,
+                images: true,
+                amenities: {
+                    include: {
+                        amenity: true
+                    },
+                }
+            }
+        });
+        return {
+            hotels: hotels
+        }
+    },
+
+    // Cập nhật khách sạn
+    updateHotel: async function (hotelId, data, imageFile) {
+        const { name, address, description, locationId, defaultRating, amenities } = data;
+
+        const updateData = {};
+        if (name) updateData.name = name;
+        if (address) updateData.address = address;
+        if (description) updateData.description = description
+        if (locationId) {
+            const parsedLocationId = parseInt(locationId);
+            const location = await prisma.location.findUnique({
+                where: { id: parsedLocationId }
+            });
+            if (!location) {
+                throw new NotFoundException("Không tìm thấy vị trí");
+            }
+            updateData.locationId = parsedLocationId;
+        }
+        if (defaultRating) {
+            const parsedRating = parseFloat(defaultRating);
+            updateData.defaultRating = parsedRating;
+        }
+        if (imageFile) {
+            updateData.image = imageFile;
+        }
+
+        if (amenities) {
+            const amenitiesIds = Array.isArray(amenities)
+                ? amenities.map(id => parseInt(id))
+                : [parseInt(amenities)];
+
+            await prisma.hotelAmenity.deleteMany({
+                where: { hotelId: hotelId }
+            });
+            const hotelAmenities = amenitiesIds.map((amenityId) => ({
+                hotelId: hotelId,
+                amenityId: amenityId
+            }));
+
+            await prisma.hotelAmenity.createMany({
+                data: hotelAmenities,
+                skipDuplicates: true // Bỏ qua nếu đã tồn tại
+            });
+
+        }
+
+
+
+        const updatedHotel = await prisma.hotel.update({
+            where: { id: hotelId },
+            data: updateData,
+            include: {
+                location: true,
+                images: true,
+                amenities: {
+                    include: {
+                        amenity: true
+                    },
+                }
+            }
+        });
+        return {
+            updatedHotel: updatedHotel
+        }
+    },
+    // Xoá khách sạn
+    deleteHotel: async function (hotelId) {
+        const hotel = await prisma.hotel.findUnique({
+            where: { id: hotelId }
+        });
+        if (!hotel) {
+            throw new NotFoundException("Khách sạn không tồn tại");
+        }
+        await prisma.hotelImage.deleteMany({
+            where: { hotelId: hotelId }
+        });
+        await prisma.hotelAmenity.deleteMany({
+            where: { hotelId: hotelId }
+        });
+        await prisma.hotel.delete({
+            where: { id: hotelId }
+        });
+
+    },
+    // Lấy danh sách ảnh phụ của khách sạn
+    getHotelImages: async function (hotelId) {
+        const hotel = await prisma.hotel.findUnique({
+            where: { id: hotelId },
+            select: {
+                name: true,
+            }
+        });
+        const hotelImages = await prisma.hotelImage.findMany({
+            where: { hotelId: hotelId }
+        })
+        return {
+            hotel: hotel.name,
+            hotelId: hotelId,
+            hotelImages: hotelImages
+        }
+    },
+
+    // Thêm xóa sửa images phụ của khách sạn
+    addHotelImage: async function (hotelId, imageFile) {
+        const hotel = await prisma.hotel.findUnique({
+            where: { id: hotelId }
+        })
+        if (!hotel) {
+            throw new NotFoundException("Khách sạn không tồn tại");
+        }
+        const newHotelImage = imageFile.map((image) => ({
+            hotelId: hotelId,
+            imageUrl: image
+        }));
+        const imageHotelImage = await prisma.hotelImage.createMany({
+            data: newHotelImage
+        });
+
+        return {
+            addImageHotelImage: imageHotelImage
+        }
+    },
+    updateHotelImage: async function (imageId, imageFile) {
+        const image = await prisma.hotelImage.findUnique({
+            where: { id: imageId }
+        })
+        if (!image) {
+            throw new NotFoundException("Ảnh không tồn tại");
+        }
+        const updatedImage = await prisma.hotelImage.update({
+            where: { id: imageId },
+            data: { imageUrl: imageFile }
+        });
+        return {
+            updatedImage: updatedImage
+        }
+    },
+    deleteHotelImage: async function (imageId) {
+        const image = await prisma.hotelImage.findUnique({
+            where: { id: imageId }
+        });
+        if (!image) {
+            throw new NotFoundException("Ảnh không tồn tại");
+        }
+        await prisma.hotelImage.delete({
+            where: { id: imageId }
+        });
+    },
+
+    // lấy thông tin khách sạn theo id
+    getHotelById: async function (hotelId) {
+        const hotel = await prisma.hotel.findUnique({
+            where: { id: hotelId },
+            include: {
+                location: true,
+                reviews: {
+                    take: 3,
+                    orderBy: { create_At: "desc" },
+                    include: {
+                        user: {
+                            select: {
+                                id: true,
+                                fullName: true,
+                                avatar: true
+                            }
+                        }
+                    }
+                },
+                images: true,
+                amenities: {
+                    include: {
+                        amenity: true
+                    },
+                }
+            }
+        });
+        if (!hotel) {
+            throw new NotFoundException("Khách sạn không tồn tại");
+        }
+        return {
+            hotel: hotel
+        }
+    },
+
+    // Lấy khách sạn liên quan tới địa điểm
+    getHotelsByLocation: async function (locationId) {
+        const hotels = await prisma.hotel.findMany({
+            where: { locationId: locationId },
+            include: {
+                location: true,
+                images: true,
+                amenities: {
+                    include: {
+                        amenity: true
+                    },
+                }
+            }
+        });
+        if (!hotels || hotels.length === 0) {
+            throw new NotFoundException("Không có khách sạn nào ở vị trí này");
+        }
+        return {
+            hotels: hotels
+        }
+    },
+
+    // Thêm sửa xóa phòng 
+    createRoom: async function (data, imageFile) {
+        const { hotelId, name, type, description, price, discount, maxGuests, amenities } = data;
+        const amenitiesIds = Array.isArray(amenities)
+            ? amenities.map(id => parseInt(id))
+            : amenities
+                ? [parseInt(amenities)]
+                : [];
+        if (!hotelId || !name || !type || !description || !price || !maxGuests || !imageFile || !amenitiesIds.length || !discount) {
+            throw new ConflictException("Thiếu trường nào đó");
+        }
+        const parsedHotelId = parseInt(hotelId);
+        const hotel = await prisma.hotel.findUnique({
+            where: { id: parsedHotelId }
+        });
+        if (!hotel) {
+            throw new NotFoundException("Không tìm thấy khách sạn");
+        }
+
+        const existingRoom = await prisma.room.findFirst({ where: { name: name, hotelId: parsedHotelId } });
+        if (existingRoom) {
+            throw new ConflictException("Phòng đã tồn tại với tên này trong khách sạn");
+        }
+
+
+        const imageCover = imageFile[0];
+        const imageGallery = imageFile.slice(1);
+
+        const newRoom = await prisma.room.create({
+            data: {
+                hotelId: parsedHotelId,
+                name: name,
+                type: type,
+                description: description,
+                price: parseInt(price),
+                discount: parseInt(discount),
+                maxGuests: parseInt(maxGuests),
+                image: imageCover
+            }
+        });
+
+        if (imageGallery.length > 0) {
+            const roomImages = imageGallery.map((image) => {
+                return {
+                    RoomId: newRoom.id,
+                    imageUrl: image
+                }
+            });
+            await prisma.roomImage.createMany({
+                data: roomImages
+            });
+        }
+
+        if (amenitiesIds.length > 0) {
+            const roomAmenities = amenitiesIds.map((amenityId) => ({
+                roomId: newRoom.id,
+                amenityId: amenityId
+            }));
+            await prisma.roomAmenity.createMany({
+                data: roomAmenities,
+                skipDuplicates: true // Bỏ qua nếu đã tồn tại
+            });
+        }
+
+        return {
+            newRoom: newRoom
+        }
+    },
+
+    // Lấy danh sách phòng theo id khách sạn
+    getRoomsByHotelId: async function (hotelId) {
+        const rooms = await prisma.room.findMany({
+            where: { hotelId: hotelId },
+            include: {
+                images: true,
+                amenities: {
+                    include: {
+                        amenity: true
+                    }
+                }
+            }
+        });
+        if (!rooms || rooms.length === 0) {
+            throw new NotFoundException("Không có phòng nào trong khách sạn này");
+        }
+        return {
+            rooms: rooms
+        }
+    },
+
+    // Cập nhật phòng
+    updateRoom: async function (roomId, data, imageFile) {
+        const { name, type, description, price, discount, maxGuests, amenities } = data;
+        const updateData = {};
+        if (name) updateData.name = name;
+        if (type) updateData.type = type;
+        if (description) updateData.description = description;
+        if (price) updateData.price = parseInt(price);
+        if (discount) updateData.discount = parseInt(discount);
+        if (maxGuests) updateData.maxGuests = parseInt(maxGuests);
+        if (imageFile) {
+            updateData.image = imageFile;
+        }
+        const parsedRoomId = parseInt(roomId);
+        const room = await prisma.room.findUnique({
+            where: { id: parsedRoomId }
+        });
+        if (!room) {
+            throw new NotFoundException("Phòng không tồn tại");
+        }
+
+        if (amenities) {
+            const amenitiesIds = Array.isArray(amenities)
+                ? amenities.map(id => parseInt(id))
+                : [parseInt(amenities)];
+
+            await prisma.roomAmenity.deleteMany({
+                where: { roomId: parsedRoomId }
+            });
+            const roomAmenities = amenitiesIds.map((amenityId) => ({
+                roomId: parsedRoomId,
+                amenityId: amenityId
+            }));
+
+            await prisma.roomAmenity.createMany({
+                data: roomAmenities,
+                skipDuplicates: true // Bỏ qua nếu đã tồn tại
+            });
+        }
+
+        const updatedRoom = await prisma.room.update({
+            where: { id: parsedRoomId },
+            data: updateData,
+            include: {
+                images: true,
+                amenities: {
+                    include: {
+                        amenity: true
+                    }
+                }
+            }
+        });
+        return {
+            updatedRoom: updatedRoom
+        }
+    },
+
+    // Xoá phòng
+    deleteRoom: async function (roomId) {
+        const parsedRoomId = parseInt(roomId);
+        const room = await prisma.room.findUnique({
+            where: { id: parsedRoomId }
+        });
+        if (!room) {
+            throw new NotFoundException("Phòng không tồn tại");
+        }
+        await prisma.roomImage.deleteMany({
+            where: { RoomId: parsedRoomId }
+        });
+        await prisma.roomAmenity.deleteMany({
+            where: { roomId: parsedRoomId }
+        });
+        await prisma.room.delete({
+            where: { id: parsedRoomId }
+        });
+    },
+    // Tạo ảnh phụ của phòng 
+    addRoomImages: async function (RoomId, imageFile) {
+        const room = await prisma.room.findUnique({
+            where: { id: RoomId }
+        });
+        if (!room) {
+            throw new NotFoundException("Phòng không tồn tại");
+        }
+        const newRoomImages = imageFile.map((image) => ({
+            RoomId: RoomId,
+            imageUrl: image
+        }));
+
+        const roomImages = await prisma.roomImage.createMany({
+            data: newRoomImages
+        });
+
+        return {
+            roomImages: roomImages
+        };
+    },
+    // Cập nhật ảnh phụ của phòng
+    updateRoomImages: async function (imageId, imageFile) {
+        const image = await prisma.roomImage.findUnique({
+            where: { id: imageId }
+        });
+        if (!image) {
+            throw new NotFoundException("Ảnh không tồn tại");
+        }
+        const updatedImage = await prisma.roomImage.update({
+            where: { id: imageId },
+            data: { imageUrl: imageFile }
+        });
+        return {
+            updatedImage: updatedImage
+        }
+    },
+    // Xóa ảnh phụ của phòng
+    deleteRoomImage: async function (imageId) {
+        const image = await prisma.roomImage.findUnique({
+            where: { id: imageId }
+        });
+        if (!image) {
+            throw new NotFoundException("Ảnh không tồn tại");
+        }
+        await prisma.roomImage.delete({
+            where: { id: imageId }
+        });
+    },
+    // Lấy thông tin phòng theo id
+    getRoomById: async function (roomId) {
+        const parsedRoomId = parseInt(roomId);
+        const room = await prisma.room.findUnique({
+            where: { id: parsedRoomId },
+            include: {
+                images: true,
+                amenities: {
+                    include: {
+                        amenity: true
+                    }
+                }
+            }
+        });
+        if (!room) {
+            throw new NotFoundException("Phòng không tồn tại");
+        }
+        return {
+            room: room
+        }
+    },
+
+    // Tạo ảnh phụ của phòng 
+    addRoomImage: async function (roomId, imageFile) {
+        const parsedRoomId = parseInt(roomId);
+        const room = await prisma.room.findUnique({
+            where: { id: parsedRoomId }
+        });
+        if (!room) {
+            throw new NotFoundException("Phòng không tồn tại");
+        }
+        const newRoomImage = imageFile.map((image) => ({
+            RoomId: parsedRoomId,
+            imageUrl: image
+        }));
+        const roomImages = await prisma.roomImage.createMany({
+            data: newRoomImage
+        });
+        return {
+            roomImages: roomImages
+        }
+    },
+
+    // Cập nhật ảnh phụ của phòng
+    updateRoomImage: async function (imageId, imageFile) {
+        const image = await prisma.roomImage.findUnique({
+            where: { id: imageId }
+        });
+        if (!image) {
+            throw new NotFoundException("Ảnh không tồn tại");
+        }
+        const updatedImage = await prisma.roomImage.update({
+            where: { id: imageId },
+            data: { imageUrl: imageFile }
+        });
+        return {
+            updatedImage: updatedImage
+        }
+    },
+
+    // Xóa ảnh phụ của phòng
+    deleteRoomImage: async function (imageId) {
+        const image = await prisma.roomImage.findUnique({
+            where: { id: imageId }
+        });
+        if (!image) {
+            throw new NotFoundException("Ảnh không tồn tại");
+        }
+        await prisma.roomImage.delete({
+            where: { id: imageId }
+        });
+    },
+
+    // Lấy danh sách phòng 
+    getAllRooms: async function () {
+        const rooms = await prisma.room.findMany({
+            include: {
+                hotel: true,
+                images: true,
+                amenities: {
+                    include: {
+                        amenity: true
+                    }
+                }
+            }
+        });
+        return {
+            rooms: rooms
+        }
+    },
+
+    // Lấy những khách sạn liên quan tới địa điểm và nhận phòng trả phòng và số người
+    getSearchAvailableHotels: async function (data) {
+        const { locationId, checkIn, checkOut, guests } = data;
+        const parsedLocationId = parseInt(locationId);
+        const parsedGuests = parseInt(guests);
+
+        const rooms = await prisma.room.findMany({
+            where: {
+                maxGuests: {
+                    gte: parsedGuests
+                },
+                hotel: {
+                    locationId: parsedLocationId
+                },
+                bookings: {
+                    none: {
+                        OR: [
+                            {
+                                checkIn: { lte: new Date(checkOut) },
+                                checkOut: { gte: new Date(checkIn) }
+                            }
+                        ]
+                    }
+                }
+            },
+            include: {
+                hotel: {
+                    include: {
+                        location: true,
+                        images: true,
+                    }
+                }
+            }
+        });
+        const hotelMap = new Map();
+        for (const room of rooms) {
+            hotelMap.set(room.hotel.id, room.hotel);
+        }
+        return {
+            count: hotelMap.size,
+            hotels: Array.from(hotelMap.values())
+        }
+    },
+
+    // Tạo blog
+    createBlog: async function (data, imageFile) {
+        const { title, content, author, locationId, summary } = data;
+
+        if (!title || !content || !author || !locationId || !imageFile || !summary) {
+            throw new ConflictException("Thiếu trường nào đó");
+        }
+        const slug = createSlug(title);
+        const blog = await prisma.blogPost.findUnique({
+            where: { slug: slug }
+        });
+        if (blog) {
+            throw new ConflictException("Blog đã tồn tại");
+        }
+        const newBlog = await prisma.blogPost.create({
+            data: {
+                title: title,
+                content: content,
+                author: author || "",
+                locationId: parseInt(locationId),
+                image: imageFile,
+                slug: slug,
+                summary: summary
+            },
+            include: {
+                location: true
+            }
+        });
+        return {
+            blog: newBlog
+        }
+    },
+
+    // Cập nhật blog
+    updateBlog: async function (blogId, data, imageFile) {
+        const { title, content, author, locationId, summary } = data;
+
+        if (!title || !content || !author || !locationId || !imageFile || !summary) {
+            throw new ConflictException("Thiếu trường nào đó");
+        }
+        const slug = createSlug(title);
+        const blog = await prisma.blogPost.findUnique({
+            where: { id: blogId }
+        });
+        if (!blog) {
+            throw new NotFoundException("Blog không tồn tại");
+        }
+        const updatedBlog = await prisma.blogPost.update({
+            where: { id: blogId },
+            data: {
+                title: title,
+                content: content,
+                author: author || "",
+                locationId: parseInt(locationId),
+                image: imageFile,
+                slug: slug,
+                summary: summary
+            },
+            include: {
+                location: true
+            }
+        });
+        return {
+            blog: updatedBlog
+        }
+    },
+
+    // Xoá blog
+    deleteBlog: async function (blogId) {
+        const blog = await prisma.blogPost.findUnique({
+            where: { id: blogId }
+        });
+        if (!blog) {
+            throw new NotFoundException("Blog không tồn tại");
+        }
+        await prisma.blogPost.delete({
+            where: { id: blogId }
+        });
+    },
+
+    // Tạo người dùng
+    createUser: async function (data, avatarPath) {
+        const { firstName, lastName, email, password, role, gender } = data;
+        if (!firstName || !lastName || !email || !password || !role || !gender) {
+            throw new ConflictException("Thiếu trường nào đó");
+        }
+        const existingUser = await prisma.user.findUnique({
+            where: { email: email }
+        });
+        if (existingUser) {
+            throw new ConflictException("Người dùng đã tồn tại với email này");
+        }
+
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const newUser = await prisma.user.create({
+            data: {
+                firstName: firstName,
+                lastName: lastName,
+                email: email,
+                password: hashedPassword,
+                role: role,
+                gender: gender,
+                avatarPath: avatarPath || ""
+            }
+        });
+        return {
+            user: newUser
+        }
+    },
+
+    // update người dùng
+    updateUser: async function (userId, data, avatarPath) {
+        const { firstName, lastName, email, password, role, gender } = data;
+
+        if (!firstName || !lastName || !email || !password || !role || !gender) {
+            throw new ConflictException("Thiếu trường nào đó");
+        }
+
+        const existingUser = await prisma.user.findUnique({
+            where: { id: userId }
+        });
+        if (!existingUser) {
+            throw new NotFoundException("Người dùng không tồn tại");
+        }
+
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const updatedUser = await prisma.user.update({
+            where: { id: userId },
+            data: {
+                firstName: firstName,
+                lastName: lastName,
+                email: email,
+                password: hashedPassword,
+                role: role,
+                gender: gender,
+                avatar: avatarPath
+            }
+        });
+        return {
+            user: updatedUser
+        };
+    },
+
+    // Xoá người dùng
+    deleteUser: async function (userId) {
+        const user = await prisma.user.findUnique({
+            where: { id: userId }
+        });
+        if (!user) {
+            throw new NotFoundException("Người dùng không tồn tại");
+        }
+        await prisma.user.delete({
+            where: { id: userId }
+        });
+    },
+
+    // Lấy danh sách người dùng
+    getAllUsers: async function (currentUser) {
+        const users = await prisma.user.findMany({
+            where: {
+                NOT: [
+                    { id: currentUser },
+
+                ]
+            },
+            select: {
+                id: true,
+                firstName: true,
+                lastName: true,
+                email: true,
+                role: true,
+                gender: true
+            }
+        });
+        return {
+            users: users
+        };
+    }
+
+};
