@@ -45,7 +45,7 @@ export default function RegisterPage() {
                 <div className="absolute inset-0 flex items-center justify-center p-10">
                     <h1 className="text-white text-4xl font-bold leading-tight text-center">
                         Chào mừng bạn đến với{" "}
-                        <span className="text-[#6246ea]">Hệ thống B5ooking</span>
+                        <span className="text-[#6246ea]">B5ooking</span>
                     </h1>
                 </div>
             </div>
