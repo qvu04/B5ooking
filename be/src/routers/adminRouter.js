@@ -61,6 +61,13 @@ router.post('/createBlog',upload.single('imageFile'),authMiddleware,checkAdmin,a
 router.put('/updateBlog/:id',upload.single('imageFile'),authMiddleware,checkAdmin,adminController.updateBlog);
 router.delete('/deleteBlog/:id',authMiddleware,checkAdmin,adminController.deleteBlog);
 
+// Tạo người dùng 
+router.post('/createUser',authMiddleware,checkAdmin,adminController.createUser)
+// update người dùng 
+router.put('/updateUser/:id',authMiddleware,checkAdmin,adminController.updateUser)
+// Xóa người dùng 
+router.delete('/deleteUser/:id',authMiddleware,checkAdmin,adminController.deleteUser)
+
 // Lấy danh sách người dùng
 router.get('/getAllUsers',authMiddleware,checkAdmin,adminController.getAllUsers);
 // Lấy danh sách phòng của khách sạn
