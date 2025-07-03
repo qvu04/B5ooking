@@ -28,7 +28,7 @@ router.put("/updateReview/:id",authMiddleware,userController.updateReview)
 router.delete("/deleteReview/:id",authMiddleware,userController.deleteReview)
 
 // Lấy đánh giá theo khách sạn
-router.get("/getAllReviewByHotelId/:id",userController.getAllReviewByHotelId)
+// router.get("/getAllReviewByHotelId/:id",userController.getAllReviewByHotelId)
 
 // Lấy danh sách đánh giá khách sạn của ng dùng đó hui
 router.get('/getAllReviewByUser',authMiddleware,userController.getAllReviewHotelByUser)

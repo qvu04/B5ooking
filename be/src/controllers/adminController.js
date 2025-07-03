@@ -65,6 +65,30 @@ export const adminController = {
         }
 
     },
+    updateAmenity: async function (req, res, next) {
+        try {
+            const amenityId = req.params.id;
+
+            const updateAmenity = await adminService.updateAmenity(amenityId, req.body)
+            const response = responseSuccess(updateAmenity, "Cập nhật tiện nghi thành công")
+            res.status(response.status).json(response)
+        } catch (err) {
+            console.error("Cập nhật tiện nghi không thành công", err);
+            next(err);
+        }
+    },
+    deleteAmenity: async function (req, res, next) {
+        try {
+            const amenityId = req.params.id;
+            await adminService.deleteAmenity(amenityId)
+            const response = responseSuccess(null, "Xóa tiện nghi thành công")
+            res.status(response.status).json(response)
+        } catch (err) {
+            console.error("Xóa tiện nghi không thành công", err);
+            next(err);
+        }
+
+    },
     // Lấy danh sách tiện nghi
     getAllAmenities: async function (req, res, next) {
         try {
@@ -183,17 +207,17 @@ export const adminController = {
     },
 
     // lấy thông tin khách sạn theo id
-    getHotelById: async function (req, res, next) {
-        const hotelId = parseInt(req.params.id);
-        try {
-            const {hotel} = await adminService.getHotelById(hotelId);
-            const response = responseSuccess(hotel, "Lấy thông tin khách sạn thành công");
-            res.status(response.status).json(response);
-        } catch (err) {
-            console.error("Lấy thông tin khách sạn không thành công", err);
-            next(err);
-        }
-    },
+    // getHotelById: async function (req, res, next) {
+    //     const hotelId = parseInt(req.params.id);
+    //     try {
+    //         const { hotel } = await adminService.getHotelById(hotelId);
+    //         const response = responseSuccess(hotel, "Lấy thông tin khách sạn thành công");
+    //         res.status(response.status).json(response);
+    //     } catch (err) {
+    //         console.error("Lấy thông tin khách sạn không thành công", err);
+    //         next(err);
+    //     }
+    // },
 
     // Lấy khách sạn theo khu vực
     getHotelsByLocation: async function (req, res, next) {
@@ -290,6 +314,18 @@ export const adminController = {
             next(err);
         }
     },
+    // Lấy danh sách phòng 
+    getAllRooms : async function (req,res,next) {
+       try {
+         const rooms = await adminService.getAllRooms();
+          const response = responseSuccess(rooms, "Lấy danh sách phòng thành công");
+            res.status(response.status).json(response);
+       } catch (err) {
+            console.error("Lấy danh sách phòng không thành công", err);
+            next(err);
+        }
+        
+    },
     // Tạo blog
     createBlog: async function (req, res, next) {
         try {
@@ -377,28 +413,28 @@ export const adminController = {
         }
     },
     // Lấy danh sách phòng của khách sạn
-    getRoomsByHotel: async function (req, res, next) {
+    getRoomsByHotelId: async function (req, res, next) {
         const hotelId = parseInt(req.params.hotelId);
         try {
-                const rooms = await adminService.getRoomsByHotelId(hotelId);
-                const response = responseSuccess(rooms, "Lấy danh sách phòng thành công");
-                res.status(response.status).json(response);
-            } catch (err) {
-                console.error("Lấy danh sách phòng không thành công", err);
-                next(err);
-            }
-        },
-
-        // Lấy những khách sạn liên quan tới địa điểm và nhận phòng trả phòng và số người
-        getSearchAvailableHotels: async function (req, res, next) {
-            try {
-                const result = await adminService.getSearchAvailableHotels(req.query);
-                const response = responseSuccess(result, "Lấy danh sách khách sạn thành công");
-                res.status(response.status).json(response);
-            } catch (error) {
-                console.error("Lấy danh sách khách sạn không thành công", error);
-                next(error);
-            }
+            const rooms = await adminService.getRoomsByHotelId(hotelId);
+            const response = responseSuccess(rooms, "Lấy danh sách phòng thành công");
+            res.status(response.status).json(response);
+        } catch (err) {
+            console.error("Lấy danh sách phòng không thành công", err);
+            next(err);
         }
+    },
 
-    }
+    // Lấy những khách sạn liên quan tới địa điểm và nhận phòng trả phòng và số người
+    // getSearchAvailableHotels: async function (req, res, next) {
+    //     try {
+    //         const result = await adminService.getSearchAvailableHotels(req.query);
+    //         const response = responseSuccess(result, "Lấy danh sách khách sạn thành công");
+    //         res.status(response.status).json(response);
+    //     } catch (error) {
+    //         console.error("Lấy danh sách khách sạn không thành công", error);
+    //         next(error);
+    //     }
+    // }
+
+}

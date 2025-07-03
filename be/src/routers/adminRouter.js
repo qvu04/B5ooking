@@ -3,6 +3,7 @@ import { upload } from '../Config/cloudinary.js';
 import { authMiddleware } from '../middleware/authMiddleware.js';
 import { checkAdmin } from '../middleware/checkAdmin.js';
 import { adminController } from '../controllers/adminController.js';
+import { adminService } from '../services/adminService.js';
 
 const router = express.Router();
 
@@ -14,9 +15,10 @@ router.delete('/deleteLocation/:id',authMiddleware,checkAdmin,adminController.de
 // Lấy danh sách vị trí
 router.get('/getAllLocations',authMiddleware,checkAdmin,adminController.getAllLocations);
 
-// Tạo tiện nghi
+// Tạo sửa xóa tiện nghi
 router.post('/createAmenity',authMiddleware,checkAdmin,adminController.createAmenity);
-
+router.put('/updateAmenity/:id',authMiddleware,checkAdmin,adminService.updateAmenity);
+router.delete('/deleteAmenity/:id',authMiddleware,checkAdmin,adminService.deleteAmenity)
 // Lấy danh sách tiện nghi
 router.get('/getAllAmenities',authMiddleware,checkAdmin,adminController.getAllAmenities);
 
@@ -28,8 +30,10 @@ router.delete('/deleteHotel/:id',authMiddleware,checkAdmin,adminController.delet
 // Lấy danh sách khách sạn
 router.get('/getAllHotels',authMiddleware,checkAdmin,adminController.getAllHotels);
 
-// Lấy thông tin khách sạn theo id
-router.get('/getHotelById/:id',authMiddleware,checkAdmin,adminController.getHotelById);
+router.get('/getAllRooms',authMiddleware,checkAdmin, adminController.getAllRooms)
+
+// // Lấy thông tin khách sạn theo id
+// router.get('/getHotelById/:id',authMiddleware,checkAdmin,adminController.getHotelById);
 
 // lấy danh sách ảnh phụ của khách sạn
 router.get('/getHotelImages/:hotelId',authMiddleware,checkAdmin,adminController.getHotelImages);
@@ -60,8 +64,8 @@ router.delete('/deleteBlog/:id',authMiddleware,checkAdmin,adminController.delete
 // Lấy danh sách người dùng
 router.get('/getAllUsers',authMiddleware,checkAdmin,adminController.getAllUsers);
 // Lấy danh sách phòng của khách sạn
-router.get('/getRoomsByHotel/:hotelId',authMiddleware,checkAdmin,adminController.getRoomsByHotel);
+router.get('/getRoomsByHotel/:hotelId',authMiddleware,checkAdmin,adminController.getRoomsByHotelId);
 
-// Lấy những khách sạn liên quan tới địa điểm và nhận phòng trả phòng và số người
-router.get('/getSearchAvailableHotels',authMiddleware,checkAdmin,adminController.getSearchAvailableHotels);
+// // Lấy những khách sạn liên quan tới địa điểm và nhận phòng trả phòng và số người
+// router.get('/getSearchAvailableHotels',authMiddleware,checkAdmin,adminController.getSearchAvailableHotels);
 export default router

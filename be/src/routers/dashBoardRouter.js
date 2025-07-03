@@ -1,7 +1,7 @@
 import express from 'express'
-import { authMiddleware } from '../middleware/authMiddleware'
-import { checkAdmin } from '../middleware/checkAdmin'
-import { dashBoardController } from '../controllers/dashBoardController'
+import { authMiddleware } from '../middleware/authMiddleware.js'
+import { checkAdmin } from '../middleware/checkAdmin.js'
+import { dashBoardController } from '../controllers/dashBoardController.js'
 
 const router = express.Router()
 

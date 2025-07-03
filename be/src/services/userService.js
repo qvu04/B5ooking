@@ -298,26 +298,26 @@ export const userService = {
         })
     },
 
-    getAllReviewByHotelId: async function (hotelId) {
-        const parsedHotelId = parseInt(hotelId)
-        const reviews = await prisma.review.findMany({
-            where: { hotelId: parsedHotelId },
-            select: {
-                comment: true,
-                rating: true,
-                user: {
-                    select: {
-                        id: true,
-                        fullName: true,
-                        avatar: true
-                    }
-                }
-            }
-        })
-        return {
-            reviews: reviews
-        }
-    },
+    // getAllReviewByHotelId: async function (hotelId) {
+    //     const parsedHotelId = parseInt(hotelId)
+    //     const reviews = await prisma.review.findMany({
+    //         where: { hotelId: parsedHotelId },
+    //         select: {
+    //             comment: true,
+    //             rating: true,
+    //             user: {
+    //                 select: {
+    //                     id: true,
+    //                     fullName: true,
+    //                     avatar: true
+    //                 }
+    //             }
+    //         }
+    //     })
+    //     return {
+    //         reviews: reviews
+    //     }
+    // },
     getAllReviewHotelByUser: async function (userId) {
         const reviewsUser = await prisma.review.findMany({
             where: { userId: userId },
