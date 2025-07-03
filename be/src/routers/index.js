@@ -15,5 +15,4 @@ router.use('/api/blog',blogRouter)
 router.use('/api/dashBoard',dashBoardRouter)
 router.use('/api/hotel',hotelRouter)
 router.use('/api/room',roomRouter)
-
 export default router;
