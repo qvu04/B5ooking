@@ -1,1 +1,37 @@
-login 
+Api Auth xác thực login, register
+Register (Post) : http://localhost:7000/api/auth/register
+login (Post) : http://localhost:7000/api/auth/login
+
+Api riêng tư cho user
+Cập nhật hồ sơ người dùng (Patch): http://localhost:7000/api/user/update-profile
+Lấy lịch sử đã booking (Get) : http://localhost:7000/api/user/getHistoryBookings
+Đặt phòng (Post) : http://localhost:7000/api/user/BookingRoom
+Thêm yêu thích của khách sạn đó (Post) :  http://localhost:7000/api/user/addFavoriteHotel/:hotelId
+Xóa yêu thích khách sạn đó (Delete) : http://localhost:7000/api/user/removeFavoriteHotel/:hotelId
+Lấy danh sách yêu thích khách sạn của người dùng (Get) : http://localhost:7000/api/user/getAllFavoriteHotel
+Thêm review người dùng hiện tại để đánh giá hotel (Post) : http://localhost:7000/api/user/addReview/:hotelId
+Sửa review người dùng hiện tại đánh giá hotel (Put):  http://localhost:7000/api/user/updateReview/:id
+Xóa review người dùng hiện tại đánh giá hotel (Delete) :  http://localhost:7000/api/user/deleteReview/:id
+Lấy danh sách đánh giá của các khách sạn của ng dùng đã đánh giá (Get) : http://localhost:7000/api/user/getAllReviewByUser
+
+Api riêng tư cho admin
+http://localhost:7000/api/admin/
+Tạo vị trí (Post) : http://localhost:7000/api/admin/createLocation
+Sửa vị trí (Put) : http://localhost:7000/api/admin/updateLocation/:id
+Xóa vị trí nhưng sẽ không xóa được nếu như còn khách sạn đó (Delete) : http://localhost:7000/api/admin/deleteLocation/:id
+Lấy danh sách vị trí (Get) : http://localhost:7000/api/admin/getAllLocations
+Tạo tiện nghi (Post) : http://localhost:7000/api/admin/createAmenity
+Sửa tiện nghi (Put) : http://localhost:7000/api/admin/updateAmenity/:id
+Xóa tiện nghi (Delete) : http://localhost:7000/api/admin/deleteAmenity/:id
+Lấy danh sách tiện nghi (Get) : http://localhost:7000/api/admin/getAllAmenities
+
+Tạo khách sạn (Post) : http://localhost:7000/api/admin/createHotel
+Sửa khách sạn (Put) : http://localhost:7000/api/admin/updateHotel/:id
+Xóa khách sạn (Delete) : http://localhost:7000/api/admin/deleteHotel/:id
+Lấy danh sách khách sạn : http://localhost:7000/api/admin/getAllHotels
+
+Tạo ảnh phụ của khách sạn : http://localhost:7000/api/admin/addHotelImage/:hotelId
+
+
+Api công khai
+

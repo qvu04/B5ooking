@@ -117,17 +117,17 @@ export const userController = {
             next(err)
         }
     },
-    getAllReviewByHotelId: async function (req, res, next) {
-        try {
-            const hotelId = req.params.id;
-            const reviews = await userService.getAllReviewByHotelId(hotelId)
-            const response = responseSuccess(reviews, "Lấy danh sách đánh giá của khách sạn thành công")
-            res.status(response.status).json(response)
-        } catch (err) {
-             console.error("Lấy danh sách đánh giá của khách sạn đó không thành công", err)
-            next(err)
-        }
-    },
+    // getAllReviewByHotelId: async function (req, res, next) {
+    //     try {
+    //         const hotelId = req.params.id;
+    //         const reviews = await userService.getAllReviewByHotelId(hotelId)
+    //         const response = responseSuccess(reviews, "Lấy danh sách đánh giá của khách sạn thành công")
+    //         res.status(response.status).json(response)
+    //     } catch (err) {
+    //          console.error("Lấy danh sách đánh giá của khách sạn đó không thành công", err)
+    //         next(err)
+    //     }
+    // },
 
     getAllReviewHotelByUser : async function (req,res,next) {
         try {

@@ -1,6 +1,5 @@
-import { Prisma } from "@prisma/client"
-import { dashboardService } from "../services/dashboardService"
-import { responseSuccess } from "../helpers/response.helper"
+import { dashboardService } from "../services/dashboardService.js"
+import { responseSuccess } from "../helpers/response.helper.js"
 
 export const dashBoardController = {
     getTotal: async function (req, res, next) {
