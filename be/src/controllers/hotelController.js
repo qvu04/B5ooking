@@ -12,6 +12,16 @@ export const hotelController = {
             next(err);
         }
     },
+      getSomeLocaltions: async function (req, res, next) {
+        try {
+            const locations = await hotelService.getSomeLocaltions();
+            const response = responseSuccess(locations, "Lấy danh sách 1 vài vị trí thành công");
+            res.status(response.status).json(response);
+        } catch (err) {
+            console.error("Lấy danh sách 1 vài vị trí không thành công", err);
+            next(err);
+        }
+    },
     // Lấy danh sách khách sạn
     getAllHotels: async function (req, res, next) {
         try {

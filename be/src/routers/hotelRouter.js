@@ -5,6 +5,8 @@ const router = express.Router()
 
 // Lấy danh sách vị trí
 router.get('/getAllLocations',hotelController.getAllLocations);
+// Lấy danh sách 1 vài vị trí
+router.get('/getSomeLocaltions',hotelController.getSomeLocaltions);
 
 // Lấy danh sách khách sạn
 router.get('/getAllHotels',hotelController.getAllHotels);
