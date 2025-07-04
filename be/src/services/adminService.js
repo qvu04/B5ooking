@@ -88,8 +88,8 @@ export const adminService = {
         }
     },
     // Sửa tiện nghi
-    updateAmenity : async function (amenityId,data) {
-        const {name} = data
+    updateAmenity: async function (amenityId, data) {
+        const { name } = data
         const amenity = await prisma.amenity.findUnique({
             where: { id: amenityId }
         });
@@ -97,26 +97,26 @@ export const adminService = {
             throw new ConflictException("Tiện nghi không tồn tại");
         }
         const updateAmenity = await prisma.amenity.update({
-            where : {id : amenityId},
-            data : {
-                name : name
+            where: { id: amenityId },
+            data: {
+                name: name
             }
         })
         return {
-            updateAmenity : updateAmenity
+            updateAmenity: updateAmenity
         }
     },
     // Xóa tiện nghi 
-    deleteAmenity : async function (amenityId) {
+    deleteAmenity: async function (amenityId) {
         const amenity = await prisma.amenity.findUnique({
             where: { id: amenityId }
         });
         if (!amenity) {
             throw new ConflictException("Tiện nghi không tồn tại");
         }
-      await prisma.amenity.delete({
-        where : {id : amenityId}
-      })  
+        await prisma.amenity.delete({
+            where: { id: amenityId }
+        })
     },
     // Lấy danh sách tiện nghi
     getAllAmenities: async function () {
@@ -284,17 +284,59 @@ export const adminService = {
         if (!hotel) {
             throw new NotFoundException("Khách sạn không tồn tại");
         }
+
+
         await prisma.hotelImage.deleteMany({
-            where: { hotelId: hotelId }
+            where: { hotelId }
         });
+
         await prisma.hotelAmenity.deleteMany({
-            where: { hotelId: hotelId }
+            where: { hotelId }
         });
+
+
+        await prisma.review.deleteMany({
+            where: { hotelId }
+        });
+
+
+        await prisma.favoriteHotel.deleteMany({
+            where: { hotelId }
+        });
+
+
+        const rooms = await prisma.room.findMany({
+            where: { hotelId },
+            select: { id: true }
+        });
+        const roomIds = rooms.map(r => r.id);
+
+
+        await prisma.roomImage.deleteMany({
+            where: { RoomId: { in: roomIds } }
+        });
+
+
+        await prisma.roomAmenity.deleteMany({
+            where: { roomId: { in: roomIds } }
+        });
+
+
+        await prisma.booking.deleteMany({
+            where: { roomId: { in: roomIds } }
+        });
+
+
+        await prisma.room.deleteMany({
+            where: { hotelId }
+        });
+
+
         await prisma.hotel.delete({
             where: { id: hotelId }
         });
-
     },
+
     // Lấy danh sách ảnh phụ của khách sạn
     getHotelImages: async function (hotelId) {
         const hotel = await prisma.hotel.findUnique({
@@ -808,6 +850,15 @@ export const adminService = {
             throw new ConflictException("Thiếu trường nào đó");
         }
         const slug = createSlug(title);
+        if (blog.slug !== slug) {
+            const slugExist = await prisma.blogPost.findUnique({
+                where: { slug }
+            });
+            if (slugExist) {
+                throw new ConflictException("Slug đã tồn tại");
+            }
+        }
+
         const blog = await prisma.blogPost.findUnique({
             where: { id: blogId }
         });
@@ -915,9 +966,17 @@ export const adminService = {
         const user = await prisma.user.findUnique({
             where: { id: userId }
         });
+
         if (!user) {
             throw new NotFoundException("Người dùng không tồn tại");
         }
+
+        // Xoá các dữ liệu liên quan
+        await prisma.booking.deleteMany({ where: { userId } });
+        await prisma.review.deleteMany({ where: { userId } });
+        await prisma.favoriteHotel.deleteMany({ where: { userId } });
+
+        // Xoá người dùng
         await prisma.user.delete({
             where: { id: userId }
         });

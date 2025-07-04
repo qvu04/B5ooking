@@ -97,6 +97,8 @@ http://localhost:7000/api/blog/
 
 Lấy danh sách vị trí (Get) : http://localhost:7000/api/hotel/getAllLocations
 
+Lấy danh sách 1 vài vị trí (Get) : http://localhost:7000/api/hotel/getSomeLocaltions
+
 Lấy danh sách khách sạn (Get) : http://localhost:7000/api/hotel/getAllHotels
 
 Lấy thông tin khách sạn theo khách sạn id (Get) : http://localhost:7000/api/hotel/getHotelById/:id
