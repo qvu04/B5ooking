@@ -1,0 +1,15 @@
+{
+    "home": {
+        "greeting": "Xin chào",
+        "slogan": "Khám phá những chỗ ở tốt nhất cho chuyến đi của bạn",
+        "discover_now": "Khám phá ngay",
+        "plan_title": "Bạn ơi, lên kế hoạch cho chuyến đi mơ ước nhé !!!",
+        "plan_description": "Chọn điểm đến, xếp hành lý và bắt đầu hành trình thôi nào!",
+        "promo_title": "Ưu Đãi",
+        "promo_1": "Khuyến mãi, giảm giá và ưu đãi đặc biệt dành riêng cho bạn",
+        "promo_2": "Mua với giá trên 10.000.000đ",
+        "promo_3": "Với nhiều ưu đãi hấp dẫn giúp bạn trải nghiệm tốt hơn",
+        "promo_button": "Săn Ngay",
+        "popular_places": "Điểm đến đang thịnh hành"
+    }
+}

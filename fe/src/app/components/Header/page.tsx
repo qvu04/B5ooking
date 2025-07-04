@@ -1,20 +1,28 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { AutoComplete, DatePicker, InputNumber, Button } from "antd";
-import { FaHotel, FaNewspaper, FaInfoCircle, FaSun } from "react-icons/fa";
+import { FaSun, FaMoon } from "react-icons/fa";
 import { MdTranslate } from "react-icons/md";
 import { SearchOutlined } from "@ant-design/icons";
+import { useTheme } from "next-themes";
 import dayjs from "dayjs";
-
+import { useTranslation } from "react-i18next";
 const { RangePicker } = DatePicker;
 
 const Header = () => {
     const [location, setLocation] = useState("");
     const [guestCount, setGuestCount] = useState(1);
-    const [dateRange, setDateRange] = useState<[dayjs.Dayjs, dayjs.Dayjs] | null>(null);
-
+    const [dateRange, setDateRange] = useState<[dayjs.Dayjs | null, dayjs.Dayjs | null] | null>(null);
+    const { theme, setTheme, resolvedTheme } = useTheme();
+    const [mounted, setMounted] = useState(false);
+    const { t, i18n } = useTranslation();
+    useEffect(() => {
+        setMounted(true);
+    }, []);
+    if (!mounted) return null;
+    console.log("Current theme:", resolvedTheme);
     return (
         <header className="relative w-full h-[600px] overflow-hidden text-white">
             {/* VIDEO BACKGROUND */}
@@ -23,7 +31,7 @@ const Header = () => {
                 muted
                 loop
                 className="absolute inset-0 w-full h-full object-cover z-0"
-                src="/header.mp4"
+                src="/videos/header.mp4"
             />
 
             {/* OVERLAY */}
@@ -34,7 +42,7 @@ const Header = () => {
                 {/* Logo */}
                 <div className="flex items-center space-x-0">
                     <img
-                        src="/logo-b5ooking.png"
+                        src="/images/logo-b5ooking.png"
                         alt="logo"
                         className="w-[200px] h-[80px] object-contain"
                     />
@@ -45,18 +53,18 @@ const Header = () => {
 
                 {/* Menu */}
                 <nav className="hidden md:flex space-x-6 text-white">
-                    <Link href="/" className="group relative flex items-center gap-1 hover:text-[#6246ea] transition">
-                        <FaHotel className="text-lg" />
+                    <Link href="/" className="group relative flex justify-center items-center gap-0 hover:text-[#6246ea] transition">
+                        <img className="animate-bounce w-12 h-6 object-cover rounded-sm" src="/images/home.png" alt="" />
                         Chỗ ở
                         <span className="absolute left-0 -bottom-1 h-[2px] w-0 bg-[#6246ea] transition-all duration-300 group-hover:w-full" />
                     </Link>
-                    <Link href="/tintuc" className="group relative flex items-center gap-1 hover:text-[#6246ea] transition">
-                        <FaNewspaper className="text-lg" />
+                    <Link href="/article" className="group relative flex justify-center items-center gap-0 hover:text-[#6246ea] transition">
+                        <img className="animate-bounce w-12 h-6 object-cover rounded-sm" src="/images/article.png" alt="" />
                         Tin tức
                         <span className="absolute left-0 -bottom-1 h-[2px] w-0 bg-[#6246ea] transition-all duration-300 group-hover:w-full" />
                     </Link>
-                    <Link href="/about" className="group relative flex items-center gap-1 hover:text-[#6246ea] transition">
-                        <FaInfoCircle className="text-lg" />
+                    <Link href="/about" className="group relative flex justify-center items-center gap-0 hover:text-[#6246ea] transition">
+                        <img className="animate-bounce w-12 h-6 object-cover rounded-sm" src="/images/about.png" alt="" />
                         Về chúng tôi
                         <span className="absolute left-0 -bottom-1 h-[2px] w-0 bg-[#6246ea] transition-all duration-300 group-hover:w-full" />
                     </Link>
@@ -64,10 +72,17 @@ const Header = () => {
 
                 {/* Icons */}
                 <div className="flex items-center space-x-4">
-                    <button className="text-white hover:text-[#6246ea] text-xl">
-                        <FaSun />
+                    <button
+                        onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
+                        className="text-white hover:text-[#6246ea] text-xl"
+                    >
+                        {resolvedTheme === "dark" ? <FaSun /> : <FaMoon />}
                     </button>
-                    <button className="text-white hover:text-[#6246ea] text-xl">
+
+                    <button
+                        onClick={() => i18n.changeLanguage(i18n.language === "vi" ? "en" : "vi")}
+                        className="text-white hover:text-[#6246ea] text-xl"
+                    >
                         <MdTranslate />
                     </button>
                     <Link
@@ -82,9 +97,9 @@ const Header = () => {
             {/* TEXT SECTION */}
             <div className="relative z-20 mt-10 px-10 flex flex-col items-start justify-center h-[150px] text-white">
                 <h1 className="text-5xl font-extrabold mb-3">
-                    <span className="text-[#6246ea]">B5ooking</span> - Cùng khám phá Việt Nam
+                    <span className="text-[#6246ea]">B5ooking</span> - {t("home.greeting")}
                 </h1>
-                <p className="text-xl">Khám phá những chỗ ở tốt nhất cho chuyến đi của bạn</p>
+                <p className="text-xl">{t("home.slogan")}</p>
             </div>
 
             {/* SEARCH SECTION */}
