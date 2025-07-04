@@ -11,6 +11,16 @@ export const hotelService = {
         }
 
     },
+     // Lấy danh sách vị trí (Lấy 6 cái)
+    getSomeLocaltions: async function () {
+        const locations = await prisma.location.findMany({
+            take : 6
+        });
+        return {
+            locations: locations
+        }
+
+    },
     // Lấy danh sách khách sạn
     getAllHotels: async function () {
         const hotels = await prisma.hotel.findMany({
