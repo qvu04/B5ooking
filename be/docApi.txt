@@ -102,7 +102,7 @@ Lấy danh sách khách sạn (Get) : http://localhost:7000/api/hotel/getAllHote
 Lấy thông tin khách sạn theo khách sạn id (Get) : http://localhost:7000/api/hotel/getHotelById/:id
 
 Lấy khách sạn theo khu vực (Get) : http://localhost:7000/api/hotel/getHotelsByLocation/:locationId
-
+    
 Lấy những khách sạn liên quan tới địa điểm và nhận phòng trả phòng và số người (Get) : http://localhost:7000/api/hotel/getSearchAvailableHotels
 
 Lấy tất cả đánh giá của id khách sạn (Get) : http://localhost:7000/api/hotel/getAllReviewByHotelId/:id

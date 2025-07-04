@@ -1,0 +1,15 @@
+{
+    "home": {
+        "greeting": "Hello",
+        "slogan": "Discover the best places to stay for your trip",
+        "discover_now": "Discover Now",
+        "plan_title": "Hey, time to plan your dream trip!!!",
+        "plan_description": "Choose a destination, pack your bags, and start your journey!",
+        "promo_title": "Promotion",
+        "promo_1": "Special discounts and offers just for you",
+        "promo_2": "Buy over 10,000,000 VND",
+        "promo_3": "With many attractive offers for a better experience",
+        "promo_button": "Grab Now",
+        "popular_places": "Trending Destinations"
+    }
+}
