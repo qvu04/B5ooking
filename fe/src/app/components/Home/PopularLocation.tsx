@@ -2,22 +2,23 @@
 import React from 'react'
 import { useState, useEffect } from 'react';
 import { Locations } from '@/app/types/locationTypes';
-import { getAllLocation } from '@/app/api/locationService';
+import { getSomeLocation } from '@/app/api/locationService';
 
 const PopularLocation = () => {
     const [locations, setLocations] = useState<Locations[] | null>(null);
+    const fetchAllLocations = async () => {
+        try {
+            const res = await getSomeLocation();
+            console.log('✌️res --->', res.data);
+            setLocations(res.data.data.locations);
+        } catch (error) {
+            console.log('✌️error --->', error);
+        }
+    };
     useEffect(() => {
-        const fetchAllLocations = async () => {
-            try {
-                const res = await getAllLocation();
-                console.log('✌️res --->', res.data);
-                setLocations(res.data.data.locations);
-            } catch (error) {
-                console.log('✌️error --->', error);
-            }
-        };
         fetchAllLocations();
-    }, []);
+    }, [])
+
     return (
         <div>
             <h2 className="text-2xl font-bold mb-4 text-black dark:text-white">Điểm đến đang thịnh hành</h2>

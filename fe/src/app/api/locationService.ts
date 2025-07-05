@@ -1,5 +1,5 @@
 import { https } from "./configService"
 
-export const getAllLocation = () => {
-    return https.get("/api/hotel/getAllLocations");
+export const getSomeLocation = () => {
+    return https.get("/api/hotel/getSomeLocaltions");
 }
