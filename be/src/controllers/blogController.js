@@ -13,6 +13,16 @@ export const blogController = {
       next(err);
     }
   },
+    getSomeBlogs: async function (req, res, next) {
+    try {
+      const blogs = await blogService.getSomeBlogs();
+      const response = responseSuccess(blogs, "Lấy danh sách 1 vài blog thành công");
+      res.status(response.status).json(response);
+    } catch (err) {
+      console.error("Lấy danh sách 1 vài blog không thành công", err);
+      next(err);
+    }
+  },
   // Lấy blog theo slug
   getBlogBySlug: async function (req, res, next) {
     try {

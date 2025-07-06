@@ -17,15 +17,29 @@ export const blogService = {
         })
         return blogs;
     },
+    getSomeBlogs: async function () {
+        const blogs = await prisma.blogPost.findMany({
+            select: {
+                id: true,
+                title: true,
+                summary: true,
+                image: true,
+                create_At: true,
+                update_At: true,
+            },
+            take: 4
+        })
+        return blogs;
+    },
 
-    getBlogBySlug : async function (slug) {
+    getBlogBySlug: async function (slug) {
         const blog = await prisma.blogPost.findUnique({
             where: { slug: slug },
             select: {
                 id: true,
                 title: true,
                 content: true,
-                author : true,
+                author: true,
                 summary: true,
                 image: true,
                 create_At: true,

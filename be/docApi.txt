@@ -115,6 +115,8 @@ Lấy thông tin phòng theo id phòng (Get) : http://localhost:7000/api/room/ge
 
 Lấy tất cả bài blog : http://localhost:7000/api/blog/getAllBlogs
 
+Lấy 1 vài bài blog : http://localhost:7000/api/blog/getSomeBlogs
+
 Lấy thông tin bài viết đó theo slug :  http://localhost:7000/api/blog/getBlogBySlug/:slug
 
 Lấy các bài viết theo khu vực : http://localhost:7000/api/blog/getAllBlogsByLocationId/:locationId
