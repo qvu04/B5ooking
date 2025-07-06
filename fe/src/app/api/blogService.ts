@@ -1,5 +1,5 @@
 import { https } from "./configService"
 
-export const getAllBlog = () => {
-    https.get("/api/blog/getAllBlogs");
+export const getSomeBlogs = () => {
+    return https.get("/api/blog/getSomeBlogs");
 }

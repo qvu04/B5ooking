@@ -5,6 +5,7 @@ import Header from "./components/Header/page";
 import Footer from "./components/Footer/page";
 import { Providers } from './providers';
 import "@/lib/i18n";
+import ClientLayout from "./components/Template/ClientLayout";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -30,9 +31,7 @@ export default function RootLayout({
     <html lang="vi" className='dark' suppressHydrationWarning>
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
         <Providers>
-          <Header />
-          {children}
-          <Footer />
+          <ClientLayout>{children}</ClientLayout>
         </Providers>
       </body>
     </html>

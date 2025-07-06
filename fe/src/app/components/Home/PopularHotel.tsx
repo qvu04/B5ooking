@@ -45,7 +45,7 @@ const PopularHotel = () => {
 
     return (
         <div className="px-2 md:px-10 py-10 max-w-7xl mx-auto">
-            <h2 className="text-xl md:text-2xl font-bold italic mb-4 pl-4 md:pl-6">
+            <h2 className="text-xl md:text-2xl font-bold italic mb-4 pl-4 md:pl-6 ">
                 Những chỗ nghỉ nổi bật được đề xuất cho quý khách:
             </h2>
 
@@ -65,7 +65,7 @@ const PopularHotel = () => {
                     </button>
                 ))}
                 <div className="ml-auto">
-                    <button className="text-sm font-semibold text-black hover:text-[#6246ea] transition">
+                    <button className="text-2xl font-bold text-black hover:text-[#6246ea] transition dark:text-[#fffffe]">
                         Xem Thêm Các Chỗ Nghỉ Khác &gt;
                     </button>
                 </div>
@@ -85,7 +85,7 @@ const PopularHotel = () => {
             >
                 {hotels?.map((hotel) => (
                     <div key={hotel.id} className="px-2">
-                        <div className="border rounded-xl shadow hover:shadow-lg overflow-hidden flex flex-col h-full bg-white">
+                        <div className="border rounded-xl shadow hover:shadow-lg overflow-hidden flex flex-col h-full dark:bg-[#16161a] dark:border dark:border-gray-300">
                             <img
                                 src={hotel.image}
                                 alt={hotel.name}
@@ -93,10 +93,10 @@ const PopularHotel = () => {
                             />
                             <div className="p-4 flex flex-col justify-between flex-1">
                                 <div>
-                                    <h3 className="text-lg font-semibold mb-1 line-clamp-2 min-h-[48px]">
+                                    <h3 className="text-lg dark:text-[#fffffe] font-semibold mb-1 line-clamp-2 min-h-[48px]">
                                         {hotel.name}
                                     </h3>
-                                    <p className="text-sm text-gray-600 mb-2 line-clamp-2 min-h-[40px]">
+                                    <p className="text-sm dark:text-[#94a1b2] mb-2 line-clamp-2 min-h-[40px]">
                                         {hotel.address}
                                     </p>
                                 </div>
@@ -106,7 +106,7 @@ const PopularHotel = () => {
                                         allowHalf
                                         value={hotel.averageRating || hotel.defaultRating}
                                     />
-                                    <span className="text-sm text-gray-500">
+                                    <span className="text-sm text-[#94a1b2]">
                                         ({hotel.averageRating || hotel.defaultRating})
                                     </span>
                                 </div>

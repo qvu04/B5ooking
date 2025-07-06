@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import { AutoComplete, DatePicker, InputNumber, Button } from "antd";
+import { AutoComplete, DatePicker, InputNumber, Button, Select } from "antd";
 import { FaSun, FaMoon } from "react-icons/fa";
 import { MdTranslate } from "react-icons/md";
 import { SearchOutlined } from "@ant-design/icons";
@@ -17,23 +17,22 @@ const Header = () => {
     const [guestCount, setGuestCount] = useState(1);
     const [dateRange, setDateRange] =
         useState<[dayjs.Dayjs | null, dayjs.Dayjs | null] | null>(null);
-    const { theme, setTheme, resolvedTheme } = useTheme();
+    const { setTheme, resolvedTheme } = useTheme();
     const { t, i18n } = useTranslation();
+
     const [mounted, setMounted] = useState(false);
     const [isScrolled, setIsScrolled] = useState(false);
 
     useEffect(() => {
         setMounted(true);
-
         const handleScroll = () => {
             setIsScrolled(window.scrollY > 20);
         };
-
         window.addEventListener("scroll", handleScroll);
         return () => window.removeEventListener("scroll", handleScroll);
     }, []);
 
-    if (!mounted) return null;
+    if (!mounted) return null; // 💥 Ngăn render khi chưa mount để tránh lỗi hydration
 
     return (
         <>
@@ -45,7 +44,7 @@ const Header = () => {
                     }`}
             >
                 {/* Logo */}
-                <div className="flex items-center space-x-0">
+                <Link href="/" className="flex items-center space-x-0">
                     <img
                         src="/images/logo-b5ooking.png"
                         alt="logo"
@@ -54,7 +53,7 @@ const Header = () => {
                     <span className="text-2xl md:text-3xl font-bold text-[#6246ea] -ml-10">
                         B5ooking
                     </span>
-                </div>
+                </Link>
 
                 {/* Menu */}
                 <nav className="hidden md:flex space-x-6">
@@ -98,24 +97,38 @@ const Header = () => {
 
                 {/* Icons */}
                 <div className="flex items-center space-x-4">
+                    {/* Toggle theme */}
                     <button
                         onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
-                        className={`text-xl hover:text-[#6246ea] transition ${isScrolled ? "text-black dark:text-white" : "text-white"
-                            }`}
+                        className="text-xl hover:text-[#6246ea] transition"
                     >
                         {resolvedTheme === "dark" ? <FaSun /> : <FaMoon />}
                     </button>
 
+                    {/* Select language */}
+                    <div className="flex items-center gap-1">
+                        <MdTranslate className="text-xl" />
+                        <Select
+                            value={i18n.language}
+                            onChange={(val) => i18n.changeLanguage(val)}
+                            className="w-[130px] text-white dark:text-white"
+                            suffixIcon={null} // Ẩn icon xổ xuống nếu bạn muốn
+                            popupMatchSelectWidth={false}
+                            options={[
+                                { value: "vi", label: "🇻🇳 Tiếng Việt" },
+                                { value: "en", label: "🇺🇸 English" },
+                            ]}
+                            classNames={{
+                                popup: {
+                                    root: resolvedTheme === "dark" ? "text-white" : "text-black",
+                                },
+                            }}
+                        />
 
-                    <button
-                        onClick={() => i18n.changeLanguage(i18n.language === "vi" ? "en" : "vi")}
-                        className={`text-xl hover:text-[#6246ea] transition ${isScrolled ? "text-black dark:text-white" : "text-white"
-                            }`}
-                    >
-                        <MdTranslate />
-                    </button>
 
+                    </div>
 
+                    {/* Login */}
                     <Link
                         href="/login"
                         className="ml-2 px-4 py-1.5 rounded-xl bg-[#6246ea] hover:bg-blue-700 text-white font-medium transition"
@@ -127,7 +140,7 @@ const Header = () => {
 
             {/* HEADER CONTENT */}
             <header className="relative w-full h-[600px] overflow-hidden text-white">
-                {/* VIDEO BACKGROUND */}
+                {/* Video Background */}
                 <video
                     autoPlay
                     muted
@@ -136,10 +149,10 @@ const Header = () => {
                     src="/videos/header.mp4"
                 />
 
-                {/* OVERLAY */}
+                {/* Overlay */}
                 <div className="absolute inset-0 bg-black/40 z-10" />
 
-                {/* TEXT SECTION */}
+                {/* Text Section */}
                 <div className="relative z-20 mt-28 px-10 flex flex-col items-start justify-center h-[150px] text-white">
                     <h1 className="text-5xl font-extrabold mb-3">
                         <span className="text-[#6246ea]">B5ooking</span> - {t("home.greeting")}
@@ -147,7 +160,7 @@ const Header = () => {
                     <p className="text-xl">{t("home.slogan")}</p>
                 </div>
 
-                {/* SEARCH SECTION */}
+                {/* Search Section */}
                 <div className="relative z-20 px-10 mt-6">
                     <div className="flex items-center justify-between gap-6 bg-white/20 backdrop-blur-md text-white px-6 py-4 rounded-full w-full max-w-5xl mx-auto shadow-lg">
                         {/* Địa điểm */}

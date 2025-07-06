@@ -1,4 +1,5 @@
 import PlanBanner from "./components/Home/PlanBanner";
+import PopularBlog from "./components/Home/PopularBlog";
 import PopularHotel from "./components/Home/PopularHotel";
 import PopularLocation from "./components/Home/PopularLocation";
 import PopularTravel from "./components/Home/PopularTravel";
@@ -11,6 +12,7 @@ export default function Home() {
       <PopularLocation />
       <PopularHotel />
       <PopularTravel />
+      <PopularBlog />
       <PlanBanner />
     </div>
   );

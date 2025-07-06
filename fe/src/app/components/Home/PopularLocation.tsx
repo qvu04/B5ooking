@@ -3,6 +3,8 @@ import React from 'react'
 import { useState, useEffect } from 'react';
 import { Locations } from '@/app/types/locationTypes';
 import { getSomeLocation } from '@/app/api/locationService';
+import Link from 'next/link';
+import slugify from 'slugify';
 
 const PopularLocation = () => {
     const [locations, setLocations] = useState<Locations[] | null>(null);
@@ -24,7 +26,8 @@ const PopularLocation = () => {
             <h2 className="text-2xl font-bold mb-4 text-black dark:text-white">Điểm đến đang thịnh hành</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
                 {locations?.map((location) => (
-                    <div
+                    <Link
+                        href={`/location/${slugify(location.city, { lower: true })}`}
                         key={location.id}
                         className="relative group rounded-lg overflow-hidden shadow-md border"
                     >
@@ -47,7 +50,7 @@ const PopularLocation = () => {
                                 </h3>
                             </div>
                         </div>
-                    </div>
+                    </Link>
                 ))}
             </div>
         </div>
