@@ -12,7 +12,7 @@ export const hotelController = {
             next(err);
         }
     },
-      getSomeLocaltions: async function (req, res, next) {
+    getSomeLocaltions: async function (req, res, next) {
         try {
             const locations = await hotelService.getSomeLocaltions();
             const response = responseSuccess(locations, "Lấy danh sách 1 vài vị trí thành công");
@@ -37,7 +37,11 @@ export const hotelController = {
     getHotelById: async function (req, res, next) {
         const hotelId = parseInt(req.params.id);
         try {
-            const { hotel } = await hotelService.getHotelById(hotelId);
+            const { hotel, reviewCount, ratingStats } = await hotelService.getHotelById(hotelId);
+
+            hotel.reviewCount = reviewCount;
+            hotel.ratingStats = ratingStats;
+
             const response = responseSuccess(hotel, "Lấy thông tin khách sạn thành công");
             res.status(response.status).json(response);
         } catch (err) {
@@ -69,15 +73,15 @@ export const hotelController = {
         }
     },
     // Lấy tất cả đánh giá của khách sạn 
-      getAllReviewByHotelId: async function (req, res, next) {
-            try {
-                const hotelId = req.params.id;
-                const reviews = await hotelService.getAllReviewByHotelId(hotelId)
-                const response = responseSuccess(reviews, "Lấy danh sách đánh giá của khách sạn thành công")
-                res.status(response.status).json(response)
-            } catch (err) {
-                 console.error("Lấy danh sách đánh giá của khách sạn đó không thành công", err)
-                next(err)
-            }
-        },
+    getAllReviewByHotelId: async function (req, res, next) {
+        try {
+            const hotelId = req.params.id;
+            const reviews = await hotelService.getAllReviewByHotelId(hotelId)
+            const response = responseSuccess(reviews, "Lấy danh sách đánh giá của khách sạn thành công")
+            res.status(response.status).json(response)
+        } catch (err) {
+            console.error("Lấy danh sách đánh giá của khách sạn đó không thành công", err)
+            next(err)
+        }
+    },
 }
