@@ -121,3 +121,5 @@ Lấy thông tin bài viết đó theo slug :  http://localhost:7000/api/blog/ge
 
 Lấy các bài viết theo khu vực : http://localhost:7000/api/blog/getAllBlogsByLocationId/:locationId
 
+Lấy danh sách phòng phù hợp với checkin checkout guests để lọc phòng : http://localhost:7000/api/room/getSearchAvailableHotels
+
