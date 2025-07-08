@@ -29,7 +29,7 @@ const Header = () => {
             setIsScrolled(window.scrollY > 20);
         };
         window.addEventListener("scroll", handleScroll);
-        return () => window.removeEventListener("scroll", handleScroll);
+        return () => window.removeEventListener("scroll", handleScroll);    
     }, []);
 
     if (!mounted) return null; // 💥 Ngăn render khi chưa mount để tránh lỗi hydration

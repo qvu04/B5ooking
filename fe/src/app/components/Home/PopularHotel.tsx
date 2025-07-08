@@ -5,29 +5,50 @@ import { getHotelsByLocation } from "@/app/api/hotelService";
 import { Locations } from "@/app/types/locationTypes";
 import { Hotels } from "@/app/types/hotelTypes";
 import { Carousel, Rate } from "antd";
+import { useTranslation } from "react-i18next";
+import { translateText } from "@/lib/translate"; // bạn đã setup API này trước đó
 
 const PopularHotel = () => {
     const [locations, setLocations] = useState<Locations[] | null>(null);
     const [hotels, setHotels] = useState<Hotels[] | null>(null);
     const [activeLocationId, setActiveLocationId] = useState<number | null>(null);
+    const { i18n, t } = useTranslation();
 
-    // Lấy danh sách địa điểm
     const fetchLocation = async () => {
         try {
             const res = await getSomeLocation();
-            const locs = res.data.data.locations;
-            setLocations(locs);
+            const locs: Locations[] = res.data.data.locations;
+
+            // Nếu không phải tiếng Việt thì dịch từng city
+            const translatedLocs = await Promise.all(
+                locs.map(async (loc) => {
+                    const city = i18n.language === "vi" ? loc.city : await translateText(loc.city, "vi", i18n.language);
+                    return { ...loc, city };
+                })
+            );
+
+            setLocations(translatedLocs);
             if (locs.length > 0) setActiveLocationId(locs[0].id);
         } catch (error) {
             console.error("Lỗi lấy địa điểm:", error);
         }
     };
 
-    // Lấy danh sách khách sạn theo location
     const fetchHotels = async (locationId: number) => {
         try {
             const res = await getHotelsByLocation(locationId);
-            setHotels(res.data.data.hotels);
+            const rawHotels = res.data.data.hotels;
+
+            // Nếu không phải tiếng Việt thì dịch tên và địa chỉ
+            const translatedHotels = await Promise.all(
+                rawHotels.map(async (hotel: Hotels) => {
+                    const name = i18n.language === "vi" ? hotel.name : await translateText(hotel.name, "vi", i18n.language);
+                    const address = i18n.language === "vi" ? hotel.address : await translateText(hotel.address, "vi", i18n.language);
+                    return { ...hotel, name, address };
+                })
+            );
+
+            setHotels(translatedHotels);
         } catch (error) {
             console.error("Lỗi lấy khách sạn:", error);
         }
@@ -35,18 +56,18 @@ const PopularHotel = () => {
 
     useEffect(() => {
         fetchLocation();
-    }, []);
+    }, [i18n.language]);
 
     useEffect(() => {
         if (activeLocationId !== null) {
             fetchHotels(activeLocationId);
         }
-    }, [activeLocationId]);
+    }, [activeLocationId, i18n.language]);
 
     return (
         <div className="px-2 md:px-10 py-10 max-w-7xl mx-auto">
             <h2 className="text-xl md:text-2xl font-bold italic mb-4 pl-4 md:pl-6 ">
-                Những chỗ nghỉ nổi bật được đề xuất cho quý khách:
+                {t("home.popularHotels")}
             </h2>
 
             {/* Tabs địa điểm */}
@@ -56,7 +77,7 @@ const PopularHotel = () => {
                         key={location.id}
                         onClick={() => setActiveLocationId(location.id)}
                         className={`px-4 py-2 rounded-full border transition cursor-pointer 
-                                ${activeLocationId === location.id
+              ${activeLocationId === location.id
                                 ? "bg-[#6246ea] text-[#fffffe]"
                                 : "bg-gray-100 text-gray-800 hover:bg-[#e0e0ff] hover:text-[#6246ea] hover:border-[#6246ea]"
                             }`}
@@ -66,7 +87,7 @@ const PopularHotel = () => {
                 ))}
                 <div className="ml-auto">
                     <button className="text-2xl font-bold text-black hover:text-[#6246ea] transition dark:text-[#fffffe]">
-                        Xem Thêm Các Chỗ Nghỉ Khác &gt;
+                        {t("home.seeMoreHotels")} &gt;
                     </button>
                 </div>
             </div>

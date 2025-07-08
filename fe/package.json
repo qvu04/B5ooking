@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@tailwindcss/line-clamp": "^0.4.4",
+    "@vitalets/google-translate-api": "^9.2.1",
     "antd": "^5.26.3",
     "axios": "^1.10.0",
     "i18next": "^25.3.0",
@@ -21,7 +22,8 @@
     "react-hook-form": "^7.59.0",
     "react-i18next": "^15.6.0",
     "react-icons": "^5.5.0",
-    "slugify": "^1.6.6"
+    "slugify": "^1.6.6",
+    "translate-google": "^1.5.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

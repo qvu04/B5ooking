@@ -18,196 +18,195 @@ enum Role {
   USER
 }
 
-
 enum BookingStatus {
   CONFIRMED
   CANCELED
 }
+
 model User {
-  id Int @id @default(autoincrement())
-  firstName String
-  lastName String
-  fullName String
-  avatar  String?
-  email String @unique
-  password String
+  id          Int     @id @default(autoincrement())
+  firstName   String
+  lastName    String
+  fullName    String
+  avatar      String?
+  email       String  @unique
+  password    String
   dateOfBirth String?
-  gender String?
-  phone String?
-  address String?
-  role Role @default(USER)
+  gender      String?
+  phone       String?
+  address     String?
+  role        Role    @default(USER)
 
   bookings Booking[]
-  reviews Review[]
- 
+  reviews  Review[]
+
   favorites FavoriteHotel[]
 
   create_At DateTime @default(now())
   update_At DateTime @updatedAt
 }
 
-
 model Location {
   id Int @id @default(autoincrement())
-  
+
   imageLocation String?
-  city String
-  distric String?
-  ward String?
-  latitude Float?
-  longitude Float?
+  city          String
+  distric       String?
+  ward          String?
+  latitude      Float?
+  longitude     Float?
 
   blogPosts BlogPost[]
-  hotel Hotel[]
+  hotel     Hotel[]
 }
 
 model Hotel {
-  id Int @id @default(autoincrement())
-  name String
-  address String
-  description String
-  image String
-  averageRating  Float?
-  defaultRating  Float?
-  amenities HotelAmenity[]
-  locationId Int
-  location Location @relation(fields : [locationId], references : [id])
+  id            Int            @id @default(autoincrement())
+  name          String
+  address       String
+  description   String
+  image         String
+  averageRating Float?
+  defaultRating Float?
+  amenities     HotelAmenity[]
+  locationId    Int
+  location      Location       @relation(fields: [locationId], references: [id])
 
-  rooms Room[]
-  reviews Review[]
+  rooms       Room[]
+  reviews     Review[]
   favoritedBy FavoriteHotel[]
 
   images HotelImage[]
 
+
   create_At DateTime @default(now())
   update_At DateTime @updatedAt
 }
 
+
 model HotelImage {
-  id Int @id @default(autoincrement())
-  imageUrl String
-  hotelId Int
-  hotel Hotel @relation(fields : [hotelId], references : [id])
+  id        Int      @id @default(autoincrement())
+  imageUrl  String
+  hotelId   Int
+  hotel     Hotel    @relation(fields: [hotelId], references: [id])
   createdAt DateTime @default(now())
 }
 
-
 model Room {
-  id Int @id @default(autoincrement())
-  name String
-  type String
-  price Int
-  discount Int?
+  id          Int           @id @default(autoincrement())
+  name        String
+  type        String
+  price       Int
+  discount    Int?
   description String?
-  amenities RoomAmenity[]
+  amenities   RoomAmenity[]
 
-  maxGuests Int @default(2)
-  image String?
+  maxGuests Int     @default(2)
+  image     String?
 
-  hotelId Int
-  hotel  Hotel @relation(fields: [hotelId], references: [id])
-  bookings Booking[]
-  images RoomImage[]
-  create_At DateTime @default(now())
-  update_At DateTime @updatedAt
+  hotelId   Int
+  hotel     Hotel       @relation(fields: [hotelId], references: [id])
+  bookings  Booking[]
+  images    RoomImage[]
+  create_At DateTime    @default(now())
+  update_At DateTime    @updatedAt
 }
 
 model RoomImage {
-  id Int @id @default(autoincrement())
-  imageUrl String
-  RoomId Int
-  room Room @relation(fields : [RoomId], references : [id])
+  id        Int      @id @default(autoincrement())
+  imageUrl  String
+  RoomId    Int
+  room      Room     @relation(fields: [RoomId], references: [id])
   createdAt DateTime @default(now())
 }
 
 model Amenity {
-  id Int @id @default(autoincrement())
+  id   Int    @id @default(autoincrement())
   name String @unique
 
-  hotels HotelAmenity[]
-  rooms RoomAmenity[]
-  create_At DateTime @default(now())
+  hotels    HotelAmenity[]
+  rooms     RoomAmenity[]
+  create_At DateTime       @default(now())
 }
 
 model HotelAmenity {
-  id Int  @id @default(autoincrement())
-  hotelId Int
+  id        Int @id @default(autoincrement())
+  hotelId   Int
   amenityId Int
 
-  hotel Hotel @relation(fields : [hotelId], references : [id])
-  amenity Amenity @relation(fields : [amenityId], references : [id])
+  hotel   Hotel   @relation(fields: [hotelId], references: [id])
+  amenity Amenity @relation(fields: [amenityId], references: [id])
 
-  @@unique([hotelId,amenityId])
+  @@unique([hotelId, amenityId])
 }
 
 model RoomAmenity {
   id Int @id @default(autoincrement())
 
-  roomId Int
+  roomId    Int
   amenityId Int
 
-  room Room @relation(fields : [roomId], references : [id])
-   amenity Amenity @relation(fields : [amenityId], references : [id])
+  room    Room    @relation(fields: [roomId], references: [id])
+  amenity Amenity @relation(fields: [amenityId], references: [id])
 
-   @@unique([roomId,amenityId])
+  @@unique([roomId, amenityId])
 }
 
 model Booking {
-  id Int @id @default(autoincrement())
-  userId Int
-  roomId Int 
-  checkIn DateTime
-  checkOut DateTime
-  status BookingStatus @default(CONFIRMED)
-  guests Int
+  id         Int           @id @default(autoincrement())
+  userId     Int
+  roomId     Int
+  checkIn    DateTime
+  checkOut   DateTime
+  status     BookingStatus @default(CONFIRMED)
+  guests     Int
   totalPrice Int
 
-  user User @relation(fields : [userId], references : [id])
-  room Room @relation(fields : [roomId], references : [id])
+  user User @relation(fields: [userId], references: [id])
+  room Room @relation(fields: [roomId], references: [id])
 
   create_At DateTime @default(now())
   update_At DateTime @updatedAt
 }
 
 model Review {
-  id Int @id @default(autoincrement())
-  userId Int 
+  id      Int     @id @default(autoincrement())
+  userId  Int
   hotelId Int
-  rating Int
+  rating  Int
   comment String?
 
-  user User @relation(fields : [userId], references : [id])
-  hotel Hotel @relation(fields : [hotelId], references : [id])
+  user      User     @relation(fields: [userId], references: [id])
+  hotel     Hotel    @relation(fields: [hotelId], references: [id])
   create_At DateTime @default(now())
   update_At DateTime @updatedAt
 }
 
 model BlogPost {
-  id Int @id @default(autoincrement())
-  title String
-  slug String @unique
-  content    String   @db.LongText
-  image String
-  author String?
+  id         Int     @id @default(autoincrement())
+  title      String
+  slug       String  @unique
+  content    String  @db.LongText
+  image      String
+  author     String?
   locationId Int
-  summary String
+  summary    String
 
-  location Location? @relation(fields : [locationId], references : [id])
- 
+  location Location? @relation(fields: [locationId], references: [id])
+
   create_At DateTime @default(now())
   update_At DateTime @updatedAt
 }
 
 model FavoriteHotel {
-  id Int @id @default(autoincrement())
-  userId Int
+  id      Int @id @default(autoincrement())
+  userId  Int
   hotelId Int
 
-  user      User     @relation(fields: [userId], references: [id])
-  hotel     Hotel    @relation(fields: [hotelId], references: [id])
+  user  User  @relation(fields: [userId], references: [id])
+  hotel Hotel @relation(fields: [hotelId], references: [id])
 
   createdAt DateTime @default(now())
 
   @@unique([userId, hotelId])
-
 }
