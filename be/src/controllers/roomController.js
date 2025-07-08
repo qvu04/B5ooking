@@ -26,5 +26,15 @@ export const roomController = {
             console.error("Lấy thông tin phòng không thành công", err);
             next(err);
         }
+    },
+    getAvailableRoomsByHotelId : async function (req,res,next) {
+        try {
+            const result = await roomService.getAvailableRoomsByHotelId(req.query);
+          const response = responseSuccess(result, "Lấy danh sách phòng phù hợp thành công");
+            res.status(response.status).json(response);
+        } catch (error) {
+            console.error("Lấy danh sách phòng phù hợp không thành công", error);
+            next(error);
+        }
     }
 }
