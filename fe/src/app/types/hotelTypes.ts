@@ -11,5 +11,7 @@ export interface Hotels {
         amenity: {
             name: string
         }
-    }[]
+    }[];
+    latitude?: number;
+    longitude?: number;
 }   

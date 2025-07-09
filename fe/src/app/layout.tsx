@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import Header from "./components/Header/page";
-import Footer from "./components/Footer/page";
+import 'leaflet/dist/leaflet.css';
 import { Providers } from './providers';
 import "@/lib/i18n";
 import ClientLayout from "./components/Template/ClientLayout";
