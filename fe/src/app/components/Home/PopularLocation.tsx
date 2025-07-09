@@ -2,23 +2,17 @@
 import React from 'react'
 import { useState, useEffect } from 'react';
 import { Locations } from '@/app/types/locationTypes';
-import { getSomeLocation } from '@/app/api/locationService';
 import Link from 'next/link';
-import slugify from 'slugify';
+import { fetchSomeLocation } from '@/app/api/locationService';
+import { toSlug } from '@/utils/slug';
 
 const PopularLocation = () => {
     const [locations, setLocations] = useState<Locations[] | null>(null);
-    const fetchAllLocations = async () => {
-        try {
-            const res = await getSomeLocation();
-            console.log('✌️res --->', res.data);
-            setLocations(res.data.data.locations);
-        } catch (error) {
-            console.log('✌️error --->', error);
-        }
-    };
     useEffect(() => {
-        fetchAllLocations();
+        (async () => {
+            const loc: Locations[] = await fetchSomeLocation()
+            setLocations(loc);
+        })()
     }, [])
 
     return (
@@ -27,7 +21,7 @@ const PopularLocation = () => {
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
                 {locations?.map((location) => (
                     <Link
-                        href={`/location/${slugify(location.city, { lower: true })}`}
+                        href={`/location/${toSlug(location.city)}`}
                         key={location.id}
                         className="relative group rounded-lg overflow-hidden shadow-md border"
                     >

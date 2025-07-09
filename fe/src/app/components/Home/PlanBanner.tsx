@@ -2,7 +2,7 @@ import React from 'react'
 
 const PlanBanner = () => {
     return (
-        <div className="bg-[#d1d1e9] border rounded-2xl shadow-lg p-6 md:p-12 my-10 mx-4 md:mx-auto max-w-6xl">
+        <div className="bg-[#d1d1e9] border-gray-300 rounded-2xl shadow-lg p-6 md:p-12 my-10 mx-4 md:mx-auto max-w-6xl">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
 
                 {/* Left bubble-style box */}
