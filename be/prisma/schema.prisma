@@ -93,15 +93,13 @@ model HotelImage {
 }
 
 model Room {
-  id          Int           @id @default(autoincrement())
-  name        String
-  type        String
-  price       Int
-  discount    Int?
-
-  description String?  @db.LongText
-
-  amenities   RoomAmenity[]
+  id Int @id @default(autoincrement())
+  name String
+  type String
+  price Int
+  discount Int?
+  description String?
+  amenities RoomAmenity[]
 
   maxGuests Int     @default(2)
   image     String?
@@ -211,8 +209,4 @@ model FavoriteHotel {
   createdAt DateTime @default(now())
 
   @@unique([userId, hotelId])
-
 }
-
-
-
