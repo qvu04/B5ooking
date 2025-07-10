@@ -6,7 +6,7 @@ import Link from "next/link"
 import React, { useState } from "react"
 import { useForm } from "react-hook-form"
 import { FiEye, FiEyeOff } from "react-icons/fi"
-
+import toast from "react-hot-toast";
 type FormData = {
     firstName: string
     lastName: string
@@ -45,6 +45,7 @@ export default function RegisterPage() {
             const res = await registerService(payload);
             const user = res.data
             console.log('✌️userRegister thành công: --->', user);
+            toast.success("Đăng ký thành công");
         } catch (error) {
             console.log('✌️error --->', error);
 

@@ -8,7 +8,7 @@ import { useRouter } from "next/navigation"
 import React, { useState } from "react"
 import { useForm } from "react-hook-form"
 import { FiEye, FiEyeOff } from "react-icons/fi"
-
+import toast from "react-hot-toast";
 type FormData = {
     email: string
     password: string
@@ -31,6 +31,7 @@ export default function LoginPage() {
             console.log('✌️userLogin thành công: --->', user);
             localStorage.setItem('user', JSON.stringify(user));
             dispatch(setUserLoginAction(user));
+            toast.success("Đăng nhập thành công");
             router.push("/");
             console.log("👉 Redirecting to homepage...");
         } catch (error) {

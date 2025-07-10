@@ -2,15 +2,19 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { AutoComplete, DatePicker, InputNumber, Button, Select } from "antd";
-import { FaSun, FaMoon } from "react-icons/fa";
+import { FaSun, FaMoon, FaUserAlt } from "react-icons/fa";
 import { MdTranslate } from "react-icons/md";
 import { SearchOutlined } from "@ant-design/icons";
 import { useTheme } from "next-themes";
 import dayjs from "dayjs";
 import { useTranslation } from "react-i18next";
 import { usePathname } from "next/navigation";
+import { useAppDispatch } from "@/redux/hook";
+import { useSelector } from "react-redux";
+import { setUserLogoutAction } from "@/redux/features/userSlice";
 const { RangePicker } = DatePicker;
-
+import toast from "react-hot-toast";
+import { RootState } from "@/lib/store";
 const Header = () => {
     const [location, setLocation] = useState("");
     const [guestCount, setGuestCount] = useState(1);
@@ -26,6 +30,12 @@ const Header = () => {
         { href: "/article", label: "Tin tức", icon: "/images/article.png" },
         { href: "/about", label: "Về chúng tôi", icon: "/images/about.png" },
     ];
+    const { user } = useSelector((state: RootState) => state.userSlice);
+    const dispatch = useAppDispatch();
+    const handleLogout = () => {
+        dispatch(setUserLogoutAction());
+        toast.success("Đăng xuất thành công");
+    }
     useEffect(() => {
         setMounted(true);
         const handleScroll = () => {
@@ -121,12 +131,42 @@ const Header = () => {
                     </div>
 
                     {/* Login */}
-                    <Link
-                        href="/login"
-                        className="ml-2 px-4 py-1.5 rounded-xl bg-[#6246ea] hover:bg-blue-700 text-white font-medium transition"
-                    >
-                        Đăng nhập
-                    </Link>
+                    {user ? (
+                        <div className="flex items-center gap-4">
+                            {/* Avatar và tên */}
+                            <div className="flex items-center gap-2">
+                                {user.data.User.avatar ? (
+                                    <img
+                                        src={user.data.User.avatar}
+                                        alt="avatar"
+                                        className="w-8 h-8 rounded-full object-cover"
+                                    />
+                                ) : (
+                                    <div className="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center text-white">
+                                        <FaUserAlt className="text-sm" />
+                                    </div>
+                                )}
+                                <span className="text-sm font-medium">{user.data.User.fullName}</span>
+                            </div>
+
+                            {/* Nút đăng xuất */}
+                            <button
+                                onClick={handleLogout}
+                                className="px-3 py-1.5 cursor-pointer rounded-xl bg-[#6246ea] hover:bg-blue-700 text-white font-medium transition"
+                            >
+                                Đăng xuất
+                            </button>
+                        </div>
+                    ) : (
+                        <Link
+                            href="/login"
+                            className="ml-2 px-4 py-1.5 rounded-xl bg-[#6246ea] hover:bg-blue-700 text-white font-medium transition"
+                        >
+                            Đăng nhập
+                        </Link>
+                    )}
+
+
                 </div>
             </nav>
 
