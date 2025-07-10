@@ -1,5 +1,4 @@
 "use client";
-
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { AutoComplete, DatePicker, InputNumber, Button, Select } from "antd";
@@ -9,7 +8,7 @@ import { SearchOutlined } from "@ant-design/icons";
 import { useTheme } from "next-themes";
 import dayjs from "dayjs";
 import { useTranslation } from "react-i18next";
-
+import { usePathname } from "next/navigation";
 const { RangePicker } = DatePicker;
 
 const Header = () => {
@@ -19,10 +18,14 @@ const Header = () => {
         useState<[dayjs.Dayjs | null, dayjs.Dayjs | null] | null>(null);
     const { setTheme, resolvedTheme } = useTheme();
     const { t, i18n } = useTranslation();
-
     const [mounted, setMounted] = useState(false);
     const [isScrolled, setIsScrolled] = useState(false);
-
+    const pathName = usePathname();
+    const navItems = [
+        { href: "/", label: "Chỗ ở", icon: "/images/home.png" },
+        { href: "/article", label: "Tin tức", icon: "/images/article.png" },
+        { href: "/about", label: "Về chúng tôi", icon: "/images/about.png" },
+    ];
     useEffect(() => {
         setMounted(true);
         const handleScroll = () => {
@@ -57,42 +60,31 @@ const Header = () => {
 
                 {/* Menu */}
                 <nav className="hidden md:flex space-x-6">
-                    <Link
-                        href="/"
-                        className="group relative flex justify-center items-center gap-0 hover:text-[#6246ea] transition"
-                    >
-                        <img
-                            className="animate-bounce w-12 h-6 object-cover rounded-sm"
-                            src="/images/home.png"
-                            alt=""
-                        />
-                        Chỗ ở
-                        <span className="absolute left-0 -bottom-1 h-[2px] w-0 bg-[#6246ea] transition-all duration-300 group-hover:w-full" />
-                    </Link>
-                    <Link
-                        href="/article"
-                        className="group relative flex justify-center items-center gap-0 hover:text-[#6246ea] transition"
-                    >
-                        <img
-                            className="animate-bounce w-12 h-6 object-cover rounded-sm"
-                            src="/images/article.png"
-                            alt=""
-                        />
-                        Tin tức
-                        <span className="absolute left-0 -bottom-1 h-[2px] w-0 bg-[#6246ea] transition-all duration-300 group-hover:w-full" />
-                    </Link>
-                    <Link
-                        href="/about"
-                        className="group relative flex justify-center items-center gap-0 hover:text-[#6246ea] transition"
-                    >
-                        <img
-                            className="animate-bounce w-12 h-6 object-cover rounded-sm"
-                            src="/images/about.png"
-                            alt=""
-                        />
-                        Về chúng tôi
-                        <span className="absolute left-0 -bottom-1 h-[2px] w-0 bg-[#6246ea] transition-all duration-300 group-hover:w-full" />
-                    </Link>
+                    {navItems.map((item) => {
+                        const isActive = pathName === item.href;
+                        return (
+                            <Link
+                                key={item.href}
+                                href={item.href}
+                                className={`group relative flex items-center gap-1 transition-all duration-300
+          ${isActive ? "text-[#6246ea] scale-[1.05]" : "hover:text-[#6246ea]"}`}
+                            >
+                                <img
+                                    className={`w-6 h-6 object-cover rounded-sm transition-transform duration-300
+            ${isActive ? "scale-125" : "group-hover:scale-110"}`}
+                                    src={item.icon}
+                                    alt={item.label}
+                                />
+                                <span className="font-medium">{item.label}</span>
+
+                                {/* Underline hiệu ứng */}
+                                <span
+                                    className={`absolute left-0 -bottom-1 h-[2px] bg-[#6246ea] transition-all duration-300
+            ${isActive ? "w-full" : "w-0 group-hover:w-full"}`}
+                                />
+                            </Link>
+                        );
+                    })}
                 </nav>
 
                 {/* Icons */}

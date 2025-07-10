@@ -3,7 +3,7 @@ import { getSomeLocation } from '@/app/api/locationService';
 import { getHotelsByLocation } from '@/app/api/hotelService';
 import { Hotels } from '@/app/types/hotelTypes';
 import { Locations } from '@/app/types/locationTypes';
-import slugify from 'slugify';
+import { toSlug } from '@/utils/slug';
 
 type Props = {
     params: { slug: string };
@@ -16,7 +16,7 @@ export default async function LocationPage({ params }: Props) {
     const locations: Locations[] = res.data.data.locations;
 
     const matchedLocation = locations.find(
-        (loc) => slugify(loc.city, { lower: true }) === slug
+        (loc) => toSlug(loc.city) === slug
     );
 
     if (!matchedLocation) {

@@ -1,12 +1,11 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import Header from "./components/Header/page";
-import Footer from "./components/Footer/page";
+import 'leaflet/dist/leaflet.css';
 import { Providers } from './providers';
 import "@/lib/i18n";
 import ClientLayout from "./components/Template/ClientLayout";
-
+import { ReduxProvider } from '@/redux/provider'
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -30,9 +29,11 @@ export default function RootLayout({
   return (
     <html lang="vi" className='dark' suppressHydrationWarning>
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        <Providers>
-          <ClientLayout>{children}</ClientLayout>
-        </Providers>
+        <ReduxProvider>
+          <Providers>
+            <ClientLayout>{children}</ClientLayout>
+          </Providers>
+        </ReduxProvider>
       </body>
     </html>
   );

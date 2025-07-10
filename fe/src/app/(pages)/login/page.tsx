@@ -1,6 +1,10 @@
 "use client"
-
+import { loginService } from "@/app/api/authService"
+import { LoginUser } from "@/app/types/authType"
+import { setUserLoginAction } from "@/redux/features/userSlice"
+import { useAppDispatch } from "@/redux/hook"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import React, { useState } from "react"
 import { useForm } from "react-hook-form"
 import { FiEye, FiEyeOff } from "react-icons/fi"
@@ -13,10 +17,32 @@ type FormData = {
 export default function LoginPage() {
     const { register, handleSubmit, formState: { errors } } = useForm<FormData>()
     const [showPassword, setShowPassword] = useState(false)
+    const dispatch = useAppDispatch();
+    const router = useRouter()
 
+    const fetchUserLogin = async (formValues: { taiKhoan: string, matKhau: string }) => {
+        try {
+            const payLoad: LoginUser = {
+                email: formValues.taiKhoan,
+                password: formValues.matKhau
+            };
+            const res = await loginService(payLoad);
+            const user = res.data
+            console.log('✌️userLogin thành công: --->', user);
+            localStorage.setItem('user', JSON.stringify(user));
+            dispatch(setUserLoginAction(user));
+            router.push("/");
+            console.log("👉 Redirecting to homepage...");
+        } catch (error) {
+            console.log('✌️error --->', error);
+
+        }
+    }
     const onSubmit = (data: FormData) => {
-        console.log("Đăng nhập với:", data)
-        // TODO: gọi API hoặc xử lý đăng nhập ở đây
+        fetchUserLogin({
+            taiKhoan: data.email,
+            matKhau: data.password
+        })
     }
 
     return (
@@ -25,20 +51,20 @@ export default function LoginPage() {
             <div className="relative w-1/2 hidden md:block">
                 <video
                     className="absolute inset-0 z-0 w-full h-full object-cover"
-                    src="/login-page.mp4"
+                    src="/videos/login-page.mp4"
                     autoPlay
                     muted
                     loop
                 />
-                {/* Overlay với dark mode nhẹ hơn */}
-                <div className="absolute inset-0 z-10 bg-gradient-to-tr from-black/50 via-black/30 to-transparent dark:from-black/10 dark:via-black/5" />
+                {/* Overlay chỉ để dễ đọc chữ – rất nhẹ */}
+                <div className="absolute inset-0 z-10 bg-black/10" />
                 <div className="absolute inset-0 z-20 flex items-center justify-center p-10">
-                    <h1 className="text-white text-4xl font-bold text-center leading-tight">
-                        Chào mừng bạn đến với{" "}
-                        <span className="text-[#6246ea]">B5ooking</span>
+                    <h1 className="text-white text-4xl font-bold text-center leading-tight drop-shadow-lg">
+                        Chào mừng bạn đến với <span className="text-[#6246ea]">B5ooking</span>
                     </h1>
                 </div>
             </div>
+
 
             {/* RIGHT - LOGIN FORM */}
             <div className="w-full md:w-1/2 flex items-center justify-center px-4 bg-gradient-to-br from-indigo-100 to-blue-50 dark:from-gray-900 dark:to-gray-800">

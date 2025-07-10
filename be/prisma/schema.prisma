@@ -98,7 +98,9 @@ model Room {
   type        String
   price       Int
   discount    Int?
+
   description String?  @db.LongText
+
   amenities   RoomAmenity[]
 
   maxGuests Int     @default(2)
@@ -209,4 +211,8 @@ model FavoriteHotel {
   createdAt DateTime @default(now())
 
   @@unique([userId, hotelId])
+
 }
+
+
+

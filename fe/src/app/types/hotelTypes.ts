@@ -6,4 +6,12 @@ export interface Hotels {
     image: string;
     averageRating: number;
     defaultRating: number;
-}
+    images: { imageUrl: string }[];
+    amenities: {
+        amenity: {
+            name: string
+        }
+    }[];
+    latitude?: number;
+    longitude?: number;
+}   
