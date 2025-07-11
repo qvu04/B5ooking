@@ -25,3 +25,6 @@ export const fetchHotelByLocation = async (locationId: number, lang: string): Pr
 export const getHotelsbyHotelId = (hotelId: number) => {
     return https.get(`/api/hotel/getHotelById/${hotelId}`)
 }
+export const postReviewHotel = (hotelId: number, data: { rating: number, comment: string }) => {
+    return https.post(`/api/user/addReview/${hotelId}`, data);
+}

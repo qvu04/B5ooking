@@ -30,6 +30,7 @@
     "react-redux": "^9.2.0",
     "slugify": "^1.6.6",
     "swiper": "^11.2.10",
+    "tailwind-scrollbar": "^4.0.2",
     "translate-google": "^1.5.0"
   },
   "devDependencies": {

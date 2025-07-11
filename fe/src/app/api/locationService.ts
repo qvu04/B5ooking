@@ -15,6 +15,15 @@ export const fetchSomeLocation = async () => {
         console.log('✌️error --->', error);
     }
 }
+export const getAllLocation = () => {
+    return https.get("/api/hotel/getAllLocations");
+}
+export const fetchAllLocation = async () => {
+    const res = await getAllLocation();
+    const locations = res.data.data.locations;
+    console.log("✌️locations --->", res.data.data);
+    return locations;
+}
 export const fetchTranslateLocation = async (lang: string): Promise<Locations[]> => {
     try {
         const res = await getSomeLocation();

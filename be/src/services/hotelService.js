@@ -75,23 +75,22 @@ export const hotelService = {
             where: { id: hotelId },
             include: {
                 location: true,
-                rooms : {
-                    take : 3,
-                    select : {
-                        name : true,
-                        type : true,
-                        price : true,
-                        discount : true,
-                        maxGuests : true,
-                        amenities : {
-                            include : {
-                                amenity : true
+                rooms: {
+                    take: 3,
+                    select: {
+                        name: true,
+                        type: true,
+                        price: true,
+                        discount: true,
+                        maxGuests: true,
+                        amenities: {
+                            include: {
+                                amenity: true
                             }
                         }
                     }
                 },
                 reviews: {
-                    take: 4,
                     orderBy: { create_At: "desc" },
                     include: {
                         user: {
@@ -142,13 +141,13 @@ export const hotelService = {
             }
         });
         const countHotel = await prisma.hotel.count({
-            where : {locationId : locationId}
+            where: { locationId: locationId }
         })
         if (!hotels || hotels.length === 0) {
             throw new NotFoundException("Không có khách sạn nào ở vị trí này");
         }
         return {
-            countHotel:countHotel,
+            countHotel: countHotel,
             hotels: hotels
 
         }

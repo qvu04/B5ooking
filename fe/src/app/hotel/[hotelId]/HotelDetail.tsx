@@ -12,6 +12,11 @@ import { AiOutlineHeart, AiFillStar, AiOutlineCheckCircle, AiOutlineUser, AiOutl
 import Link from 'next/link';
 import MapView from '@/app/components/Map/MapViewWrapper';
 import { FaUserAlt } from 'react-icons/fa';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/lib/store';
+import toast from 'react-hot-toast';
+import { postReviewHotel } from '@/app/api/hotelService';
+import { ReviewType } from '@/app/types/reviewType';
 
 type Props = {
     hotel: Hotels;
@@ -21,7 +26,12 @@ export default function HotelDetailClient({ hotel }: Props) {
     const [thumbsSwiper, setThumbsSwiper] = useState<SwiperType | null>(null);
     const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(null);
     const [showAllReviews, setShowAllReviews] = useState(false);
-    console.log("hotel", hotel)
+    const [rating, setRating] = useState(0);
+    const [comment, setComment] = useState("");
+    const [reviews, setReviews] = useState(hotel.reviews || []);
+    const { user } = useSelector((state: RootState) => state.userSlice);
+    const [mounted, setMounted] = useState(false);
+
     useEffect(() => {
         if (hotel.latitude && hotel.longitude) {
             setCoords({ lat: hotel.latitude, lng: hotel.longitude });
@@ -31,6 +41,36 @@ export default function HotelDetailClient({ hotel }: Props) {
             });
         }
     }, [hotel]);
+    const handlePostSubmitReview = async () => {
+        try {
+            if (!user) {
+                toast.error("Vui lòng đăng nhập để đánh giá");
+                return;
+            }
+            const res = await postReviewHotel(hotel.id, { rating, comment });
+            const newReview: ReviewType = {
+                comment,
+                rating,
+                user: {
+                    avatar: user?.data?.User.avatar || '',
+                    fullName: user?.data?.User.fullName || '',
+                },
+            };
+            setReviews((prev: ReviewType[]) => [newReview, ...prev]);
+            setRating(0);
+            setComment("");
+            toast.success("Gửi đánh giá thành công");
+
+        } catch (error) {
+            toast.error("Đánh giá thất bại. Vui lòng thử lại.");
+            console.log('✌️error --->', error);
+
+        }
+
+    }
+    useEffect(() => {
+        setMounted(true);
+    }, []);
 
     return (
         <div className="max-w-7xl mx-auto px-4 py-8">
@@ -194,7 +234,7 @@ export default function HotelDetailClient({ hotel }: Props) {
 
                     <table className="w-full border border-black table-fixed">
                         <thead>
-                            <tr className="bg-gray-100 text-left">
+                            <tr className="bg-[#d1d1e9] text-left">
                                 <th className="w-[30%] border-r border-black p-4 font-semibold text-lg">Loại phòng</th>
                                 <th className="w-[10%] border-r border-black p-4 font-semibold text-lg text-center">Lượng khách</th>
                                 <th className="w-[15%] border-r border-black p-4 font-semibold text-lg text-center">Giá hôm nay</th>
@@ -306,13 +346,13 @@ export default function HotelDetailClient({ hotel }: Props) {
 
                     {/* Danh sách bình luận với Show More */}
                     <div className="grid gap-6">
-                        {(showAllReviews ? hotel.reviews : hotel.reviews.slice(0, 2)).map((review, index) => (
+                        {(showAllReviews ? reviews : reviews.slice(0, 2)).map((review, index) => (
                             <div
                                 key={index}
                                 className="bg-white rounded-lg shadow-md p-5 border border-gray-200"
                             >
                                 <div className="flex items-center gap-4 mb-3">
-                                    {review.user.avatar ? (
+                                    {review.user?.avatar ? (
                                         <img
                                             src={review.user.avatar}
                                             alt="avatar"
@@ -325,7 +365,7 @@ export default function HotelDetailClient({ hotel }: Props) {
                                     )}
 
                                     <div>
-                                        <p className="font-semibold text-gray-900">{review.user.fullName}</p>
+                                        <p className="font-semibold text-gray-900">{review.user?.fullName}</p>
                                         <div className="flex items-center gap-1">
                                             {Array.from({ length: 5 }).map((_, i) => (
                                                 <AiFillStar
@@ -354,8 +394,69 @@ export default function HotelDetailClient({ hotel }: Props) {
                         </div>
                     )}
                 </div>
+                {/* Post bình luận */}
+                {/* Gửi đánh giá */}
+                <div className="mt-12">
+                    <h2 className="text-2xl font-bold mb-6">Gửi đánh giá của bạn</h2>
 
+                    <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-6 space-y-6">
+                        {/* Avatar + Tên + Chọn sao */}
+                        {mounted && (
+                            <div className="flex flex-col gap-4">
+                                <div className="flex items-center gap-3">
+                                    {user?.data?.User?.avatar ? (
+                                        <img
+                                            src={user.data.User.avatar}
+                                            alt="Avatar"
+                                            className="w-12 h-12 rounded-full object-cover shadow-md"
+                                        />
+                                    ) : (
+                                        <div className="w-12 h-12 rounded-full bg-gray-300 flex items-center justify-center text-white shadow-md">
+                                            <FaUserAlt className="text-base" />
+                                        </div>
+                                    )}
+                                    <p className="font-semibold text-lg text-gray-800">
+                                        {user?.data?.User?.fullName}
+                                    </p>
+                                </div>
 
+                                <div className="flex gap-1">
+                                    {Array.from({ length: 5 }).map((_, i) => (
+                                        <AiFillStar
+                                            key={i}
+                                            size={24}
+                                            onClick={() => setRating(i + 1)}
+                                            className={`cursor-pointer transition-all duration-150 ${i < rating ? "text-yellow-400" : "text-gray-300"}`}
+                                        />
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Textarea */}
+                        <textarea
+                            placeholder="Chia sẻ trải nghiệm của bạn tại khách sạn..."
+                            rows={4}
+                            value={comment}
+                            onChange={(e) => setComment(e.target.value)}
+                            className="w-full border border-gray-300 rounded-lg p-4 shadow-sm resize-none focus:outline-none focus:ring-2 focus:ring-purple-500 text-gray-700"
+                        ></textarea>
+
+                        {/* Nút gửi */}
+                        <div className="text-right">
+                            <button
+                                disabled={!comment || rating === 0}
+                                onClick={handlePostSubmitReview}
+                                className={`px-6 py-2 rounded-full cursor-pointer font-semibold transition duration-300 ${comment && rating
+                                    ? "bg-purple-600 text-white hover:bg-purple-700"
+                                    : "bg-gray-300 text-gray-500 cursor-not-allowed"
+                                    }`}
+                            >
+                                Đánh giá
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     );

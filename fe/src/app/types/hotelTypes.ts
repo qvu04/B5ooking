@@ -1,3 +1,4 @@
+import { ReviewType } from "./reviewType";
 import { RoomType } from "./roomType";
 
 export interface Hotels {
@@ -18,14 +19,7 @@ export interface Hotels {
     longitude?: number;
     reviewCount: number;
     rooms: RoomType[];
-    reviews: {
-        comment: string,
-        rating: number,
-        user: {
-            avatar: string,
-            fullName: string,
-        }
-    }[];
+    reviews: ReviewType[];
     ratingStats: {
         count: {
             1: number;

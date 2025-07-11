@@ -6,14 +6,17 @@ import Link from 'next/link';
 import { fetchSomeLocation } from '@/app/api/locationService';
 import { toSlug } from '@/utils/slug';
 
+
 const PopularLocation = () => {
     const [locations, setLocations] = useState<Locations[] | null>(null);
+ 
     useEffect(() => {
         (async () => {
             const loc: Locations[] = await fetchSomeLocation()
             setLocations(loc);
         })()
     }, [])
+ 
 
     return (
         <div>
