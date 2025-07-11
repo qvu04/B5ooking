@@ -1,3 +1,4 @@
+import { AmenityType } from "./amenityType";
 import { ReviewType } from "./reviewType";
 import { RoomType } from "./roomType";
 
@@ -9,7 +10,7 @@ export interface Hotels {
     image: string;
     averageRating: number;
     defaultRating: number;
-    images: { imageUrl: string }[];
+    images: RoomImage[];
     amenities: {
         amenity: {
             name: string
@@ -36,4 +37,31 @@ export interface Hotels {
             5: number;
         };
     }
-}   
+}
+export type RoomImage = {
+    id: number;
+    imageUrl: string;
+    RoomId: number;
+    createdAt: string;
+};
+export type RoomAmenity = {
+    id: number;
+    roomId: number;
+    amenityId: number;
+    amenity: AmenityType;
+};
+export type RoomAvailable = {
+    id: number;
+    name: string;
+    type: string;
+    price: number;
+    discount: number;
+    description: string;
+    maxGuests: number;
+    image: string;
+    hotelId: number;
+    create_At: string;
+    update_At: string;
+    images: RoomImage[];
+    amenities: RoomAmenity[];
+};

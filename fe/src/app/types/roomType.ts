@@ -12,6 +12,13 @@ export interface RoomType {
   price: number;
   discount: number;
   maxGuests: number;
+  description: string;
+  images: {
+    id: number;
+    imageUrl: string;
+
+  }[];
+  image: string;
   amenities: RoomAmenity[];
 }
 

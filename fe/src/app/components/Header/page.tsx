@@ -131,7 +131,7 @@ const Header = () => {
                         />
                     </div>
                     {user ? (
-                        <div className="flex items-center gap-4">
+                        <Link href={"/profile"} className="flex items-center gap-4">
                             <div className="flex items-center gap-2">
                                 {user.data.User.avatar ? (
                                     <img src={user.data.User.avatar} alt="avatar" className="w-8 h-8 rounded-full object-cover" />
@@ -143,7 +143,7 @@ const Header = () => {
                                 <span className="text-sm font-medium">{user.data.User.fullName}</span>
                             </div>
                             <button onClick={() => { dispatch(setUserLogoutAction()); toast.success("Đăng xuất thành công"); }} className="px-3 py-1.5 rounded-xl bg-[#6246ea] hover:bg-blue-700 text-white font-medium transition">Đăng xuất</button>
-                        </div>
+                        </Link>
                     ) : (
                         <Link href="/login" className="ml-2 px-4 py-1.5 rounded-xl bg-[#6246ea] hover:bg-blue-700 text-white font-medium transition">Đăng nhập</Link>
                     )}

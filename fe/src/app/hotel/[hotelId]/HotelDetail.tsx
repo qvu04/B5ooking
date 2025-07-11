@@ -1,5 +1,5 @@
 'use client';
-import { Hotels } from '@/app/types/hotelTypes';
+import { Hotels, RoomAvailable } from '@/app/types/hotelTypes';
 import { useEffect, useState } from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay, Thumbs } from 'swiper/modules';
@@ -9,6 +9,7 @@ import { Swiper as SwiperType } from 'swiper/types';
 import { geocodeAddress } from '@/lib/geocode';
 import { FiShare } from "react-icons/fi";
 import { AiOutlineHeart, AiFillStar, AiOutlineCheckCircle, AiOutlineUser, AiOutlineCheck } from "react-icons/ai";
+import type { RangePickerProps } from "antd/es/date-picker";
 import Link from 'next/link';
 import MapView from '@/app/components/Map/MapViewWrapper';
 import { FaUserAlt } from 'react-icons/fa';
@@ -17,7 +18,10 @@ import { RootState } from '@/lib/store';
 import toast from 'react-hot-toast';
 import { postReviewHotel } from '@/app/api/hotelService';
 import { ReviewType } from '@/app/types/reviewType';
-
+import { fetchSearchHotel } from '@/app/api/roomService';
+import { DatePicker } from "antd";
+import dayjs from "dayjs";
+import RoomDetailModal from './RoomDetailModal';
 type Props = {
     hotel: Hotels;
 };
@@ -31,6 +35,12 @@ export default function HotelDetailClient({ hotel }: Props) {
     const [reviews, setReviews] = useState(hotel.reviews || []);
     const { user } = useSelector((state: RootState) => state.userSlice);
     const [mounted, setMounted] = useState(false);
+    const [checkIn, setCheckIn] = useState<string>("");
+    const [checkOut, setCheckOut] = useState<string>("");
+    const [guests, setGuests] = useState<number>(1);
+    const [availableRooms, setAvailableRooms] = useState<RoomAvailable[]>([]);
+    const [selectedRoom, setSelectedRoom] = useState<RoomAvailable | null>(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
     useEffect(() => {
         if (hotel.latitude && hotel.longitude) {
@@ -41,6 +51,48 @@ export default function HotelDetailClient({ hotel }: Props) {
             });
         }
     }, [hotel]);
+    const handleDateChange: RangePickerProps['onChange'] = (dates, dateStrings) => {
+        setCheckIn(dateStrings[0]);
+        setCheckOut(dateStrings[1]);
+    };
+    const handleSearch = async () => {
+        if (!checkIn || !checkOut || !guests) {
+            toast.error("Vui lòng chọn đầy đủ thông tin tìm kiếm");
+            return;
+        }
+
+        try {
+            const rooms = await fetchSearchHotel({
+                hotelId: hotel.id,
+                checkIn,
+                checkOut,
+                guests,
+            });
+            setAvailableRooms(rooms);
+        } catch (error) {
+            console.error("Lỗi khi tìm kiếm phòng:", error);
+            toast.error("Không thể tìm kiếm phòng");
+        }
+    };
+    useEffect(() => {
+        if (!hotel.id) return;
+
+        const fetchAvailableRooms = async () => {
+            try {
+                const rooms = await fetchSearchHotel({
+                    hotelId: hotel.id,
+                    checkIn: "2025-07-20",  // Hardcoded tạm
+                    checkOut: "2025-07-22",
+                    guests: 2,
+                });
+                setAvailableRooms(rooms);
+            } catch (error) {
+                console.error("Lỗi khi fetch phòng trống:", error);
+            }
+        };
+
+        fetchAvailableRooms();
+    }, [hotel.id]);
     const handlePostSubmitReview = async () => {
         try {
             if (!user) {
@@ -72,6 +124,15 @@ export default function HotelDetailClient({ hotel }: Props) {
         setMounted(true);
     }, []);
 
+    const handleOpenRoomDetail = (room: RoomAvailable) => {
+        setSelectedRoom(room);
+        console.log('✌️room --->', room);
+        setIsModalOpen(true);
+    };
+    const handleCloseRoomDetail = () => {
+        setSelectedRoom(null);
+        setIsModalOpen(false);
+    };
     return (
         <div className="max-w-7xl mx-auto px-4 py-8">
             {/* Tiêu đề */}
@@ -231,95 +292,140 @@ export default function HotelDetailClient({ hotel }: Props) {
                 {/* Các phòng trống */}
                 <div className="mt-10">
                     <h2 className="text-2xl font-bold mb-6">Tất cả các phòng còn trống</h2>
+                    {/* Thanh tìm kiếm phòng trống */}
+                    <div className="mt-4 border border-gray-200 p-6 rounded-lg shadow-sm space-y-4">
+                        <h3 className="text-xl font-semibold mb-2">Tìm kiếm phòng trống</h3>
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                            {/* Chọn ngày */}
+                            <div>
+                                <label className="block mb-1 font-medium text-gray-700">Chọn ngày</label>
+                                <DatePicker.RangePicker
+                                    format="YYYY-MM-DD"
+                                    onChange={handleDateChange}
+                                    className="w-full"
+                                    disabledDate={(current) => current && current < dayjs().startOf("day")}
+                                />
+                            </div>
 
-                    <table className="w-full border border-black table-fixed">
-                        <thead>
-                            <tr className="bg-[#d1d1e9] text-left">
-                                <th className="w-[30%] border-r border-black p-4 font-semibold text-lg">Loại phòng</th>
-                                <th className="w-[10%] border-r border-black p-4 font-semibold text-lg text-center">Lượng khách</th>
-                                <th className="w-[15%] border-r border-black p-4 font-semibold text-lg text-center">Giá hôm nay</th>
-                                <th className="w-[45%] p-4 font-semibold text-lg text-center">Các ưu đãi</th>
-                            </tr>
-                        </thead>
+                            {/* Số lượng khách */}
+                            <div>
+                                <label className="block mb-1 font-medium text-gray-700">Số lượng khách</label>
+                                <input
+                                    type="number"
+                                    min={1}
+                                    value={guests}
+                                    onChange={(e) => setGuests(parseInt(e.target.value))}
+                                    className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                                />
+                            </div>
 
-                        <tbody>
-                            {hotel.rooms.map((room, index) => (
-                                <tr key={index} className="border-t border-black">
-                                    {/* Cột loại phòng */}
-                                    <td className="align-top border-r border-black p-4">
-                                        <h3 className="font-bold text-lg">{room.name}</h3>
-                                        <p className="text-red-500 text-sm mt-1">chỉ còn 1 phòng trên trang chúng tôi</p>
-                                        <p className="mt-2">1 giường đôi 🛏️</p>
+                            {/* Nút tìm kiếm */}
+                            <div className="flex items-end">
+                                <button
+                                    onClick={handleSearch}
+                                    className="w-full bg-purple-600 cursor-pointer hover:bg-purple-700 text-white py-2 px-4 rounded-lg font-semibold"
+                                >
+                                    Tìm kiếm
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    {availableRooms.length > 0 ? (
+                        <table className="w-full border border-black table-fixed">
+                            <thead>
+                                <tr className="bg-[#d1d1e9] text-left">
+                                    <th className="w-[30%] border-r border-black p-4 font-semibold text-lg">Loại phòng</th>
+                                    <th className="w-[10%] border-r border-black p-4 font-semibold text-lg text-center">Lượng khách</th>
+                                    <th className="w-[15%] border-r border-black p-4 font-semibold text-lg text-center">Giá hôm nay</th>
+                                    <th className="w-[45%] p-4 font-semibold text-lg text-center">Các ưu đãi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {availableRooms.map((room, index) => (
+                                    <tr key={index} className="border-t border-black">
+                                        {/* Cột loại phòng */}
+                                        <td className="align-top border-r border-black p-4">
+                                            <button
+                                                className="font-bold hover:text-[#6246ea] cursor-pointer text-lg"
+                                                onClick={() => handleOpenRoomDetail(room)}
+                                            >{room.name}</button>
+                                            <p className="text-red-500 text-sm mt-1">chỉ còn 1 phòng trên trang chúng tôi</p>
+                                            <p className="mt-2">1 giường đôi 🛏️</p>
+                                            <div className="flex flex-wrap gap-x-4 gap-y-2 mt-3 text-sm text-gray-700">
+                                                {room.amenities.map((item, i) => (
+                                                    <div key={i} className="flex items-center gap-1">
+                                                        <AiOutlineCheck className="text-green-500" size={14} />
+                                                        <span>{item.amenity.name}</span>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </td>
 
-                                        <div className="flex flex-wrap gap-x-4 gap-y-2 mt-3 text-sm text-gray-700">
-                                            {room.amenities.map((item, i) => (
-                                                <div key={i} className="flex items-center gap-1">
-                                                    <AiOutlineCheck className="text-green-500" size={14} />
-                                                    <span>{item.amenity.name}</span>
+                                        {/* Cột lượng khách */}
+                                        <td className="align-top border-r border-black p-4 text-center">
+                                            <div className="flex justify-center gap-1 mt-2">
+                                                {Array.from({ length: room.maxGuests }).map((_, i) => (
+                                                    <AiOutlineUser key={i} size={18} />
+                                                ))}
+                                            </div>
+                                        </td>
+
+                                        {/* Cột giá */}
+                                        <td className="align-top border-r border-black p-4 text-center">
+                                            {room.discount > 0 ? (
+                                                <div className="mt-2 space-y-1">
+                                                    <p className="text-gray-400 line-through text-sm">
+                                                        {room.price.toLocaleString()} VND
+                                                    </p>
+                                                    <p className="text-green-600 text-xs font-medium">
+                                                        Giảm {room.discount}%
+                                                    </p>
+                                                    <p className="text-pink-600 text-lg font-semibold">
+                                                        {(room.price * (1 - room.discount / 100)).toLocaleString()} VND
+                                                    </p>
                                                 </div>
-                                            ))}
-                                        </div>
-                                    </td>
-
-                                    {/* Cột lượng khách */}
-                                    <td className="align-top border-r border-black p-4 text-center">
-                                        <div className="flex justify-center gap-1 mt-2">
-                                            {Array.from({ length: room.maxGuests }).map((_, i) => (
-                                                <AiOutlineUser key={i} size={18} />
-                                            ))}
-                                        </div>
-                                    </td>
-
-                                    {/* Cột giá */}
-                                    <td className="align-top border-r border-black p-4 text-center">
-                                        {room.discount > 0 ? (
-                                            <div className="mt-2 space-y-1">
-                                                <p className="text-gray-400 line-through text-sm">
+                                            ) : (
+                                                <p className="text-pink-600 text-lg font-semibold mt-2">
                                                     {room.price.toLocaleString()} VND
                                                 </p>
-                                                <p className="text-green-600 text-xs font-medium">
-                                                    Giảm {room.discount}%
-                                                </p>
-                                                <p className="text-pink-600 text-lg font-semibold">
-                                                    {(room.price * (1 - room.discount / 100)).toLocaleString()} VND
-                                                </p>
+                                            )}
+                                        </td>
 
-                                            </div>
-                                        ) : (
-                                            <p className="text-pink-600 text-lg font-semibold mt-2">
-                                                {room.price.toLocaleString()} VND
-                                            </p>
-                                        )}
-                                    </td>
+                                        {/* Cột ưu đãi */}
+                                        <td className="align-top p-4 space-y-2">
+                                            <ul className="text-sm text-gray-700 space-y-1">
+                                                <li className="flex items-start gap-2">
+                                                    <AiOutlineCheck className="text-green-500 mt-1" size={16} />
+                                                    <span>Hủy miễn phí trước 18:00, 7 tháng 7, 2025</span>
+                                                </li>
+                                                <li className="flex items-start gap-2">
+                                                    <AiOutlineCheck className="text-green-500 mt-1" size={16} />
+                                                    <span>Không cần thanh toán trước - thanh toán tại chỗ nghỉ</span>
+                                                </li>
+                                                <li className="flex items-start gap-2">
+                                                    <AiOutlineCheck className="text-green-500 mt-1" size={16} />
+                                                    <span>Không cần thẻ tín dụng</span>
+                                                </li>
+                                                <li className="flex items-start gap-2">
+                                                    <AiOutlineCheck className="text-green-500 mt-1" size={16} />
+                                                    <span><strong>Giảm giá 10%</strong> trên giá trước thuế và phí</span>
+                                                </li>
+                                            </ul>
+                                            <button className="mt-4 bg-purple-500 cursor-pointer hover:bg-purple-600 text-white px-6 py-2 rounded-full font-semibold">
+                                                Đặt Phòng
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    ) : (
+                        <div className="text-center mt-6 text-red-500 font-medium text-base">
+                            Hiện tại không có phòng theo ngày này và lượng khách không phù hợp.<br />
+                            Vui lòng giảm số lượng khách hoặc chọn ngày phù hợp hơn.
+                        </div>
+                    )}
 
-                                    {/* Cột ưu đãi */}
-                                    <td className="align-top p-4 space-y-2">
-                                        <ul className="text-sm text-gray-700 space-y-1">
-                                            <li className="flex items-start gap-2">
-                                                <AiOutlineCheck className="text-green-500 mt-1" size={16} />
-                                                <span>Hủy miễn phí trước 18:00, 7 tháng 7, 2025</span>
-                                            </li>
-                                            <li className="flex items-start gap-2">
-                                                <AiOutlineCheck className="text-green-500 mt-1" size={16} />
-                                                <span>Không cần thanh toán trước - thanh toán tại chỗ nghỉ</span>
-                                            </li>
-                                            <li className="flex items-start gap-2">
-                                                <AiOutlineCheck className="text-green-500 mt-1" size={16} />
-                                                <span>Không cần thẻ tín dụng</span>
-                                            </li>
-                                            <li className="flex items-start gap-2">
-                                                <AiOutlineCheck className="text-green-500 mt-1" size={16} />
-                                                <span><strong>Giảm giá 10%</strong> trên giá trước thuế và phí</span>
-                                            </li>
-                                        </ul>
-                                        <button className="mt-4 bg-purple-500 cursor-pointer hover:bg-purple-600 text-white px-6 py-2 rounded-full font-semibold">
-                                            Đặt Phòng
-                                        </button>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
                 </div>
                 {/* Comment */}
                 {/* Đánh giá của khách hàng */}
@@ -456,6 +562,13 @@ export default function HotelDetailClient({ hotel }: Props) {
                             </button>
                         </div>
                     </div>
+                    {selectedRoom && (
+                        <RoomDetailModal
+                            open={isModalOpen}
+                            onClose={handleCloseRoomDetail}
+                            room={selectedRoom}
+                        />
+                    )}
                 </div>
             </div>
         </div>
