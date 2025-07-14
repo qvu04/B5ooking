@@ -19,7 +19,6 @@ export const userController = {
     bookingRoom: async function (req, res, next) {
         try {
             const userId = req.user.id;
-
             const newBooking = await userService.bookingRoom(userId, req.body);
             const response = responseSuccess(newBooking, "Booking thành công");
             res.status(response.status).json(response)
@@ -28,20 +27,53 @@ export const userController = {
             next(err)
         }
     },
-
-    getHistoryBooking: async function (req, res, next) {
+    confirmBooking : async function (req,res,next) {
         try {
             const userId = req.user.id;
-
-            const bookings = await userService.getHistoryBooking(userId);
-            const response = responseSuccess(bookings, "Lấy danh sách booking của người dùng thành công");
+            const bookingId = req.params.id;
+            const confirmBooking = await userService.confirmBooking(userId,bookingId);
+            const response = responseSuccess(confirmBooking,"Xác nhận thanh toán phòng thành công");
+             res.status(response.status).json(response)
+        } catch (err) {
+            console.error("Xác nhận thanh toán phòng không thành công", err)
+            next(err)
+        }
+    },
+    cancelBooking : async function name(req,res,next) {
+         try {
+            const userId = req.user.id;
+            const bookingId = req.params.id;
+            const cancelBooking = await userService.cancelBooking(userId,bookingId);
+            const response = responseSuccess(cancelBooking,"Hủy phòng thành công");
+             res.status(response.status).json(response)
+        } catch (err) {
+            console.error("Hủy phòng không thành công", err)
+            next(err)
+        }
+    },
+    getBookingByStatus: async function (req, res, next) {
+        try {
+            const userId = req.user.id;
+            const status = req.query.status;
+            const bookingStatus = await userService.getBookingByStatus(userId,status);
+            const response = responseSuccess(bookingStatus, "Lấy các trạng thái booking của người dùng thành công");
             res.status(response.status).json(response)
         } catch (err) {
-            console.error("Lấy danh sách booking người dùng không thành công", err);
+            console.error("Lấy các trạng thái booking người dùng không thành công", err);
             next(err);
         }
     },
-
+    getFinishedBookings : async function (req,res,next) {
+          try {
+            const userId = req.user.id;
+            const finishedBookings = await userService.getFinishedBookings(userId);
+            const response = responseSuccess(finishedBookings, "Lấy danh sách booking đã ở xong của người dùng thành công");
+            res.status(response.status).json(response)
+        } catch (err) {
+            console.error("Lấy danh sách booking đã ở xong người dùng không thành công", err);
+            next(err);
+        }
+    },
     addFavoriteHotel: async function (req, res, next) {
         try {
             const userId = req.user.id;

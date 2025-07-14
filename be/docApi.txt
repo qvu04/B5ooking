@@ -10,6 +10,14 @@ Lấy lịch sử đã booking (Get) : http://localhost:7000/api/user/getHistory
 
 Đặt phòng (Post) : http://localhost:7000/api/user/BookingRoom
 
+Thanh toán phòng đó : http://localhost:7000/api/user/ConfirmBooking/:id
+
+Hủy đặt phòng đó : http://localhost:7000/api/user/CancelBooking/:id
+
+Lấy trạng thái từng loại Booking (Pending, Confirm, Cancel) : http://localhost:7000/api/user/getBookingByStatus
+
+Lấy danh sách lịch sử đã phòng đã từng ở : http://localhost:7000/api/user/getFinishedBookings
+
 Thêm yêu thích của khách sạn đó (Post) :  http://localhost:7000/api/user/addFavoriteHotel/:hotelId
 
 Xóa yêu thích khách sạn đó (Delete) : http://localhost:7000/api/user/removeFavoriteHotel/:hotelId

@@ -10,8 +10,14 @@ router.patch('/update-profile',upload.single('imageFile'),authMiddleware,userCon
 // Booking Room
 router.post('/BookingRoom',authMiddleware,userController.bookingRoom)
 
+router.post('/ConfirmBooking/:id',authMiddleware,userController.confirmBooking)
+
+router.post('/CancelBooking/:id',authMiddleware,userController.cancelBooking)
+
+router.get('/getFinishedBookings',authMiddleware,userController.getFinishedBookings)
+
 // Lấy danh sách lịch sử booking Room
-router.get("/getHistoryBookings",authMiddleware,userController.getHistoryBooking)
+router.get("/getBookingByStatus",authMiddleware,userController.getBookingByStatus)
 
 //  Thêm yêu thích khác sạn
 router.post('/addFavoriteHotel/:hotelId',authMiddleware,userController.addFavoriteHotel)
