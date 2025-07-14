@@ -49,7 +49,7 @@ export const userService = {
 
         const parsedCheckIn = new Date(checkIn);
         const parsedCheckOut = new Date(checkOut);
-
+        const now = new Date();
         const oneDay = 1000 * 60 * 60 * 24;
         const nights = Math.ceil((parsedCheckOut - parsedCheckIn) / oneDay);
         if (nights <= 0) {
@@ -59,6 +59,8 @@ export const userService = {
         const existingBooking = await prisma.booking.findFirst({
             where: {
                 roomId: roomId,
+                status: { in: ['PENDING', 'CONFIRMED'] },
+                checkOut: { gt: now },
                 OR: [
                     {
                         checkIn: { lte: parsedCheckOut },
@@ -97,7 +99,8 @@ export const userService = {
                 checkIn: parsedCheckIn,
                 checkOut: parsedCheckOut,
                 totalPrice: totalPrice,
-                guests: guests
+                guests: guests,
+                status: 'PENDING'
             },
             include: {
                 user: true,
@@ -110,17 +113,61 @@ export const userService = {
         });
 
         return {
+            nights: nights,
             newBooking: newBooking
         }
     },
+    confirmBooking: async function (userId, bookingId) {
+        const booking = await prisma.booking.findUnique({ where: { id: parseInt(bookingId) } })
+        if (!booking || booking.userId !== userId) {
+            throw new NotFoundException("Không tìm thấy đơn đặt")
+        }
+        if (booking.status !== 'PENDING') {
+            throw new BadrequestException("Chỉ xác nhận đơn chờ")
+        }
 
-    getHistoryBooking: async function (userId) {
+        const confirmBooking = await prisma.booking.update({
+            where: { id: parseInt(bookingId) },
+            data: {
+                status: 'CONFIRMED'
+            }
+        })
+        return {
+            confirmBooking: confirmBooking
+        }
+
+    },
+    cancelBooking: async function (userId, bookingId) {
+        const booking = await prisma.booking.findUnique({ where: { id: parseInt(bookingId) } })
+        if (!booking || booking.userId !== userId) {
+            throw new NotFoundException("Không tìm thấy đơn để hủy")
+        }
+        if (booking.status === 'CANCELED') throw new BadrequestException("Đã bị hủy trước đó");
+        if (booking.status !== "PENDING") throw new BadrequestException("Chỉ huỷ đơn đang chờ");
+        const cancelBooking = await prisma.booking.update({
+            where: { id: parseInt(bookingId) },
+            data: {
+                status: 'CANCELED'
+            }
+        })
+        return {
+            cancelBooking: cancelBooking
+        }
+    },
+    getBookingByStatus: async (userId, status) => {
+        const whereClause = { userId };
+
+        if (status) {
+            whereClause.status = status;
+        } else {
+            whereClause.status = {
+                not: "FINISHED"
+            };
+        }
 
         const bookings = await prisma.booking.findMany({
-            where: {
-                userId: userId
-            },
-            orderBy: { create_At: 'desc' },
+            where: whereClause,
+            orderBy: { create_At: "desc" },
             include: {
                 room: {
                     include: {
@@ -130,11 +177,76 @@ export const userService = {
             }
         });
 
-        return {
-            bookings: bookings
-        }
+        // ✅ Thêm nights, pricePerNight, totalPrice cho từng đơn
+        const bookingsWithDetails = bookings.map((booking) => {
+            const checkIn = new Date(booking.checkIn);
+            const checkOut = new Date(booking.checkOut);
+            const nights = Math.ceil((checkOut - checkIn) / (1000 * 60 * 60 * 24));
+
+            const basePrice = booking.room.price;
+            const discount = booking.room.discount || 0;
+            const pricePerNight = Math.round(basePrice * (1 - discount / 100));
+            const totalPrice = nights * pricePerNight;
+
+            return {
+                ...booking,
+                nights,
+                pricePerNight,
+                calculatedTotalPrice: totalPrice
+            };
+        });
+
+        return { bookings: bookingsWithDetails };
+    },
+    getFinishedBookings: async (userId) => {
+        const bookings = await prisma.booking.findMany({
+            where: {
+                userId,
+                status: "FINISHED"
+            },
+            orderBy: { create_At: "desc" },
+            include: {
+                room: {
+                    include: {
+                        hotel: true
+                    }
+                }
+            }
+        });
+
+
+        const withDetails = bookings.map((booking) => {
+            const checkIn = new Date(booking.checkIn);
+            const checkOut = new Date(booking.checkOut);
+            const nights = Math.ceil((checkOut - checkIn) / (1000 * 60 * 60 * 24));
+
+            const pricePerNight = booking.room.discount
+                ? Math.round(booking.room.price * (1 - booking.room.discount / 100))
+                : booking.room.price;
+
+            const totalPrice = nights * pricePerNight;
+
+            return {
+                ...booking,
+                nights,
+                pricePerNight,
+                calculatedTotalPrice: totalPrice
+            };
+        });
+
+        return { bookings: withDetails };
     },
 
+    updateFinishBooking: async function () {
+        const now = new Date();
+        await prisma.booking.updateMany({
+            where: {
+                status: "CONFIRMED",
+                checkOut: { lt: now }
+            },
+            data: { status: "FINISHED" }
+        });
+    },
     addFavoriteHotel: async function (userId, hotelId) {
         const parsedHotelId = parseInt(hotelId)
         const existingFavorite = await prisma.favoriteHotel.findUnique({
@@ -199,7 +311,17 @@ export const userService = {
                 hotelId: parsedHotelId,
                 comment: comment || "",
                 rating: rating || 0
+            },
+            include: {
+                user: {
+                    select: {
+                        fullName: true,
+                        avatar: true
+                    }
+                }
             }
+
+
         })
 
         const avg = await prisma.review.aggregate({
@@ -298,26 +420,8 @@ export const userService = {
         })
     },
 
-    // getAllReviewByHotelId: async function (hotelId) {
-    //     const parsedHotelId = parseInt(hotelId)
-    //     const reviews = await prisma.review.findMany({
-    //         where: { hotelId: parsedHotelId },
-    //         select: {
-    //             comment: true,
-    //             rating: true,
-    //             user: {
-    //                 select: {
-    //                     id: true,
-    //                     fullName: true,
-    //                     avatar: true
-    //                 }
-    //             }
-    //         }
-    //     })
-    //     return {
-    //         reviews: reviews
-    //     }
-    // },
+
+
     getAllReviewHotelByUser: async function (userId) {
         const reviewsUser = await prisma.review.findMany({
             where: { userId: userId },
@@ -337,7 +441,7 @@ export const userService = {
                     }
                 }
             },
-            orderBy : {create_At : "desc"}
+            orderBy: { create_At: "desc" }
         })
         return {
             reviewsUser: reviewsUser

@@ -3,6 +3,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import router from "./routers/index.js";
 import { errorHandler } from "./middleware/errorHandler.js";
+import { startBookingStatusCron } from "./cron/bookingStatus.cron.js";
 
 dotenv.config();
 
@@ -12,6 +13,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 
+startBookingStatusCron()
 app.get("/",(req,res) =>{
     res.send("hello")
 })
