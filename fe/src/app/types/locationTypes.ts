@@ -4,4 +4,5 @@ export interface Locations {
     city: string;
     district?: string;
     ward?: string;
+
 }

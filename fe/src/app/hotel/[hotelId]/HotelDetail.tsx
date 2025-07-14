@@ -81,7 +81,7 @@ export default function HotelDetailClient({ hotel }: Props) {
             try {
                 const rooms = await fetchSearchHotel({
                     hotelId: hotel.id,
-                    checkIn: "2025-07-20",  // Hardcoded tạm
+                    checkIn: "2025-07-20",
                     checkOut: "2025-07-22",
                     guests: 2,
                 });
@@ -205,7 +205,9 @@ export default function HotelDetailClient({ hotel }: Props) {
                                     </button>
                                 </div>
                             </div>
-                            <MapView lat={coords.lat} lng={coords.lng} name={hotel.name} />
+                            <div className='relative z-0 w-full h-[460px] overflow-hidden'>
+                                <MapView lat={coords.lat} lng={coords.lng} name={hotel.name} />
+                            </div>
                         </>
                     )}
                 </div>

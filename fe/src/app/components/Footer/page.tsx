@@ -1,6 +1,6 @@
 'use client';
 import React, { useEffect, useState } from 'react';
-import { FaFacebookF, FaInstagram, FaYoutube } from 'react-icons/fa';
+import { FaFacebookF, FaInstagram, FaYoutube, FaArrowUp } from 'react-icons/fa';
 import { MdTranslate } from 'react-icons/md';
 import { useTranslation } from 'react-i18next';
 import Link from 'next/link';
@@ -8,13 +8,25 @@ import Link from 'next/link';
 const Footer = () => {
     const { i18n } = useTranslation();
     const [mounted, setMounted] = useState(false);
+    const [showButton, setShowButton] = useState(false);
     useEffect(() => {
         setMounted(true); // chỉ cho render ngôn ngữ khi đã mounted
     }, []);
     const toggleLanguage = () => {
         i18n.changeLanguage(i18n.language === 'vi' ? 'en' : 'vi');
     };
+    useEffect(() => {
+        const handleScroll = () => {
+            setShowButton(window.scrollY > 200);
+        };
 
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
+
+    const scrollToTop = () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
     return (
         <footer className="bg-gray-100 dark:bg-gray-900 text-gray-700 dark:text-gray-300 py-10 mt-20">
             <div className="max-w-6xl mx-auto px-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
@@ -84,6 +96,14 @@ const Footer = () => {
             <div className="mt-10 text-center text-sm text-gray-500 dark:text-gray-400">
                 © {new Date().getFullYear()} B5ooking. All rights reserved.
             </div>
+            {showButton && (
+                <button
+                    onClick={scrollToTop}
+                    className="cursor-pointer fixed bottom-5 right-5 p-3 bg-[#6246ea] text-white rounded-full shadow-lg hover:bg-[#5135c8] transition duration-300"
+                >
+                    <FaArrowUp />
+                </button>
+            )}
         </footer>
     );
 };

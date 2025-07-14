@@ -142,10 +142,10 @@ const Header = () => {
                                 )}
                                 <span className="text-sm font-medium">{user.data.User.fullName}</span>
                             </div>
-                            <button onClick={() => { dispatch(setUserLogoutAction()); toast.success("Đăng xuất thành công"); }} className="px-3 py-1.5 rounded-xl bg-[#6246ea] hover:bg-blue-700 text-white font-medium transition">Đăng xuất</button>
+                            <button onClick={() => { dispatch(setUserLogoutAction()); toast.success("Đăng xuất thành công"); }} className="px-3 py-1.5 rounded-xl bg-[#6246ea] hover:bg-[#5135c8] text-white font-medium transition">Đăng xuất</button>
                         </Link>
                     ) : (
-                        <Link href="/login" className="ml-2 px-4 py-1.5 rounded-xl bg-[#6246ea] hover:bg-blue-700 text-white font-medium transition">Đăng nhập</Link>
+                        <Link href="/login" className="ml-2 px-4 py-1.5 rounded-xl bg-[#6246ea] hover:bg-[#5135c8] text-white font-medium transition">Đăng nhập</Link>
                     )}
                 </div>
             </nav>
@@ -221,7 +221,7 @@ const Header = () => {
                             type="default"
                             shape="circle"
                             icon={<SearchOutlined />}
-                            className="!bg-[#6246ea] hover:!bg-blue-700 !text-white !border-none w-12 h-12 flex items-center justify-center shadow-md"
+                            className="!bg-[#6246ea] hover:!bg-[#5135c8] !text-white !border-none w-12 h-12 flex items-center justify-center shadow-md"
                         />
                     </div>
 

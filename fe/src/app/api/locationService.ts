@@ -9,7 +9,6 @@ export const fetchSomeLocation = async () => {
     try {
         const res = await getSomeLocation();
         const locations = res.data.data.locations;
-        console.log("✌️locations --->", res.data.data);
         return locations;
     } catch (error) {
         console.log('✌️error --->', error);
