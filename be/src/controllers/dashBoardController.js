@@ -15,24 +15,40 @@ export const dashBoardController = {
 
     getGroupedRevenue: async function (req, res, next) {
         try {
-            const { type, formDate, toDate } = req.query
-            const result = await dashboardService.getGroupedRevenue(type, formDate, toDate)
-            const response = responseSuccess(result, "Thống kê doanh thu theo ngày / tuần / tháng thành công")
-            res.status(response.status).json(response)
+            let { type = 'day', fromDate, toDate } = req.query;
+
+            if (!fromDate || !toDate) {
+                return res.status(400).json({ message: "fromDate và toDate là bắt buộc" });
+            }
+
+            const start = new Date(fromDate);
+            const end = new Date(toDate);
+
+            if (isNaN(start.getTime()) || isNaN(end.getTime())) {
+                return res.status(400).json({ message: "fromDate hoặc toDate không hợp lệ" });
+            }
+
+            const result = await dashboardService.getGroupedRevenue(type, fromDate, toDate);
+            const response = responseSuccess(result, " Thống kê doanh thu theo ngày / tuần / tháng thành công");
+            res.status(response.status).json(response);
         } catch (err) {
-            console.error("Thống kê doanh thu theo ngày / tuần / tháng không thành công", err)
-            next(err)
+            console.error(" Thống kê doanh thu thất bại:", err);
+            next(err);
         }
     },
+
     getHotelRevenuePercentage: async function (req, res, next) {
-       try {
-         const { formDate, toDate } = req.query
-        const result = await dashboardService.getHotelRevenuePercentage(formDate, toDate)
-   const response = responseSuccess(result, "Phần trăm doanh thu của từng khách sạn thành công")
+        try {
+              const { fromDate, toDate } = req.query;
+              if (!fromDate || !toDate || isNaN(Date.parse(fromDate)) || isNaN(Date.parse(toDate))) {
+                return res.status(400).json({ message: "fromDate hoặc toDate không hợp lệ" });
+              }
+            const result = await dashboardService.getHotelRevenuePercentage(fromDate, toDate)
+            const response = responseSuccess(result, "Phần trăm doanh thu của từng khách sạn thành công")
             res.status(response.status).json(response)
-       } catch (err) {
-        console.error("Phần trăm doanh thu của từng khách sạn không thành công", err)
+        } catch (err) {
+            console.error("Phần trăm doanh thu của từng khách sạn không thành công", err)
             next(err)
-       }
+        }
     }
 }

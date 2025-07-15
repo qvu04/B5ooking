@@ -3,9 +3,10 @@ import { userService } from "../services/userService.js";
 
 
 export const startBookingStatusCron = () => {
-  cron.schedule("0 0 * * *", async () => {
-    console.log("Đang cập nhật trạng thái booking...");
+  // Mỗi phút chạy 1 lần
+  cron.schedule("*/10 * * * *", async () => {
+    console.log("⏰ Bắt đầu cron check...");
     await userService.updateFinishBooking();
-    console.log("✅ Đã cập nhật xong trạng thái booking");
+    console.log("✅ Cron check xong");
   });
 };
