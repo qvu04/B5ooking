@@ -9,7 +9,7 @@ export const dashboardService = {
                 totalPrice: true
             },
             where: {
-                status: 'CONFIRMED'
+               status: { in: ['CONFIRMED', 'FINISHED'] }
             }
         })
         const totalUser = await prisma.user.count({
@@ -36,7 +36,7 @@ export const dashboardService = {
                 by: ['create_At'],
                 _sum: { totalPrice: true },
                 where: {
-                    status: 'CONFIRMED',
+                     status: { in: ['CONFIRMED', 'FINISHED'] },
                     create_At: {
                         gte: start,
                         lte: end
@@ -57,7 +57,7 @@ export const dashboardService = {
                 MIN(DATE(create_At)) AS weekStart,
                  SUM(totalPrice) AS revenue
                   FROM Booking
-                   WHERE status = 'CONFIRMED'
+                  WHERE status IN ('CONFIRMED', 'FINISHED')
                     AND create_At BETWEEN ${start} AND ${end}
                           GROUP BY YEARWEEK(create_At, 1)
                         ORDER BY week ASC;
@@ -74,7 +74,7 @@ export const dashboardService = {
             DATE_FORMAT(create_At, '%Y-%m') AS month,
             SUM(totalPrice) as revenue
             FROM Booking
-            WHERE status = 'CONFIRMED'
+            WHERE status IN ('CONFIRMED', 'FINISHED')
             AND create_At BETWEEN ${start} AND ${end}
             GROUP BY month
             ORDER BY month ASC;
@@ -87,30 +87,34 @@ export const dashboardService = {
         }
 
     },
-    getHotelRevenuePercentage: async function (fromDate, toDate) {
-        const start = new Date(fromDate);
-        const end = new Date(toDate);
-        const result = await prisma.$queryRaw`
-        SELECT
-        h.id
-        h.name,
-        SUM(b.totalPrice) AS revenue
-         FROM Booking b
-         JOIN Room r ON b.roomId = r.id
-        JOIN Hotel h ON r.hotelId = h.id
-        WHERE b.status = 'CONFIRMED'
+   getHotelRevenuePercentage: async function (fromDate, toDate) {
+  const start = new Date(fromDate);
+  const end = new Date(toDate);
+
+  const result = await prisma.$queryRaw`
+    SELECT
+      h.id,
+      h.name,
+      SUM(b.totalPrice) AS revenue
+    FROM Booking b
+    JOIN Room r ON b.roomId = r.id
+    JOIN Hotel h ON r.hotelId = h.id
+    WHERE b.status IN ('CONFIRMED', 'FINISHED')
       AND b.create_At BETWEEN ${start} AND ${end}
-         GROUP BY h.id
-        ORDER BY revenue DESC
-        `
-        const totalRevenue = result.reduce((sum, item) => sum + Number(item.revenue), 0);
-        return result.map(item => ({
-            hotelId: item.id,
-            name: item.name,
-            revenue: Number(item.revenue),
-            precent: totalRevenue > 0 ? Number(item.revenue) / totalRevenue * 100 : 0
-        }))
-    }
+    GROUP BY h.id
+    ORDER BY revenue DESC;
+  `;
+
+  const totalRevenue = result.reduce((sum, item) => sum + Number(item.revenue), 0);
+
+  return result.map(item => ({
+    hotelId: item.id,
+    name: item.name,
+    revenue: Number(item.revenue),
+    precent: totalRevenue > 0 ? Number(item.revenue) / totalRevenue * 100 : 0,
+  }));
+}
+
 
 
 }

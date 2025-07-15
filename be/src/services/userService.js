@@ -239,14 +239,19 @@ export const userService = {
 
     updateFinishBooking: async function () {
         const now = new Date();
-        await prisma.booking.updateMany({
+        console.log("🕐 Đang chạy cron update - Giờ hiện tại:", now.toISOString());
+
+        const result = await prisma.booking.updateMany({
             where: {
                 status: "CONFIRMED",
                 checkOut: { lt: now }
             },
             data: { status: "FINISHED" }
         });
+
+        console.log("✅ Đã cập nhật", result.count, "booking thành FINISHED");
     },
+
     addFavoriteHotel: async function (userId, hotelId) {
         const parsedHotelId = parseInt(hotelId)
         const existingFavorite = await prisma.favoriteHotel.findUnique({
