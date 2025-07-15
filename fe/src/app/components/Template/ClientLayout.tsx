@@ -1,21 +1,25 @@
 'use client';
 
 import { usePathname } from 'next/navigation';
-import Header from '../Header/page';
+import NavBarOnly from '../Header/NavBarOnly';
+import HeaderBanner from '../Header/HeaderBanner';
 import Footer from '../Footer/page';
-
 
 export default function ClientLayout({ children }: { children: React.ReactNode }) {
     const pathname = usePathname();
-    const hiddenLayout = ['/login', '/register', '/admin'];
 
-    const shouldHideLayout = hiddenLayout.some(path => pathname.startsWith(path));
+    const noHeaderRoutes = ['/login', '/register', '/admin', '/not-found'];
+    const noBannerRoutes = ['/profile', '/about'];
+
+    const shouldHideHeader = noHeaderRoutes.some(path => pathname.startsWith(path));
+    const shouldHideBanner = noBannerRoutes.some(path => pathname.startsWith(path));
 
     return (
         <>
-            {!shouldHideLayout && <Header />}
+            {!shouldHideHeader && <NavBarOnly />}
+            {!shouldHideHeader && !shouldHideBanner && <HeaderBanner />}
             {children}
-            {!shouldHideLayout && <Footer />}
+            {!shouldHideHeader && !shouldHideBanner && <Footer />}
         </>
     );
 }

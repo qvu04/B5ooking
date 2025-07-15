@@ -23,7 +23,7 @@ export default function AboutPage() {
         <div>
             {/* tên và logo */}
             <div className="pt-10 text-center ">
-                <Link href="/" className="flex items-center justify-center">
+                <Link href="/" className="flex items-center justify-start">
                     <img
                         src="/images/logo-b5ooking.png"
                         alt="logo"

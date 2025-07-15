@@ -1,20 +1,21 @@
-"use client"
+"use client";
 
-import { registerService } from "@/app/api/authService"
-import { RegisterUser } from "@/app/types/authType"
-import Link from "next/link"
-import React, { useState } from "react"
-import { useForm } from "react-hook-form"
-import { FiEye, FiEyeOff } from "react-icons/fi"
+import { registerService } from "@/app/api/authService";
+import { RegisterUser } from "@/app/types/authType";
+import Link from "next/link";
+import React, { useState } from "react";
+import { useForm } from "react-hook-form";
+import { FiEye, FiEyeOff } from "react-icons/fi";
 import toast from "react-hot-toast";
+
 type FormData = {
-    firstName: string
-    lastName: string
-    gender: string
-    email: string
-    password: string
-    confirmPassword: string
-}
+    firstName: string;
+    lastName: string;
+    gender: string;
+    email: string;
+    password: string;
+    confirmPassword: string;
+};
 
 export default function RegisterPage() {
     const {
@@ -22,69 +23,59 @@ export default function RegisterPage() {
         handleSubmit,
         watch,
         formState: { errors }
-    } = useForm<FormData>()
-    const [showPassword, setShowPassword] = useState(false)
-    const [showConfirmPassword, setShowConfirmPassword] = useState(false)
-    const fetchUserRegister = async (formValues: {
-        firstName: string
-        lastName: string
-        gender: string
-        email: string
-        password: string
-        confirmPassword: string
-    }) => {
+    } = useForm<FormData>();
+
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+    const fetchUserRegister = async (formValues: FormData) => {
         try {
             const payload: RegisterUser = {
                 firstName: formValues.firstName,
                 lastName: formValues.lastName,
+                gender: formValues.gender,
                 email: formValues.email,
                 password: formValues.password,
                 confirmPassword: formValues.confirmPassword,
-                gender: formValues.gender
-            }
+            };
             const res = await registerService(payload);
-            const user = res.data
-            console.log('✌️userRegister thành công: --->', user);
+            const user = res.data;
+            console.log("✌️userRegister thành công:", user);
             toast.success("Đăng ký thành công");
         } catch (error) {
-            console.log('✌️error --->', error);
-
+            console.log("✌️Lỗi đăng ký:", error);
+            toast.error("Đăng ký thất bại. Vui lòng thử lại.");
         }
-    }
+    };
+
     const onSubmit = (data: FormData) => {
-        fetchUserRegister({
-            firstName: data.firstName,
-            lastName: data.lastName,
-            gender: data.gender,
-            email: data.email,
-            password: data.password,
-            confirmPassword: data.confirmPassword
-        })
-    }
+        fetchUserRegister(data);
+    };
 
     return (
-        <div className="flex h-screen overflow-hidden">
-            {/* LEFT SIDE - Video Background */}
-            <div className="relative w-1/2 hidden md:block">
-                <video
-                    className="absolute inset-0 z-0 w-full h-full object-cover"
-                    src="/videos/login-page.mp4"
-                    autoPlay
-                    muted
-                    loop
-                    playsInline
-                />
-                <div className="absolute inset-0 z-10 bg-gradient-to-tr from-black/50 via-black/30 to-transparent dark:from-black/10 dark:via-black/5" />
-                <div className="absolute inset-0 z-20 flex items-center justify-center p-10">
-                    <h1 className="text-white text-4xl font-bold text-center leading-tight drop-shadow-lg">
-                        Chào mừng bạn đến với <span className="text-[#6246ea]">B5ooking</span>
-                    </h1>
-                </div>
-            </div>
+        <div className="relative w-full h-screen overflow-hidden">
+            {/* VIDEO BACKGROUND */}
+            <video
+                className="absolute inset-0 z-0 w-full h-full object-cover"
+                src="/videos/intro.mp4"
+                autoPlay
+                muted
+                loop
+                playsInline
+            />
 
-            {/* RIGHT SIDE - Register Form */}
-            <div className="w-full md:w-1/2 flex items-center justify-center px-4 bg-gradient-to-br from-indigo-100 to-blue-50 dark:from-gray-900 dark:to-gray-800">
-                <div className="bg-white/50 dark:bg-white/10 backdrop-blur-md border border-gray-200 dark:border-white/20 shadow-xl rounded-2xl p-10 w-full max-w-md">
+            {/* OVERLAY */}
+            <div className="absolute inset-0 bg-black/50 z-10" />
+
+            {/* FORM + TITLE */}
+            <div className="relative z-20 flex flex-col items-center justify-center h-full px-4">
+                {/* TIÊU ĐỀ */}
+                <h1 className="text-2xl md:text-3xl font-bold text-white drop-shadow-lg mb-6 text-center">
+                    Chào mừng bạn đến với <span className="text-[#6246ea]">B5ooking</span>
+                </h1>
+
+                {/* FORM */}
+                <div className="bg-white/60 dark:bg-white/10 backdrop-blur-md border border-gray-200 dark:border-white/20 shadow-xl rounded-2xl p-10 w-full max-w-md">
                     <h2 className="text-3xl font-bold text-center text-gray-800 dark:text-white mb-6">
                         Đăng ký
                     </h2>
@@ -93,7 +84,7 @@ export default function RegisterPage() {
                         {/* First + Last Name */}
                         <div className="flex space-x-4">
                             <div className="w-1/2">
-                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">Họ</label>
+                                <label className="block text-sm font-medium text-black">Họ</label>
                                 <input
                                     type="text"
                                     {...register("firstName", { required: "Họ không được để trống" })}
@@ -105,7 +96,7 @@ export default function RegisterPage() {
                                 )}
                             </div>
                             <div className="w-1/2">
-                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">Tên</label>
+                                <label className="block text-sm font-medium text-black">Tên</label>
                                 <input
                                     type="text"
                                     {...register("lastName", { required: "Tên không được để trống" })}
@@ -120,7 +111,7 @@ export default function RegisterPage() {
 
                         {/* Gender */}
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">Giới tính</label>
+                            <label className="block text-sm font-medium text-black">Giới tính</label>
                             <select
                                 {...register("gender", { required: "Vui lòng chọn giới tính" })}
                                 className={`mt-1 w-full px-4 py-2 rounded-xl border ${errors.gender ? "border-red-500" : "border-gray-300"} focus:ring-2 focus:ring-blue-400 focus:outline-none dark:bg-transparent dark:text-white`}
@@ -137,7 +128,7 @@ export default function RegisterPage() {
 
                         {/* Email */}
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">Email</label>
+                            <label className="block text-sm font-medium text-black">Email</label>
                             <input
                                 type="email"
                                 {...register("email", { required: "Email không được để trống" })}
@@ -151,7 +142,7 @@ export default function RegisterPage() {
 
                         {/* Password */}
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">Mật khẩu</label>
+                            <label className="block text-sm font-medium text-black">Mật khẩu</label>
                             <div className="relative">
                                 <input
                                     type={showPassword ? "text" : "password"}
@@ -160,7 +151,7 @@ export default function RegisterPage() {
                                     placeholder="••••••••"
                                 />
                                 <div
-                                    className="absolute inset-y-0 right-3 flex items-center cursor-pointer text-gray-500 dark:text-gray-300"
+                                    className="absolute inset-y-0 right-3 flex items-center cursor-pointer text-black"
                                     onClick={() => setShowPassword(!showPassword)}
                                 >
                                     {showPassword ? <FiEyeOff size={20} /> : <FiEye size={20} />}
@@ -173,20 +164,20 @@ export default function RegisterPage() {
 
                         {/* Confirm Password */}
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">Xác nhận mật khẩu</label>
+                            <label className="block text-sm font-medium text-black">Xác nhận mật khẩu</label>
                             <div className="relative">
                                 <input
                                     type={showConfirmPassword ? "text" : "password"}
                                     {...register("confirmPassword", {
                                         required: "Vui lòng xác nhận mật khẩu",
                                         validate: (value) =>
-                                            value === watch("password") || "Mật khẩu xác nhận không khớp"
+                                            value === watch("password") || "Mật khẩu xác nhận không khớp",
                                     })}
                                     className={`mt-1 w-full px-4 py-2 rounded-xl border ${errors.confirmPassword ? "border-red-500" : "border-gray-300"} focus:ring-2 focus:ring-blue-400 focus:outline-none pr-10 dark:bg-transparent dark:text-white`}
                                     placeholder="••••••••"
                                 />
                                 <div
-                                    className="absolute inset-y-0 right-3 flex items-center cursor-pointer text-gray-500 dark:text-gray-300"
+                                    className="absolute inset-y-0 right-3 flex items-center cursor-pointer text-black"
                                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                                 >
                                     {showConfirmPassword ? <FiEyeOff size={20} /> : <FiEye size={20} />}
@@ -199,18 +190,18 @@ export default function RegisterPage() {
 
                         <button
                             type="submit"
-                            className="w-full bg-[#6246ea] hover:bg-blue-700 text-white py-2 rounded-xl font-semibold transition-all duration-200"
+                            className="w-full bg-[#6246ea] cursor-pointer hover:bg-blue-700 text-white py-2 rounded-xl font-semibold transition-all duration-200"
                         >
                             Đăng ký
                         </button>
                     </form>
 
-                    <p className="text-sm text-gray-600 dark:text-gray-300 mt-4 text-center">
+                    <p className="text-sm text-black mt-4 text-center">
                         Đã có tài khoản?{" "}
                         <Link href="/login" className="text-[#6246ea] hover:underline">Đăng nhập</Link>
                     </p>
                 </div>
             </div>
         </div>
-    )
+    );
 }

@@ -1,82 +1,83 @@
-"use client"
-import { loginService } from "@/app/api/authService"
-import { LoginUser } from "@/app/types/authType"
-import { setUserLoginAction } from "@/redux/features/userSlice"
-import { useAppDispatch } from "@/redux/hook"
-import Link from "next/link"
-import { useRouter } from "next/navigation"
-import React, { useState } from "react"
-import { useForm } from "react-hook-form"
-import { FiEye, FiEyeOff } from "react-icons/fi"
+"use client";
+import { loginService } from "@/app/api/authService";
+import { LoginUser } from "@/app/types/authType";
+import { setUserLoginAction } from "@/redux/features/userSlice";
+import { useAppDispatch } from "@/redux/hook";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import React, { useState } from "react";
+import { useForm } from "react-hook-form";
+import { FiEye, FiEyeOff } from "react-icons/fi";
 import toast from "react-hot-toast";
+
 type FormData = {
-    email: string
-    password: string
-}
+    email: string;
+    password: string;
+};
 
 export default function LoginPage() {
-    const { register, handleSubmit, formState: { errors } } = useForm<FormData>()
-    const [showPassword, setShowPassword] = useState(false)
+    const { register, handleSubmit, formState: { errors } } = useForm<FormData>();
+    const [showPassword, setShowPassword] = useState(false);
     const dispatch = useAppDispatch();
-    const router = useRouter()
+    const router = useRouter();
 
-    const fetchUserLogin = async (formValues: { taiKhoan: string, matKhau: string }) => {
+    const fetchUserLogin = async (formValues: { taiKhoan: string; matKhau: string }) => {
         try {
             const payLoad: LoginUser = {
                 email: formValues.taiKhoan,
                 password: formValues.matKhau
             };
             const res = await loginService(payLoad);
-            const user = res.data
-            console.log('✌️userLogin thành công: --->', user);
+            const user = res.data;
             localStorage.setItem('user', JSON.stringify(user));
             dispatch(setUserLoginAction(user));
             toast.success("Đăng nhập thành công");
             router.push("/");
-            console.log("👉 Redirecting to homepage...");
         } catch (error) {
-            console.log('✌️error --->', error);
-
+            console.log('Lỗi đăng nhập:', error);
+            toast.error("Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.");
         }
-    }
+    };
+
     const onSubmit = (data: FormData) => {
         fetchUserLogin({
             taiKhoan: data.email,
             matKhau: data.password
-        })
-    }
+        });
+    };
 
     return (
-        <div className="flex h-screen overflow-hidden">
-            {/* LEFT - VIDEO BACKGROUND */}
-            <div className="relative w-1/2 hidden md:block">
+        <div className="relative w-full h-screen overflow-hidden">
+            {/* VIDEO BACKGROUND */}
+            <div>
                 <video
-                    className="absolute inset-0 z-0 w-full h-full object-cover"
-                    src="/videos/login-page.mp4"
+                    src="/videos/intro.mp4"
                     autoPlay
                     muted
                     loop
+                    playsInline
+                    className="absolute inset-0 w-full h-full object-cover z-0"
                 />
-                {/* Overlay chỉ để dễ đọc chữ – rất nhẹ */}
-                <div className="absolute inset-0 z-10 bg-black/10" />
-                <div className="absolute inset-0 z-20 flex items-center justify-center p-10">
-                    <h1 className="text-white text-4xl font-bold text-center leading-tight drop-shadow-lg">
-                        Chào mừng bạn đến với <span className="text-[#6246ea]">B5ooking</span>
-                    </h1>
-                </div>
             </div>
+            {/* OVERLAY */}
+            <div className="absolute inset-0 bg-black/50 z-10" />
+            {/* LOGIN FORM CENTERED */}
+            <div className="relative z-20 flex flex-col items-center justify-center h-full px-4 ">
+                {/* Chào mừng */}
+                <h1 className="text-2xl md:text-3xl font-bold text-white drop-shadow-lg mb-6">
+                    Chào mừng bạn đến với <span className="text-[#6246ea]">B5ooking</span>
+                </h1>
 
-
-            {/* RIGHT - LOGIN FORM */}
-            <div className="w-full md:w-1/2 flex items-center justify-center px-4 bg-gradient-to-br from-indigo-100 to-blue-50 dark:from-gray-900 dark:to-gray-800">
-                <div className="bg-white/50 dark:bg-white/10 backdrop-blur-md border border-gray-200 dark:border-white/20 shadow-xl rounded-2xl p-10 w-full max-w-md">
-                    <h2 className="text-3xl font-bold text-center text-gray-800 dark:text-white mb-6">
+                {/* FORM LOGIN */}
+                <div className="bg-white/60 dark:bg-white/10 backdrop-blur-md p-10 rounded-2xl shadow-xl w-full max-w-md border border-gray-200 dark:border-white/20">
+                    <h2 className="text-xl font-semibold text-center text-gray-800 dark:text-white mb-6">
                         Đăng nhập
                     </h2>
+
                     <form className="space-y-5" onSubmit={handleSubmit(onSubmit)}>
                         {/* Email */}
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">Email</label>
+                            <label className="block text-sm font-medium text-black">Email</label>
                             <input
                                 type="email"
                                 {...register("email", { required: "Email không được để trống" })}
@@ -90,7 +91,7 @@ export default function LoginPage() {
 
                         {/* Password */}
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">Mật khẩu</label>
+                            <label className="block text-sm font-medium text-black">Mật khẩu</label>
                             <div className="relative">
                                 <input
                                     type={showPassword ? "text" : "password"}
@@ -99,7 +100,7 @@ export default function LoginPage() {
                                     placeholder="••••••••"
                                 />
                                 <div
-                                    className="absolute inset-y-0 right-3 flex items-center cursor-pointer text-gray-500 dark:text-gray-300"
+                                    className="absolute inset-y-0 right-3 flex items-center cursor-pointer text-black"
                                     onClick={() => setShowPassword(!showPassword)}
                                 >
                                     {showPassword ? <FiEyeOff size={20} /> : <FiEye size={20} />}
@@ -113,14 +114,13 @@ export default function LoginPage() {
                         {/* Submit */}
                         <button
                             type="submit"
-                            className="w-full bg-[#6246ea] hover:bg-blue-700 text-white py-2 rounded-xl font-semibold transition-all duration-200"
+                            className="w-full bg-[#6246ea] cursor-pointer hover:bg-blue-700 text-white py-2 rounded-xl font-semibold transition-all duration-200"
                         >
                             Đăng nhập
                         </button>
                     </form>
 
-                    {/* Link đăng ký */}
-                    <p className="text-sm text-gray-600 dark:text-gray-300 mt-4 text-center">
+                    <p className="text-sm text-black mt-4 text-center">
                         Chưa có tài khoản?{" "}
                         <Link href="/register" className="text-[#6246ea] hover:underline">
                             Đăng ký ngay
@@ -128,6 +128,7 @@ export default function LoginPage() {
                     </p>
                 </div>
             </div>
+
         </div>
-    )
+    );
 }
