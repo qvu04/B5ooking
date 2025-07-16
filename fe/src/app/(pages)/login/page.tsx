@@ -28,9 +28,14 @@ export default function LoginPage() {
                 password: formValues.matKhau
             };
             const res = await loginService(payLoad);
-            const user = res.data;
-            localStorage.setItem('user', JSON.stringify(user));
-            dispatch(setUserLoginAction(user));
+            console.log('✌️resDataLogin --->', res);
+            const { User, token_access } = res.data.data;
+            const userData = {
+                ...User,
+                token_access,
+            };
+            localStorage.setItem('user', JSON.stringify(userData));
+            dispatch(setUserLoginAction(userData));
             toast.success("Đăng nhập thành công");
             router.push("/");
         } catch (error) {

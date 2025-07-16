@@ -1,7 +1,7 @@
 import axios from "axios";
 const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 export const https = axios.create({
-    baseURL: apiUrl,
+  baseURL: apiUrl,
 })
 https.interceptors.request.use(
   (config) => {
@@ -9,7 +9,7 @@ https.interceptors.request.use(
       const userJson = localStorage.getItem("user");
       if (userJson) {
         const userInfo = JSON.parse(userJson);
-        const token = userInfo?.data?.token_access;
+        const token = userInfo?.token_access;
         if (token) {
           config.headers.Authorization = `Bearer ${token}`;
         }

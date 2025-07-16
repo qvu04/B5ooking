@@ -6,8 +6,6 @@ login (Post) : http://localhost:7000/api/auth/login
 Api riêng tư cho user
 Cập nhật hồ sơ người dùng (Patch): http://localhost:7000/api/user/update-profile
 
-Lấy lịch sử đã booking (Get) : http://localhost:7000/api/user/getHistoryBookings
-
 Đặt phòng (Post) : http://localhost:7000/api/user/BookingRoom
 
 Thanh toán phòng đó : http://localhost:7000/api/user/ConfirmBooking/:id

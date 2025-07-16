@@ -75,14 +75,14 @@ const NavBarOnly = () => {
                 {user ? (
                     <Link href={"/profile"} className="flex items-center gap-4">
                         <div className="flex items-center gap-2">
-                            {user.data.User.avatar ? (
-                                <img src={user.data.User.avatar} alt="avatar" className="w-8 h-8 rounded-full object-cover" />
+                            {user?.avatar ? (
+                                <img src={user.avatar} alt="avatar" className="w-8 h-8 rounded-full object-cover" />
                             ) : (
                                 <div className="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center text-white">
                                     <FaUserAlt className="text-sm" />
                                 </div>
                             )}
-                            <span className="text-sm font-medium">{user.data.User.fullName}</span>
+                            <span className="text-sm font-medium">{user?.fullName}</span>
                         </div>
                         <button onClick={() => { dispatch(setUserLogoutAction()); toast.success("Đăng xuất thành công"); }} className="px-3 py-1.5 rounded-xl bg-[#6246ea] hover:bg-[#5135c8] text-white font-medium transition">Đăng xuất</button>
                     </Link>

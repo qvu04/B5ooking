@@ -2,6 +2,7 @@ import { PrismaClient } from "@prisma/client"
 import bcrypt from "bcrypt"
 import { BadrequestException, ConflictException, NotFoundException } from "../helpers/exception.helper.js";
 const prisma = new PrismaClient()
+import { BookingStatus } from "@prisma/client";
 export const userService = {
     updateProfile: async function (userId, data, avatarPath) {
 
@@ -30,6 +31,7 @@ export const userService = {
                 firstName: true,
                 lastName: true,
                 fullName: true,
+                role: true,
                 avatar: true,
                 gender: true,
                 phone: true,
@@ -158,10 +160,11 @@ export const userService = {
         const whereClause = { userId };
 
         if (status) {
-            whereClause.status = status;
+            // ✅ Ép kiểu rõ ràng bằng enum
+            whereClause.status = BookingStatus[status];
         } else {
             whereClause.status = {
-                not: "FINISHED"
+                not: BookingStatus.FINISHED,
             };
         }
 
