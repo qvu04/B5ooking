@@ -1,3 +1,5 @@
+import { store } from "@/lib/store";
+import { hideLoading, showLoading } from "@/redux/features/loadingSlice";
 import axios from "axios";
 const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 export const https = axios.create({
@@ -18,4 +20,22 @@ https.interceptors.request.use(
     return config;
   },
   (error) => Promise.reject(error)
+);
+https.interceptors.request.use(
+  (config) => {
+    store.dispatch(showLoading());
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
+
+https.interceptors.response.use(
+  (response) => {
+    setTimeout(() => store.dispatch(hideLoading()), 1000);
+    return response;
+  },
+  (error) => {
+    store.dispatch(hideLoading());
+    return Promise.reject(error);
+  }
 );

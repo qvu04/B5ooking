@@ -1,5 +1,4 @@
 "use client";
-
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { FaSun, FaMoon, FaUserAlt } from "react-icons/fa";
@@ -13,6 +12,8 @@ import { useSelector } from "react-redux";
 import { setUserLogoutAction } from "@/redux/features/userSlice";
 import toast from "react-hot-toast";
 import { RootState } from "@/lib/store";
+import { hideLoading, showLoading } from "@/redux/features/loadingSlice";
+import { useRouter } from "next/navigation";
 
 const NavBarOnly = () => {
     const { setTheme, resolvedTheme } = useTheme();
@@ -22,7 +23,7 @@ const NavBarOnly = () => {
     const pathName = usePathname();
     const dispatch = useAppDispatch();
     const { user } = useSelector((state: RootState) => state.userSlice);
-
+    const router = useRouter();
     useEffect(() => {
         setMounted(true);
         const handleScroll = () => setIsScrolled(window.scrollY > 20);
@@ -84,10 +85,33 @@ const NavBarOnly = () => {
                             )}
                             <span className="text-sm font-medium">{user?.fullName}</span>
                         </div>
-                        <button onClick={() => { dispatch(setUserLogoutAction()); toast.success("Đăng xuất thành công"); }} className="px-3 py-1.5 rounded-xl bg-[#6246ea] hover:bg-[#5135c8] text-white font-medium transition">Đăng xuất</button>
+                        <button
+                            onClick={() => {
+                                dispatch(showLoading());
+                                setTimeout(() => {
+                                    dispatch(setUserLogoutAction());
+                                    toast.success("Đăng xuất thành công");
+                                    dispatch(hideLoading());
+                                }, 1000);
+                            }}
+                            className="px-3 py-1.5 rounded-xl bg-[#6246ea] hover:bg-[#5135c8] text-white font-medium transition"
+                        >
+                            Đăng xuất
+                        </button>
                     </Link>
                 ) : (
-                    <Link href="/login" className="ml-2 px-4 py-1.5 rounded-xl bg-[#6246ea] hover:bg-[#5135c8] text-white font-medium transition">Đăng nhập</Link>
+                    <button
+                        onClick={() => {
+                            dispatch(showLoading());
+                            setTimeout(() => {
+                                router.push("/login");
+                                dispatch(hideLoading());
+                            }, 1000);
+                        }}
+                        className="ml-2 px-4 py-1.5 rounded-xl bg-[#6246ea] hover:bg-[#5135c8] text-white font-medium transition"
+                    >
+                        Đăng nhập
+                    </button>
                 )}
             </div>
         </nav>

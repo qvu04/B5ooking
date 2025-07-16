@@ -17,7 +17,7 @@ export default function HeaderBanner() {
     const router = useRouter();
     const { RangePicker } = DatePicker;
     const { t } = useTranslation();
-
+    const [mounted, setMounted] = useState(false);
     useEffect(() => {
         const loadLocations = async () => {
             const locations = await fetchAllLocation();
@@ -62,6 +62,11 @@ export default function HeaderBanner() {
             toast.error("Không tìm thấy địa điểm bạn đã nhập.");
         }
     };
+    useEffect(() => {
+        setMounted(true);
+    }, []);
+
+    if (!mounted) return null;
     return (
         <>
             <header className="relative w-full h-[600px] overflow-hidden text-white">

@@ -1,6 +1,11 @@
+"use client"
+import { hideLoading, showLoading } from '@/redux/features/loadingSlice';
+import { useAppDispatch } from '@/redux/hook';
 import Link from 'next/link';
+import { useEffect } from 'react';
 // app/about/page.tsx
 export default function AboutPage() {
+
     const data = [
         {
             title: "Đội ngũ chuyên nghiệp, tâm huyết",
@@ -19,6 +24,16 @@ export default function AboutPage() {
             desc: "Chúng tôi cam kết toàn bộ mọi thông tin cá nhân của khách hàng sẽ được giữ bí mật tuyệt đối. Quý khách có thể yên tâm trải nghiệm dịch vụ."
         }
     ]
+    const dispatch = useAppDispatch();
+
+    useEffect(() => {
+        dispatch(showLoading());
+        const timeout = setTimeout(() => {
+            dispatch(hideLoading());
+        }, 2000);
+
+        return () => clearTimeout(timeout);
+    }, [dispatch]);
     return (
         <div>
             {/* tên và logo */}

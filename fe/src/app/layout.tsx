@@ -7,6 +7,7 @@ import "@/lib/i18n";
 import ClientLayout from "./components/Template/ClientLayout";
 import { ReduxProvider } from '@/redux/provider'
 import { Toaster } from "react-hot-toast";
+import Loading from "./components/Loading/Loading";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -28,10 +29,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="vi" className='dark' suppressHydrationWarning>
+    <html lang="vi" className='dark' suppressHydrationWarning={true}>
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
         <ReduxProvider>
           <Providers>
+            <Loading />
             <Toaster position="top-center" />
             <ClientLayout>{children}</ClientLayout>
           </Providers>
