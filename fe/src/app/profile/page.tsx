@@ -3,10 +3,22 @@ import { RootState } from "@/lib/store";
 import { useSelector } from "react-redux";
 import { FaUserAlt } from 'react-icons/fa';
 import EditProfileUser from "./EditProfileUser";
-import { useState } from "react";
+import { useState, useEffect } from 'react';
+import { hideLoading, showLoading } from '@/redux/features/loadingSlice';
+import { useAppDispatch } from '@/redux/hook';
 export default function Profile() {
     const { user } = useSelector((state: RootState) => state.userSlice);
     const [isEditing, setIsEditing] = useState(false);
+    const dispatch = useAppDispatch();
+
+    useEffect(() => {
+        dispatch(showLoading());
+        const timeout = setTimeout(() => {
+            dispatch(hideLoading());
+        }, 2000);
+
+        return () => clearTimeout(timeout);
+    }, [dispatch]);
     return (
         <div className="max-w-4xl mx-auto mt-6 px-4 space-y-8">
             {/* Header */}

@@ -7,6 +7,7 @@ import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { FiEye, FiEyeOff } from "react-icons/fi";
 import toast from "react-hot-toast";
+import { useRouter } from "next/navigation";
 
 type FormData = {
     firstName: string;
@@ -27,7 +28,7 @@ export default function RegisterPage() {
 
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-
+    const router = useRouter();
     const fetchUserRegister = async (formValues: FormData) => {
         try {
             const payload: RegisterUser = {
@@ -42,6 +43,7 @@ export default function RegisterPage() {
             const user = res.data;
             console.log("✌️userRegister thành công:", user);
             toast.success("Đăng ký thành công");
+            router.push("/login")
         } catch (error) {
             console.log("✌️Lỗi đăng ký:", error);
             toast.error("Đăng ký thất bại. Vui lòng thử lại.");

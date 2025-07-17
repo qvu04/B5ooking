@@ -1,5 +1,6 @@
 import { https } from "./configService";
 import { BookingItem, BookingStatusEnum } from "../types/bookingType";
+import { BookedRoom } from "../types/roomType";
 
 // 👇 Đây là kiểu thực tế từ API bạn đã log ra
 interface BookingApiResponse {
@@ -15,3 +16,19 @@ export const getBookingByStatus = (status: BookingStatusEnum) => {
         params: { status },
     });
 };
+export const getBookedRoom = () => {
+    return https.get("/api/user/getFinishedBookings");
+
+}
+export const postBookingRoom = (data: {
+    roomId: number;
+    checkIn: string;
+    checkOut: string;
+    guests: number;
+}) => {
+    return https.post("/api/user/BookingRoom", data);
+}
+export const deleteBookingRoom = (id: number) => {
+    return https.post(`/api/user/CancelBooking/${id}`);
+
+}

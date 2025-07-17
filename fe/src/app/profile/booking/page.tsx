@@ -1,12 +1,26 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { getBookingByStatus } from "@/app/api/bookingService";
+import { deleteBookingRoom, getBookingByStatus } from "@/app/api/bookingService";
 import { BookingItem, BookingStatusEnum } from "@/app/types/bookingType";
+import {
+    AlertDialog,
+    AlertDialogTrigger,
+    AlertDialogContent,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogCancel,
+    AlertDialogAction,
+} from "@/components/ui/alert-dialog";
+import toast from "react-hot-toast";
 
 export default function Booking() {
     const [bookings, setBookings] = useState<BookingItem[]>([]);
     const [filteredStatus, setFilteredStatus] = useState<BookingStatusEnum | "ALL">("ALL");
+    const [selectedBookingId, setSelectedBookingId] = useState<number | null>(null);
+    const [isOpen, setIsOpen] = useState(false);
 
     useEffect(() => {
         const fetchBookings = async () => {
@@ -30,6 +44,24 @@ export default function Booking() {
 
         fetchBookings();
     }, []);
+    const handleOpenCancelDialog = (id: number) => {
+        setSelectedBookingId(id);
+        setIsOpen(true);    
+    };
+
+    const confirmCancelBooking = async () => {
+        if (!selectedBookingId) return;
+
+        try {
+            await deleteBookingRoom(selectedBookingId);
+            setBookings(prev => prev.filter(b => b.id !== selectedBookingId));
+            setIsOpen(false);
+            toast.success("Huỷ đặt phòng thành công.");
+        } catch (err) {
+            console.error("Lỗi khi huỷ đặt phòng:", err);
+            toast.error("Huỷ đặt phòng thất bại.");
+        }
+    };
 
     const filteredBookings = filteredStatus === "ALL"
         ? bookings
@@ -62,8 +94,34 @@ export default function Booking() {
                                     </span>
                                 </p>
                                 <span className="inline-block mt-2 text-sm px-3 py-1 rounded-full bg-gray-100 border text-[#6246ea] font-semibold">
-                                    Trạng thái: {item.status}
+                                    Trạng thái: {
+                                        item.status === "PENDING"
+                                            ? "Chờ xác nhận"
+                                            : item.status === "CONFIRMED"
+                                                ? "Đã xác nhận"
+                                                : item.status === "CANCELED"
+                                                    ? "Đã huỷ"
+                                                    : item.status
+                                    }
                                 </span>
+
+                                {/* 👇 Thêm phần này nếu trạng thái là PENDING */}
+                                {item.status === BookingStatusEnum.PENDING && (
+                                    <div className="mt-4 flex gap-3">
+                                        <button
+                                            // onClick={() => handlePayment(item.id)}
+                                            className="px-4 py-2 cursor-pointer rounded-lg bg-green-500 text-white font-medium hover:bg-green-600 transition"
+                                        >
+                                            Thanh toán
+                                        </button>
+                                        <button
+                                            onClick={() => handleOpenCancelDialog(item.id)}
+                                            className="px-4 py-2 cursor-pointer rounded-lg bg-red-500 text-white font-medium hover:bg-red-600 transition"
+                                        >
+                                            Huỷ đặt phòng
+                                        </button>
+                                    </div>
+                                )}
                             </div>
                         </li>
                     ))}
@@ -71,6 +129,7 @@ export default function Booking() {
             )}
         </section>
     );
+
 
     const renderFilterButtons = () => (
         <div className="flex flex-wrap gap-3 mb-6">
@@ -99,6 +158,22 @@ export default function Booking() {
             <h1 className="text-3xl font-bold mb-6 text-[#222]">Lịch sử đặt phòng</h1>
             {renderFilterButtons()}
             {renderBookingList()}
+            <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Bạn có chắc muốn huỷ?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            Hành động này không thể hoàn tác. Đơn đặt phòng sẽ bị huỷ vĩnh viễn.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel>Đóng</AlertDialogCancel>
+                        <AlertDialogAction onClick={confirmCancelBooking}>
+                            Đồng ý huỷ
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
         </div>
     );
 }

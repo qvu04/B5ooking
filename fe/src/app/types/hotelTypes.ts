@@ -65,3 +65,19 @@ export type RoomAvailable = {
     images: RoomImage[];
     amenities: RoomAmenity[];
 };
+export interface HotelInfo {
+    id: number;
+    name: string;
+    address: string;
+    description: string;
+    image: string;
+    averageRating: number;
+    defaultRating: number;
+}
+export type Hotel = {
+    id: number;
+    name: string;
+    address: string;
+    image: string;
+    averageRating: number;
+};

@@ -1,4 +1,5 @@
 import { AmenityType } from "./amenityType";
+import { HotelInfo } from "./hotelTypes";
 
 export interface RoomAmenity {
   id: number;
@@ -22,3 +23,27 @@ export interface RoomType {
   amenities: RoomAmenity[];
 }
 
+export interface RoomInfo {
+  name: string;
+  type: string;
+  description: string;
+  price: number;
+  discount: number;
+  image: string;
+  maxGuests: number;
+  totalPrice: number;
+  hotel: HotelInfo;
+}
+
+export interface BookedRoom {
+  roomId: number;
+  calculatedTotalPrice: number;
+  checkIn: string;
+  checkOut: string;
+  guests: number;
+  nights: number;
+  pricePerNight: number;
+  totalPrice: number;
+  status: string;
+  room: RoomInfo;
+}

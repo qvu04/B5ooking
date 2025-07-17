@@ -22,6 +22,7 @@ import { fetchSearchHotel } from '@/app/api/roomService';
 import { DatePicker } from "antd";
 import dayjs from "dayjs";
 import RoomDetailModal from './RoomDetailModal';
+import { addFavorite } from '@/app/api/favoriteService';
 type Props = {
     hotel: Hotels;
 };
@@ -74,6 +75,11 @@ export default function HotelDetailClient({ hotel }: Props) {
             toast.error("Không thể tìm kiếm phòng");
         }
     };
+    const handleAddFavoriteHotel = async () => {
+        const res = await addFavorite(hotel.id);
+        console.log('✌️res --->', res);
+        toast.success("Cảm ơn bạn đã yêu thích khách sạn");
+    }
     useEffect(() => {
         if (!hotel.id) return;
 
@@ -199,7 +205,9 @@ export default function HotelDetailClient({ hotel }: Props) {
                                         <span>Chia sẻ</span>
                                     </button>
 
-                                    <button className="flex items-center gap-1 cursor-pointer">
+                                    <button
+                                        onClick={handleAddFavoriteHotel}
+                                        className="flex items-center gap-1 cursor-pointer">
                                         <AiOutlineHeart className="text-gray-600 hover:text-red-500 transition-colors duration-300" size={20} />
                                         <span>Lưu</span>
                                     </button>
@@ -413,8 +421,10 @@ export default function HotelDetailClient({ hotel }: Props) {
                                                     <span><strong>Giảm giá 10%</strong> trên giá trước thuế và phí</span>
                                                 </li>
                                             </ul>
-                                            <button className="mt-4 bg-purple-500 cursor-pointer hover:bg-purple-600 text-white px-6 py-2 rounded-full font-semibold">
-                                                Đặt Phòng
+                                            <button
+                                                onClick={() => handleOpenRoomDetail(room)}
+                                                className="mt-4 bg-purple-500 cursor-pointer hover:bg-purple-600 text-white px-6 py-2 rounded-full font-semibold">
+                                                Xem chi tiết phòng
                                             </button>
                                         </td>
                                     </tr>
@@ -569,6 +579,8 @@ export default function HotelDetailClient({ hotel }: Props) {
                             open={isModalOpen}
                             onClose={handleCloseRoomDetail}
                             room={selectedRoom}
+                            checkIn={checkIn}
+                            checkOut={checkOut}
                         />
                     )}
                 </div>

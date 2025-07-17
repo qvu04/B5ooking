@@ -11,29 +11,61 @@ import { Thumbs } from 'swiper/modules';
 import { Swiper as SwiperType } from 'swiper/types';
 import 'swiper/css';
 import 'swiper/css/thumbs';
+import { postBookingRoom } from '@/app/api/bookingService';
+import toast from 'react-hot-toast';
+import ShowConfirm from '@/app/hotel/[hotelId]/FormConfirmBooking';
 
 type Props = {
     open: boolean;
     onClose: () => void;
     room: RoomAvailable | null;
+    checkIn: string;
+    checkOut: string;
 };
 
-export default function RoomDetailModal({ open, onClose, room }: Props) {
+export default function RoomDetailModal({ open, onClose, room, checkIn, checkOut }: Props) {
+    console.log('✌️checkOut --->', checkOut);
+    console.log('✌️checkIn --->', checkIn);
     const [fullRoom, setFullRoom] = useState<RoomType | null>(null);
     const [thumbsSwiper, setThumbsSwiper] = useState<SwiperType | null>(null);
+    const [isBooking, setIsBooking] = useState(false);
+    const [showConfirm, setShowConfirm] = useState(false);
+    const handleBooking = async (nights: number, checkInDate: string, checkOutDate: string) => {
+        if (!room) return
+        setIsBooking(true);
+        try {
+            const today = new Date();
+            const tomorrow = new Date();
+            tomorrow.setDate(today.getDate() + 1);
 
+            const payload = {
+                roomId: room.id,
+                checkIn: checkInDate,
+                checkOut: checkOutDate,
+                guests: 2,
+            }
+            const res = await postBookingRoom(payload);
+            setShowConfirm(false);
+            onClose();
+        } catch (error) {
+            console.log('✌️error --->', error);
+            toast.error("Đặt phòng thất bại");
+        } finally {
+            setIsBooking(false);
+        }
+    }
     useEffect(() => {
         if (!room || !open) return;
 
         const fetchRoomDetail = async () => {
             try {
                 const res = await getRoomByRoomId(room.id);
+                console.log('✌️res --->', res);
                 setFullRoom(res.data.data.room);
             } catch (error) {
                 console.error('❌ Lỗi khi lấy chi tiết phòng:', error);
             }
         };
-
         fetchRoomDetail();
     }, [room, open]);
 
@@ -42,7 +74,9 @@ export default function RoomDetailModal({ open, onClose, room }: Props) {
     const discountedPrice = room.discount
         ? room.price * (1 - room.discount / 100)
         : room.price;
-
+    const handleConfirmBooking = () => {
+        setShowConfirm(true);
+    };
     return (
         <Modal open={open} onCancel={onClose} footer={null} width={1000}>
             <div className="grid md:grid-cols-2 gap-6">
@@ -179,9 +213,29 @@ export default function RoomDetailModal({ open, onClose, room }: Props) {
                         </ul>
                     </div>
 
-                    <button className="w-full bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition">
-                        Đặt Phòng Ngay
+                    <button
+                        onClick={handleConfirmBooking}
+                        disabled={isBooking}
+                        className="w-full bg-purple-600 cursor-pointer text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition disabled:opacity-50"
+                    >
+                        {isBooking ? "Đang xử lý..." : "Đặt Phòng Ngay"}
                     </button>
+                    <ShowConfirm
+                        visible={showConfirm}
+                        onCancel={() => setShowConfirm(false)}
+                        onConfirm={(nights, checkInDate, checkOutDate) => {
+                            handleBooking(nights, checkInDate, checkOutDate);
+                            // Gửi API ở đây nếu cần
+                            // Bạn có thể gọi lại handleBooking(checkIn, checkOut)
+                            toast.success(`Đặt phòng thành công!`);
+                            setShowConfirm(false);
+                        }}
+                        checkIn={checkIn}
+                        checkOut={checkOut}
+                        guests={room.maxGuests}
+                        pricePerNight={room.price}
+                        discount={room.discount}
+                    />
                 </div>
             </div>
         </Modal>
