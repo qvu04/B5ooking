@@ -18,6 +18,7 @@ export const roomService = {
         if (!rooms || rooms.length === 0) {
             throw new NotFoundException("Không có phòng nào trong khách sạn này");
         }
+
         return {
             rooms: rooms
         }
@@ -44,7 +45,7 @@ export const roomService = {
         }
     },
     getAvailableRoomsByHotelId: async function (data) {
-        const {hotelId, checkIn, checkOut, guests} = data
+        const {hotelId, checkIn, checkOut, guests } = data
         const parsedCheckIn = new Date(checkIn);
         const parsedCheckOut = new Date(checkOut)
 
@@ -56,6 +57,7 @@ export const roomService = {
                 },
                 bookings: {
                     none: {
+                          status: { in: ['PENDING', 'CONFIRMED'] },
                         OR: [
                             {
                                 checkIn: { lte: parsedCheckOut },

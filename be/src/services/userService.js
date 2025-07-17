@@ -37,7 +37,9 @@ export const userService = {
                 phone: true,
                 dateOfBirth: true,
                 address: true,
-                update_At: true
+                update_At: true,
+                email: true,
+                role : true
             }
         })
 
