@@ -35,7 +35,9 @@ export const userService = {
                 phone: true,
                 dateOfBirth: true,
                 address: true,
-                update_At: true
+                update_At: true,
+                email: true,
+                role : true
             }
         })
 
@@ -295,7 +297,7 @@ export const userService = {
 
         const favorites = await prisma.favoriteHotel.findMany({
             where: {
-                id: userId
+                userId: userId
             },
             include: {
                 hotel: true
