@@ -41,3 +41,21 @@ export const fetchTranslateLocation = async (lang: string): Promise<Locations[]>
     }
 
 }
+export const fetchTranslateAllLocation = async (lang: string): Promise<Locations[]> => {
+    try {
+        const res = await getAllLocation();
+        const locations: Locations[] = res.data.data.locations;
+        if (lang === "vi") return locations
+        const translate = await Promise.all(
+            locations.map(async (loc) => {
+                const city = await translateText(loc.city, "vi", lang);
+                return { ...loc, city };
+            })
+        )
+        return translate;
+    } catch (error) {
+        console.log('✌️error --->', error);
+        return [];
+    }
+
+}

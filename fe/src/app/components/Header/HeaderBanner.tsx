@@ -1,7 +1,7 @@
 import { AutoComplete, InputNumber, Button, DatePicker } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
 import toast from 'react-hot-toast';
-import { fetchAllLocation } from '@/app/api/locationService';
+import { fetchAllLocation, fetchTranslateAllLocation } from '@/app/api/locationService';
 import { Locations } from '@/app/types/locationTypes';
 import { toSlug } from '@/utils/slug';
 import { useState, useEffect } from 'react';
@@ -16,14 +16,15 @@ export default function HeaderBanner() {
     const [options, setOptions] = useState<{ value: string; label: React.ReactNode }[]>([]);
     const router = useRouter();
     const { RangePicker } = DatePicker;
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
     const [mounted, setMounted] = useState(false);
     useEffect(() => {
         const loadLocations = async () => {
-            const locations = await fetchAllLocation();
+            const locations = await fetchTranslateAllLocation(i18n.language); // dùng API dịch
             if (!locations) return;
+
             const formatted = locations.map((loc: Locations) => ({
-                value: loc.city,
+                value: loc.city, // tên đã dịch
                 label: (
                     <div className="flex justify-between items-center">
                         <span>{loc.city}</span>
@@ -35,10 +36,12 @@ export default function HeaderBanner() {
                     </div>
                 )
             }));
+
             setOptions(formatted);
         };
         loadLocations();
-    }, []);
+    }, [i18n.language]); // mỗi khi đổi ngôn ngữ thì load lại
+
     const handleSearch = async () => {
         if (!location.trim()) {
             toast.error("Vui lòng nhập địa điểm!");
@@ -82,12 +85,12 @@ export default function HeaderBanner() {
                     <div className="flex items-center justify-between gap-6 bg-white/20 backdrop-blur-md text-white px-6 py-4 rounded-full w-full max-w-5xl mx-auto shadow-lg">
                         {/* Địa điểm */}
                         <div className="flex flex-col flex-1">
-                            <span className="text-sm font-semibold mb-1">Địa điểm</span>
+                            <span className="text-sm font-semibold mb-1">{t("home.search_bar_location")}</span>
                             <AutoComplete
                                 value={location}
                                 options={options}
                                 variant="borderless"
-                                placeholder="Bạn sắp đi đâu?"
+                                placeholder={t("home.search_bar_text")}
                                 className="text-white bg-transparent placeholder-white placeholder:font-semibold"
                                 style={{
                                     backgroundColor: "transparent",
@@ -100,7 +103,7 @@ export default function HeaderBanner() {
 
                         {/* Ngày */}
                         <div className="flex-1 min-w-[150px]">
-                            <span className="text-xs md:text-sm font-semibold mb-1 block">Ngày</span>
+                            <span className="text-xs md:text-sm font-semibold mb-1 block">{t("home.search_bar_date")}</span>
                             <RangePicker
                                 variant="borderless"
                                 format="DD/MM/YYYY"
@@ -112,13 +115,13 @@ export default function HeaderBanner() {
                                     color: "white",
                                     borderBottom: "1px solid white",
                                 }}
-                                placeholder={["Ngày đến", "Ngày đi"]}
+                                placeholder={[t("home.search_bar_checkIn"), t("home.search_bar_checkOut")]}
                             />
                         </div>
 
                         {/* Số khách */}
                         <div className="min-w-[100px]">
-                            <span className="text-xs md:text-sm font-semibold mb-1 block">Khách</span>
+                            <span className="text-xs md:text-sm font-semibold mb-1 block">{t("home.search_bar_guest")}</span>
                             <InputNumber
                                 min={1}
                                 max={100}

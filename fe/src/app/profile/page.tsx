@@ -60,7 +60,7 @@ export default function Profile() {
                     <h2 className="text-xl font-semibold dark:text-black">{user?.fullName}</h2>
                     <p className="text-gray-600 text-sm">Thành viên từ năm 2024</p>
                     <span className="inline-block bg-purple-100 text-purple-700 text-xs font-semibold px-3 py-1 rounded-full">
-                        {user?.role}
+                        {user?.role === "USER" ? "Người dùng" : user?.role}
                     </span>
                 </div>
             </div>

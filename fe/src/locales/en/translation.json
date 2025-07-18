@@ -1,17 +1,28 @@
 {
     "home": {
         "greeting": "Hello",
+        "button_header_home": "Home",
+        "button_header_article": "Article",
+        "button_header_about": "About us",
+        "button_header_signout": "Sign out",
+        "button_header_signin": "Sign in",
+        "popular_location": "Trending Destinations",
+        "seeMoreHotels": "See More Hotels",
+        "popularHotels": "Featured accommodations recommended for you",
         "slogan": "Discover the best places to stay for your trip",
         "discover_now": "Discover Now",
         "plan_title": "Hey, time to plan your dream trip!!!",
+        "search_bar_location": "Location",
+        "search_bar_date": "Date",
+        "search_bar_guest": "Guests",
+        "search_bar_text": "Where will you go next?",
+        "search_bar_checkIn": "Check In",
+        "search_bar_checkOut": "Check Out",
         "plan_description": "Choose a destination, pack your bags, and start your journey!",
         "promo_title": "Promotion",
         "promo_1": "Special discounts and offers just for you",
         "promo_2": "Buy over 10,000,000 VND",
         "promo_3": "With many attractive offers for a better experience",
-        "promo_button": "Grab Now",
-        "popular_places": "Trending Destinations",
-        "seeMoreHotels": "seeMoreHotels",
-        "popularHotels": "popularHotels"
+        "promo_button": "Grab Now"
     }
 }

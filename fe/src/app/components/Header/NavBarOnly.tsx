@@ -29,7 +29,7 @@ import {
 
 const NavBarOnly = () => {
     const { setTheme, resolvedTheme } = useTheme();
-    const { i18n } = useTranslation();
+    const { i18n, t } = useTranslation();
     const [mounted, setMounted] = useState(false);
     const [isScrolled, setIsScrolled] = useState(false);
     const pathName = usePathname();
@@ -76,7 +76,7 @@ const NavBarOnly = () => {
             <nav className="hidden md:flex space-x-6">
                 {["/", "/article", "/about"].map((href, index) => {
                     const isActive = pathName === href;
-                    const labels = ["Chỗ ở", "Tin tức", "Về chúng tôi"];
+                    const labels = [t("home.button_header_home"), t("home.button_header_article"), t("home.button_header_about")];
                     const icons = ["/images/home.png", "/images/article.png", "/images/about.png"];
                     return (
                         <Link
@@ -152,7 +152,7 @@ const NavBarOnly = () => {
                         <AlertDialog>
                             <AlertDialogTrigger asChild>
                                 <button className="px-3 py-1.5 cursor-pointer rounded-xl bg-[#6246ea] hover:bg-[#5135c8] text-white font-medium transition">
-                                    Đăng xuất
+                                    {t("home.button_header_signout")}
                                 </button>
                             </AlertDialogTrigger>
                             <AlertDialogContent>
@@ -180,7 +180,7 @@ const NavBarOnly = () => {
                         }}
                         className="ml-2 px-4 py-1.5 cursor-pointer rounded-xl bg-[#6246ea] hover:bg-[#5135c8] text-white font-medium transition"
                     >
-                        Đăng nhập
+                        {t("home.button_header_signin")}
                     </button>
                 )}
             </div>

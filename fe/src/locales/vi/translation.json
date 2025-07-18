@@ -1,17 +1,28 @@
 {
     "home": {
         "greeting": "Xin chào",
+        "button_header_home": "Chỗ ở",
+        "button_header_article": "Tin tức",
+        "button_header_about": "Về chúng tôi",
+        "button_header_signout": "Đăng xuất",
+        "button_header_signin": "Đăng nhập",
+        "popular_location": "Điểm đến đang thịnh hành",
+        "seeMoreHotels": "Xem thêm các chỗ nghỉ khác",
+        "popularHotels": "Những chỗ nghỉ nổi bật được đề xuất cho quý khách ",
         "slogan": "Khám phá những chỗ ở tốt nhất cho chuyến đi của bạn",
         "discover_now": "Khám phá ngay",
         "plan_title": "Bạn ơi, lên kế hoạch cho chuyến đi mơ ước nhé !!!",
+        "search_bar_location": "Điểm đến",
+        "search_bar_date": "Ngày",
+        "search_bar_guest": "Khách",
+        "search_bar_text": "Bạn sẽ đi đâu?",
+        "search_bar_checkIn": "Ngày đến",
+        "search_bar_checkOut": "Ngày đi",
         "plan_description": "Chọn điểm đến, xếp hành lý và bắt đầu hành trình thôi nào!",
         "promo_title": "Ưu Đãi",
         "promo_1": "Khuyến mãi, giảm giá và ưu đãi đặc biệt dành riêng cho bạn",
         "promo_2": "Mua với giá trên 10.000.000đ",
         "promo_3": "Với nhiều ưu đãi hấp dẫn giúp bạn trải nghiệm tốt hơn",
-        "promo_button": "Săn Ngay",
-        "popular_places": "Điểm đến đang thịnh hành",
-        "seeMoreHotels": "Xem thêm các chỗ nghỉ khác",
-        "popularHotels": "Những chỗ nghỉ nổi bật được đề xuất cho quý khách "
+        "promo_button": "Săn Ngay"
     }
 }
