@@ -26,7 +26,7 @@ export default function Room() {
 
     return (
         <div className="max-w-5xl mx-auto px-4 py-6">
-            <h2 className="text-3xl font-bold mb-6 text-center">Danh sách phòng đã đặt</h2>
+            <h2 className="text-3xl font-bold mb-6 text-center dark:text-black">Danh sách phòng đã đặt</h2>
 
             {loading ? (
                 <p className="text-center text-gray-500">Đang tải dữ liệu...</p>
@@ -49,7 +49,7 @@ export default function Room() {
                             {/* Thông tin phòng */}
                             <div className="col-span-2 space-y-2">
                                 <div className="flex justify-between items-center">
-                                    <h3 className="text-xl font-semibold">{booking.room.name}</h3>
+                                    <h3 className="text-xl font-semibold dark:text-black">{booking.room.name}</h3>
                                     <span className="px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-700">
                                         {booking.status === "FINISHED" ? "Đã đặt" : booking.status}
                                     </span>

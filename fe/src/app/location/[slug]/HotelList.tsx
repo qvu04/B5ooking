@@ -12,7 +12,7 @@ export default function HotelListClient({ hotels }: Props) {
             {hotels.map((hotel) => (
                 <div
                     key={hotel.id}
-                    className="border rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition duration-300 bg-white"
+                    className="border rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition duration-300 bg-white dark:bg-[#16161a]"
                 >
                     {/* Carousel ảnh */}
                     <div className="relative group">
@@ -43,7 +43,7 @@ export default function HotelListClient({ hotels }: Props) {
                         </Carousel>
 
                         {/* Label yêu thích */}
-                        <div className="absolute top-2 left-2 bg-white text-xs px-2 py-1 rounded-full shadow font-medium">
+                        <div className="absolute top-2 left-2 bg-white dark:text-black text-xs px-2 py-1 rounded-full shadow font-medium">
                             Được khách yêu thích
                         </div>
                     </div>
@@ -51,9 +51,9 @@ export default function HotelListClient({ hotels }: Props) {
                     {/* Nội dung khách sạn */}
                     <Link href={`/hotel/${hotel.id}`}>
                         <div className="p-5 space-y-1">
-                            <h3 className="text-base font-semibold text-gray-900 line-clamp-1">{hotel.name}</h3>
-                            <p className="text-sm text-gray-500 line-clamp-1">{hotel.address}</p>
-                            <p className="text-sm text-gray-700 line-clamp-2">{hotel.description}</p>
+                            <h3 className="text-base font-semibold  text-gray-900 dark:text-[#fffffe] line-clamp-1">{hotel.name}</h3>
+                            <p className="text-sm text-gray-500 dark:text-[#94a1b2] line-clamp-1">{hotel.address}</p>
+                            <p className="text-sm text-gray-700 dark:text-[#94a1b2] line-clamp-2">{hotel.description}</p>
                             <div className="text-yellow-500 font-semibold">
                                 ★ {(hotel.averageRating || hotel.defaultRating).toFixed(1)}
                             </div>

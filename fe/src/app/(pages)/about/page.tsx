@@ -52,9 +52,9 @@ export default function AboutPage() {
             {/* Content chính */}
             <div className="relative z-10 px-4 md:px-10 pt-8 text-gray-800">
                 {/* 1. Giới thiệu */}
-                <section className="mb-12 bg-white p-8 rounded-xl shadow-md">
-                    <h2 className="text-2xl text-[#2b2c34] font-bold mb-4">1. Chúng tôi là <span className="text-[#6246ea]">B5ooking</span></h2>
-                    <p className="text-lg text-[#2b2c34] leading-relaxed">
+                <section className="mb-12 bg-white dark:bg-[#242629] border-gray-300 p-8 rounded-xl shadow-md">
+                    <h2 className="text-2xl text-[#2b2c34] dark:text-[#fffffe] font-bold mb-4">1. Chúng tôi là <span className="text-[#6246ea]">B5ooking</span></h2>
+                    <p className="text-lg text-[#2b2c34] dark:text-[#94a1b2] leading-relaxed">
                         B5ooking.com là sản phẩm chính thức của Công ty TNHH Du lịch và Dịch vụ B5ooking.com. Với niềm đam mê khám phá và yêu thích du lịch,
                         chúng tôi đã tạo nên một nền tảng nơi khách hàng có thể dễ dàng tìm kiếm và lựa chọn những kỳ nghỉ lý tưởng cho bản thân và người thân.
                         B5ooking.com tuyển chọn kỹ lưỡng các du thuyền, khách sạn và hợp tác với các hãng hàng không uy tín để mang đến dịch vụ đa dạng và chất
@@ -63,22 +63,22 @@ export default function AboutPage() {
                 </section>
 
                 {/* 2. Tại sao chọn */}
-                <section className="mb-12">
-                    <h2 className="text-2xl text-[#2b2c34] font-bold mb-6">2. Tại sao chọn chúng tôi?</h2>
+                <section className="mb-12 ">
+                    <h2 className="text-2xl text-[#2b2c34] dark:text-[#fffffe] font-bold mb-6">2. Tại sao chọn chúng tôi?</h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         {data.map((item, index) => (
-                            <div key={index} className="bg-[#d1d1e9] p-6 rounded-xl shadow-sm">
-                                <h3 className="text-xl font-semibold mb-2 text-[#e45858]">{item.title}</h3>
-                                <p className="text-[#2b2c34]">{item.desc}</p>
+                            <div key={index} className="bg-[#d1d1e9] dark:bg-[#242629] p-6 rounded-xl shadow-sm">
+                                <h3 className="text-xl font-semibold mb-2 text-[#e45858] dark:text-[#7f5af0]">{item.title}</h3>
+                                <p className="text-[#2b2c34] dark:text-[#94a1b2]">{item.desc}</p>
                             </div>
                         ))}
                     </div>
                 </section>
 
                 {/* 3. Dịch vụ */}
-                <section className="mb-12 bg-white p-8 rounded-xl shadow-md">
-                    <h2 className="text-2xl text-[#2b2c34] font-bold mb-4">3. Sản phẩm dịch vụ</h2>
-                    <ul className="list-disc text-[#2b2c34] pl-6 space-y-2 text-lg">
+                <section className="mb-12 bg-white dark:bg-[#242629] p-8 rounded-xl shadow-md">
+                    <h2 className="text-2xl text-[#2b2c34] dark:text-[#fffffe] font-bold mb-4">3. Sản phẩm dịch vụ</h2>
+                    <ul className="list-disc text-[#2b2c34] dark:text-[#94a1b2] pl-6 space-y-2 text-lg">
                         <li>Đặt vé máy bay nội địa và quốc tế từ các hãng hàng không uy tín</li>
                         <li>Dịch vụ du thuyền Hạ Long với nhiều phân khúc, phù hợp cho từng sở thích và ngân sách</li>
                         <li>Đặt phòng khách sạn, resort cao cấp đến tầm trung trên toàn quốc</li>
@@ -87,9 +87,9 @@ export default function AboutPage() {
                 </section>
 
                 {/* 4. Liên hệ */}
-                <section className="bg-white p-8 rounded-xl shadow-md">
-                    <h2 className="text-2xl text-[#2b2c34] font-bold mb-4">4. Liên hệ với chúng tôi</h2>
-                    <div className="text-lg text-[#2b2c34] leading-relaxed">
+                <section className="bg-white dark:bg-[#242629] p-8 rounded-xl shadow-md">
+                    <h2 className="text-2xl text-[#2b2c34] dark:text-[#fffffe] font-bold mb-4">4. Liên hệ với chúng tôi</h2>
+                    <div className="text-lg text-[#2b2c34] dark:text-[#94a1b2] leading-relaxed">
                         <p><strong>Công ty TNHH Du Lịch và Dịch Vụ 5anhemsiunhan</strong></p>
                         <p>Địa chỉ: 321 QL1A, Phan Đăng Lưu, Quận 12, HCM</p>
                         <p>Mã số doanh nghiệp: 0123456789 do Sở Kế hoạch và Đầu tư Thành phố Hồ Chí Minh cấp ngày 05/06/2023</p>

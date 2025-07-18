@@ -11,7 +11,7 @@ import { FiEye, FiEyeOff } from "react-icons/fi";
 import toast from "react-hot-toast";
 import { useSelector } from "react-redux";
 import { RootState } from "@/lib/store";
-import { showLoading } from "@/redux/features/loadingSlice";
+import { hideLoading, showLoading } from "@/redux/features/loadingSlice";
 
 type FormData = {
     email: string;
@@ -24,7 +24,6 @@ export default function LoginPage() {
     const dispatch = useAppDispatch();
     const router = useRouter();
     const fetchUserLogin = async (formValues: { taiKhoan: string; matKhau: string }) => {
-        dispatch(showLoading());
         try {
             const payLoad: LoginUser = {
                 email: formValues.taiKhoan,
@@ -44,8 +43,6 @@ export default function LoginPage() {
         } catch (error) {
             console.log('Lỗi đăng nhập:', error);
             toast.error("Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.");
-        } finally {
-            dispatch(showLoading());
         }
     };
 

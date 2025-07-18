@@ -49,7 +49,7 @@ export default function Favorite() {
 
     return (
         <div className="max-w-7xl mx-auto px-4 py-6">
-            <h1 className="text-2xl font-bold mb-6 text-center">
+            <h1 className="text-2xl font-bold mb-6 text-center dark:text-black">
                 Khách sạn yêu thích của bạn
             </h1>
 
@@ -101,7 +101,7 @@ export default function Favorite() {
                                     </AlertDialog>
                                 </div>
                                 <div className="p-4 space-y-1">
-                                    <h2 className="text-lg font-semibold truncate">
+                                    <h2 className="text-lg font-semibold truncate dark:text-black">
                                         {hotel.name}
                                     </h2>
                                     <p className="text-gray-600 text-sm">{hotel.address}</p>

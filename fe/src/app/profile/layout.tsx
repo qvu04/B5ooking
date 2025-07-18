@@ -5,7 +5,7 @@ export default function ProfileLayout({ children }: { children: React.ReactNode 
     return (
         <div className="flex min-h-screen bg-gray-100">
             {/* Sidebar trái */}
-            <aside className="w-[280px] p-6 border-r bg-white min-h-screen">
+            <aside className="w-[280px] p-6 border-r bg-white dark:bg-zinc-900 min-h-screen">
                 <SidebarMenu />
             </aside>
 

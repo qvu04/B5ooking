@@ -22,31 +22,28 @@ export default function Booking() {
     const [selectedBookingId, setSelectedBookingId] = useState<number | null>(null);
     const [isOpen, setIsOpen] = useState(false);
 
-    useEffect(() => {
-        const fetchBookings = async () => {
-            try {
-                const [resPending, resConfirmed, resCanceled] = await Promise.all([
-                    getBookingByStatus(BookingStatusEnum.PENDING),
-                    getBookingByStatus(BookingStatusEnum.CONFIRMED),
-                    getBookingByStatus(BookingStatusEnum.CANCELED),
-                ]);
+    const fetchBookings = async () => {
+        try {
+            const [resPending, resConfirmed, resCanceled] = await Promise.all([
+                getBookingByStatus(BookingStatusEnum.PENDING),
+                getBookingByStatus(BookingStatusEnum.CONFIRMED),
+                getBookingByStatus(BookingStatusEnum.CANCELED),
+            ]);
 
-                const allBookings = [
-                    ...resPending.data.data.bookings,
-                    ...resConfirmed.data.data.bookings,
-                    ...resCanceled.data.data.bookings,
-                ];
-                setBookings(allBookings);
-            } catch (err) {
-                console.error("Lỗi lấy booking:", err);
-            }
-        };
+            const allBookings = [
+                ...resPending.data.data.bookings,
+                ...resConfirmed.data.data.bookings,
+                ...resCanceled.data.data.bookings,
+            ];
+            setBookings(allBookings);
+        } catch (err) {
+            console.error("Lỗi lấy booking:", err);
+        }
+    };
 
-        fetchBookings();
-    }, []);
     const handleOpenCancelDialog = (id: number) => {
         setSelectedBookingId(id);
-        setIsOpen(true);    
+        setIsOpen(true);
     };
 
     const confirmCancelBooking = async () => {
@@ -57,6 +54,7 @@ export default function Booking() {
             setBookings(prev => prev.filter(b => b.id !== selectedBookingId));
             setIsOpen(false);
             toast.success("Huỷ đặt phòng thành công.");
+            fetchBookings();
         } catch (err) {
             console.error("Lỗi khi huỷ đặt phòng:", err);
             toast.error("Huỷ đặt phòng thất bại.");
@@ -66,7 +64,9 @@ export default function Booking() {
     const filteredBookings = filteredStatus === "ALL"
         ? bookings
         : bookings.filter(b => b.status === filteredStatus);
-
+    useEffect(() => {
+        fetchBookings();
+    }, [])
     const renderBookingList = () => (
         <section className="mt-6">
             {filteredBookings.length === 0 ? (

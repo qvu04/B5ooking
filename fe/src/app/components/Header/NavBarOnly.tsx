@@ -103,7 +103,13 @@ const NavBarOnly = () => {
 
             <div className="flex items-center space-x-4">
                 <button
-                    onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
+                    onClick={() => {
+                        dispatch(showLoading());
+                        setTimeout(() => {
+                            setTheme(resolvedTheme === "dark" ? "light" : "dark");
+                            dispatch(hideLoading());
+                        }, 500); // thời gian loading 0.5s
+                    }}
                     className="text-xl hover:text-[#6246ea] transition"
                 >
                     {resolvedTheme === "dark" ? <FaSun /> : <FaMoon />}
@@ -170,7 +176,7 @@ const NavBarOnly = () => {
                             setTimeout(() => {
                                 router.push("/login");
                                 dispatch(hideLoading());
-                            }, 1000);
+                            }, 2000);
                         }}
                         className="ml-2 px-4 py-1.5 cursor-pointer rounded-xl bg-[#6246ea] hover:bg-[#5135c8] text-white font-medium transition"
                     >

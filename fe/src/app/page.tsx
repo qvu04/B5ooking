@@ -8,10 +8,10 @@ import TravelDealCard from "./components/Home/TravelDealCard";
 export default function Home() {
   return (
     <div className="p-6">
-      <TravelDealCard />
       <PopularLocation />
       <PopularHotel />
       <PopularTravel />
+      <TravelDealCard />
       <PopularBlog />
       <PlanBanner />
     </div>
