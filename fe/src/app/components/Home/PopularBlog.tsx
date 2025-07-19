@@ -1,6 +1,7 @@
 'use client';
 import { getSomeBlogs } from '@/app/api/blogService';
 import { Blogs } from '@/app/types/blogType';
+import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
 
 const PopularBlog = () => {
@@ -25,7 +26,8 @@ const PopularBlog = () => {
 
             <div className="flex overflow-x-auto gap-6 scrollbar-hide snap-x snap-mandatory">
                 {blogs?.map((blog) => (
-                    <div
+                    <Link
+                        href={`/blog/${blog.slug}`}
                         key={blog.id}
                         className="min-w-[300px] max-w-sm flex-shrink-0 bg-white dark:bg-[#242629] border dark:border-gray-300 rounded-xl shadow-md snap-start"
                     >
@@ -42,7 +44,7 @@ const PopularBlog = () => {
                                 {blog.summary}
                             </p>
                         </div>
-                    </div>
+                    </Link>
                 ))}
             </div>
         </div>

@@ -42,6 +42,7 @@ export const blogService = {
                 title: true,
                 summary: true,
                 image: true,
+                slug: true,
                 create_At: true,
                 update_At: true,
             },
@@ -86,6 +87,7 @@ export const blogService = {
                 title: true,
                 summary: true,
                 image: true,
+                slug: true,
                 create_At: true,
                 update_At: true,
             }
