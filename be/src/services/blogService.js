@@ -4,8 +4,15 @@ const prisma = new PrismaClient();
 
 export const blogService = {
 
-    getAllBlogs: async function () {
+    getAllBlogs: async function (page = 1) {
+        const limit = 6;
+        const skip = (page - 1) * limit;
         const blogs = await prisma.blogPost.findMany({
+            skip: skip,
+            take: limit,
+            orderBy: {
+                create_At: 'desc'
+            },
             select: {
                 id: true,
                 title: true,
@@ -15,7 +22,17 @@ export const blogService = {
                 update_At: true,
             }
         })
-        return blogs;
+        const total = await prisma.blogPost.count();
+
+        return {
+            blogs: blogs,
+            pagination: {
+                page: page,
+                limit: limit,
+                total: total,
+                totalPages: Math.ceil(total / limit)
+            }
+        };
     },
     getSomeBlogs: async function () {
         const blogs = await prisma.blogPost.findMany({
@@ -29,7 +46,9 @@ export const blogService = {
             },
             take: 4
         })
-        return blogs;
+        return {
+            blogs: blogs
+        };
     },
 
     getBlogBySlug: async function (slug) {
@@ -46,12 +65,21 @@ export const blogService = {
                 update_At: true,
             }
         });
-        return blog;
+        return {
+            blog: blog
+        };
     },
 
-    getAllBlogsByLocationId: async function (locationId) {
+    getAllBlogsByLocationId: async function (locationId, page) {
+        const limit = 6;
+        const skip = (page - 1) * limit;
         const blogs = await prisma.blogPost.findMany({
             where: { locationId: locationId },
+            skip: skip,
+            take: limit,
+            orderBy: {
+                create_At: 'desc'
+            },
             select: {
                 id: true,
                 title: true,
@@ -61,6 +89,17 @@ export const blogService = {
                 update_At: true,
             }
         });
-        return blogs;
+        const total = await prisma.blogPost.count({
+            where: { locationId: locationId }
+        })
+        return {
+            blogs: blogs,
+            pagination: {
+                page: page,
+                limit: limit,
+                total: total,
+                totalPages: Math.ceil(total / limit)
+            }
+        };
     }
 }

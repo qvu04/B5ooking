@@ -119,13 +119,11 @@ Lấy danh sách phòng của khách sạn (Get) : http://localhost:7000/api/roo
 
 Lấy thông tin phòng theo id phòng (Get) : http://localhost:7000/api/room/getRoomById/:roomId
 
-Lấy tất cả bài blog : http://localhost:7000/api/blog/getAllBlogs
+Lấy tất cả bài blog có phân trang (Get) : http://localhost:7000/api/blog/getAllBlogs ví dụ  http://localhost:7000/api/blog/getAllBlogs?page=1 hoặc hk cần để ?page=1 cũng ra trang 1
 
-Lấy 1 vài bài blog : http://localhost:7000/api/blog/getSomeBlogs
+Lấy thông tin bài viết đó theo slug (Get) :  http://localhost:7000/api/blog/getBlogBySlug/:slug
 
-Lấy thông tin bài viết đó theo slug :  http://localhost:7000/api/blog/getBlogBySlug/:slug
+Lấy các bài viết theo khu vực có phân trang (Get) : http://localhost:7000/api/blog/getAllBlogsByLocationId/:locationId ví dụ http://localhost:7000/api/blog/getAllBlogsByLocationId/:locationId?page=1 hoặc hk cần để ?page=1 cũng ra trang 1
 
-Lấy các bài viết theo khu vực : http://localhost:7000/api/blog/getAllBlogsByLocationId/:locationId
-
-Lấy danh sách phòng phù hợp với checkin checkout guests để lọc phòng : http://localhost:7000/api/room/getSearchAvailableHotels
+Lấy danh sách phòng phù hợp với checkin checkout guests để lọc phòng (Get) : http://localhost:7000/api/room/getSearchAvailableHotels
 
