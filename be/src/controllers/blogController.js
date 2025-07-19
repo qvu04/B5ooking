@@ -5,7 +5,8 @@ export const blogController = {
   // Lấy tất cả blog
   getAllBlogs: async function (req, res, next) {
     try {
-      const blogs = await blogService.getAllBlogs();
+      const page = parseInt(req.query.page) || 1;
+      const blogs = await blogService.getAllBlogs(page);
       const response = responseSuccess(blogs, "Lấy danh sách blog thành công");
       res.status(response.status).json(response);
     } catch (err) {
@@ -13,7 +14,7 @@ export const blogController = {
       next(err);
     }
   },
-    getSomeBlogs: async function (req, res, next) {
+  getSomeBlogs: async function (req, res, next) {
     try {
       const blogs = await blogService.getSomeBlogs();
       const response = responseSuccess(blogs, "Lấy danh sách 1 vài blog thành công");
@@ -26,7 +27,7 @@ export const blogController = {
   // Lấy blog theo slug
   getBlogBySlug: async function (req, res, next) {
     try {
-      const  slug  = req.params.slug;
+      const slug = req.params.slug;
       const blog = await blogService.getBlogBySlug(slug);
       const response = responseSuccess(blog, "Lấy blog thành công");
       return res.status(response.status).json(response);
@@ -39,8 +40,9 @@ export const blogController = {
   // Lấy tất cả blog theo locationId
   getAllBlogsByLocationId: async function (req, res, next) {
     try {
+      const page = parseInt(req.query.page) || 1
       const locationId = parseInt(req.params.locationId);
-      const blogs = await blogService.getAllBlogsByLocationId(locationId);
+      const blogs = await blogService.getAllBlogsByLocationId(locationId,page);
       const response = responseSuccess(blogs, "Lấy danh sách blog theo locationId thành công");
       return res.status(response.status).json(response);
     } catch (err) {
