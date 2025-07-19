@@ -74,7 +74,7 @@ const NavBarOnly = () => {
             </Link>
 
             <nav className="hidden md:flex space-x-6">
-                {["/", "/article", "/about"].map((href, index) => {
+                {["/", "/blog", "/about"].map((href, index) => {
                     const isActive = pathName === href;
                     const labels = [t("home.button_header_home"), t("home.button_header_article"), t("home.button_header_about")];
                     const icons = ["/images/home.png", "/images/article.png", "/images/about.png"];

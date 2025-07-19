@@ -20,7 +20,6 @@ export const getAllLocation = () => {
 export const fetchAllLocation = async () => {
     const res = await getAllLocation();
     const locations = res.data.data.locations;
-    console.log("✌️locations --->", res.data.data);
     return locations;
 }
 export const fetchTranslateLocation = async (lang: string): Promise<Locations[]> => {

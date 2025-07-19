@@ -9,8 +9,7 @@ const PopularBlog = () => {
     const fetchBlogs = async () => {
         try {
             const res = await getSomeBlogs();
-            console.log('✌️res --->', res.data.data);
-            setBlogs(res.data.data);
+            setBlogs(res.data.data.blogs);
         } catch (error) {
             console.log('✌️error --->', error);
         }

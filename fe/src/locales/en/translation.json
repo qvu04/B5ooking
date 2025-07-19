@@ -2,7 +2,7 @@
     "home": {
         "greeting": "Hello",
         "button_header_home": "Home",
-        "button_header_article": "Article",
+        "button_header_article": "Blog",
         "button_header_about": "About us",
         "button_header_signout": "Sign out",
         "button_header_signin": "Sign in",
