@@ -9,17 +9,19 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
     const pathname = usePathname();
 
     const noHeaderRoutes = ['/login', '/register', '/admin', '/not-found'];
-    const noBannerRoutes = ['/profile', '/about'];
+    const noBannerRoutes = ['/profile', '/about', '/article']; // => KHÔNG hiện Banner
+    const noFooterRoutes = ['/profile']; // => CHỈ ẩn Footer ở /profile
 
     const shouldHideHeader = noHeaderRoutes.some(path => pathname.startsWith(path));
     const shouldHideBanner = noBannerRoutes.some(path => pathname.startsWith(path));
+    const shouldHideFooter = noFooterRoutes.some(path => pathname.startsWith(path));
 
     return (
         <>
             {!shouldHideHeader && <NavBarOnly />}
             {!shouldHideHeader && !shouldHideBanner && <HeaderBanner />}
             {children}
-            {!shouldHideHeader && !shouldHideBanner && <Footer />}
+            {!shouldHideHeader && !shouldHideFooter && <Footer />}
         </>
     );
 }

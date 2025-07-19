@@ -1,7 +1,7 @@
 "use client";
 import { RootState } from "@/lib/store";
 import { useSelector } from "react-redux";
-import { FaUserAlt } from 'react-icons/fa';
+import { FaUserAlt, FaCamera } from 'react-icons/fa';
 import EditProfileUser from "./EditProfileUser";
 import { useState, useEffect } from 'react';
 import { hideLoading, showLoading } from '@/redux/features/loadingSlice';
@@ -19,6 +19,7 @@ export default function Profile() {
 
         return () => clearTimeout(timeout);
     }, [dispatch]);
+    
     return (
         <div className="max-w-4xl mx-auto mt-6 px-4 space-y-8">
             {/* Header */}
@@ -56,6 +57,7 @@ export default function Profile() {
                         <FaUserAlt className="text-2xl" />
                     </div>
                 )}
+
                 <div>
                     <h2 className="text-xl font-semibold dark:text-black">{user?.fullName}</h2>
                     <p className="text-gray-600 text-sm">Thành viên từ năm 2024</p>
@@ -64,7 +66,6 @@ export default function Profile() {
                     </span>
                 </div>
             </div>
-
             {/* Phần hoàn tất hồ sơ */}
             <div className="bg-white rounded-xl p-6 shadow-md">
                 <h3 className="text-xl font-bold text-gray-800 mb-2">Hoàn tất hồ sơ của bạn</h3>
