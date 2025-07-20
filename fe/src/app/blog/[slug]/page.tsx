@@ -28,9 +28,9 @@ export default function BlogDetail() {
 
     return (
         <div className="max-w-4xl mx-auto px-4 py-8">
-            <h1 className="text-3xl font-bold mb-4">{blog.title}</h1>
-            <p className="text-gray-600 mb-2">Tác giả: {blog.author}</p>
-            <p className="text-sm text-gray-400 mb-4">
+            <h1 className="text-3xl dark:text-[#fffffe] font-bold mb-4">{blog.title}</h1>
+            <p className="text-gray-600 dark:text-[#94a1b2] mb-2">Tác giả: {blog.author}</p>
+            <p className="text-sm text-gray-400 dark:text-[#94a1b2] mb-4">
                 Ngày đăng: {new Date(blog.create_At).toLocaleDateString()}
             </p>
             <img

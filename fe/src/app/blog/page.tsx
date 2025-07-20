@@ -45,9 +45,9 @@ export default function Article() {
         <div className="max-w-6xl mx-auto px-4 py-10">
             {/* Giới thiệu trang Booking */}
             <div className="text-center mb-12">
-                <h1 className="text-4xl font-bold mb-4"><span>B5ooking: </span>Khám phá Sự đặc sắc
+                <h1 className="text-4xl text-[#fffffe] font-bold mb-4"><span>B5ooking: </span>Khám phá Sự đặc sắc
                     và Cập nhật tin tức mới nhất</h1>
-                <p className="text-gray-600 dark:text-gray-300 text-lg">
+                <p className="text-gray-600 dark:text-[#94a1b2] text-lg">
                     Cập nhật những kinh nghiệm, mẹo hay và địa điểm du lịch thú vị dành cho bạn.
                 </p>
             </div>
@@ -55,7 +55,7 @@ export default function Article() {
             {/* Filter Location */}
             <div className="flex gap-4 mb-6 overflow-x-auto">
                 <button
-                    className={`px-4 py-2 rounded ${selectedLocationId === 'all' ? 'bg-white shadow font-semibold' : 'text-gray-600'}`}
+                    className={`px-4 py-2 rounded ${selectedLocationId === 'all' ? 'bg-white dark:bg-[#7f5af0] dark:text-[#fffffe] shadow font-semibold' : 'dark:text-[#94a1b2]'}`}
                     onClick={() => {
                         setSelectedLocationId('all');
                         setPage(1);
@@ -70,7 +70,7 @@ export default function Article() {
                             setSelectedLocationId(loc.id);
                             setPage(1);
                         }}
-                        className={`px-4 py-2 rounded ${selectedLocationId === loc.id ? 'bg-white shadow font-semibold' : 'text-gray-600'}`}
+                        className={`px-4 py-2 rounded ${selectedLocationId === loc.id ? 'bg-white dark:bg-[#7f5af0] dark:text-[#fffffe] shadow font-semibold' : 'dark:text-[#94a1b2]'}`}
                     >
                         {loc.city}
                     </button>
@@ -82,9 +82,9 @@ export default function Article() {
                 {blogs.map((blog) => (
                     <Link href={`/blog/${blog.slug}`} key={blog.id} className="border rounded p-4 shadow">
                         <img src={blog.image} alt={blog.title} className="w-full h-48 object-cover rounded" />
-                        <h2 className="text-xl font-semibold mt-2">{blog.title}</h2>
-                        <p className="text-gray-600 text-sm mt-1">{blog.summary}</p>
-                        <p className="text-gray-400 text-xs mt-1">
+                        <h2 className="text-xl font-semibold dark:text-[#fffffe] mt-2">{blog.title}</h2>
+                        <p className="text-gray-600 dark:text-[#94a1b2] text-sm mt-1">{blog.summary}</p>
+                        <p className="text-gray-400 dark:text-[#94a1b2] text-xs mt-1">
                             {new Date(blog.create_At).toLocaleDateString()}
                         </p>
                     </Link>
@@ -97,7 +97,7 @@ export default function Article() {
                     <button
                         onClick={() => setPage((p) => Math.max(p - 1, 1))}
                         disabled={page === 1}
-                        className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50"
+                        className="px-4 py-2 bg-[#7f5af0] text-[#fffffe] rounded disabled:opacity-50"
                     >
                         Trang trước
                     </button>
@@ -107,7 +107,7 @@ export default function Article() {
                     <button
                         onClick={() => setPage((p) => Math.min(p + 1, pagination.totalPages))}
                         disabled={page === pagination.totalPages}
-                        className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50"
+                        className="px-4 py-2 bg-[#7f5af0] text-[#fffffe] rounded disabled:opacity-50"
                     >
                         Trang sau
                     </button>
