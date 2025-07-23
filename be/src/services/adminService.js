@@ -61,12 +61,40 @@ export const adminService = {
         });
     },
     // Lấy danh sách vị trí
-    getAllLocaltions: async function () {
-        const locations = await prisma.location.findMany();
+    getAllLocaltionNames: async function () {
+        const locations = await prisma.location.findMany({
+            select: {
+                id: true,
+                city: true
+            }
+        });
         return {
             locations: locations
         }
 
+    },
+    getAllLocaltionsForAdmin: async function (page) {
+        const limit = 5;
+        const skip = (page - 1) * limit;
+        const total = await prisma.location.count()
+        const locations = await prisma.location.findMany({
+            take: limit,
+            skip: skip,
+            select: {
+                id: true,
+                imageLocation: true,
+                city: true
+            }
+        })
+
+        return {
+            locations: locations,
+            pagination: {
+                page: page,
+                limit: limit,
+                totalPages: Math.ceil(total / limit)
+            }
+        }
     },
     // Tạo tiện nghi 
     createAmenity: async function (data) {
@@ -193,8 +221,16 @@ export const adminService = {
     },
 
     // Lấy danh sách khách sạn
-    getAllHotels: async function () {
+    getAllHotels: async function (locationId, page) {
+        const limit = 5;
+        const skip = (page - 1) * limit;
+        const whereCondition = locationId
+            ? { locationId: locationId }
+            : {}
         const hotels = await prisma.hotel.findMany({
+            where: whereCondition,
+            take: limit,
+            skip: skip,
             include: {
                 location: true,
                 reviews: true,
@@ -206,10 +242,19 @@ export const adminService = {
                 }
             }
         });
+        const total = await prisma.hotel.count({
+            where: whereCondition
+        })
         return {
-            hotels: hotels
+            hotels: hotels,
+            pagination: {
+                page: page,
+                limit: limit,
+                totalPages: Math.ceil(total / limit)
+            }
         }
     },
+
 
     // Cập nhật khách sạn
     updateHotel: async function (hotelId, data, imageFile) {
@@ -338,20 +383,69 @@ export const adminService = {
     },
 
     // Lấy danh sách ảnh phụ của khách sạn
-    getHotelImages: async function (hotelId) {
+    getHotelImages: async function (hotelId, page) {
+        const limit = 10;
+        const skip = (page - 1) * limit;
+
+        // Lấy tên khách sạn
         const hotel = await prisma.hotel.findUnique({
             where: { id: hotelId },
             select: {
-                name: true,
+                name: true
             }
         });
+
+        if (!hotel) {
+            throw new Error("Không tìm thấy khách sạn");
+        }
+
+        // Lấy ảnh phân trang
         const hotelImages = await prisma.hotelImage.findMany({
+            where: { hotelId: hotelId },
+            skip: skip,
+            take: limit,
+            select: {
+                id: true,
+                imageUrl: true,
+                createdAt: true
+            }
+        });
+
+        const total = await prisma.hotelImage.count({
             where: { hotelId: hotelId }
-        })
+        });
+
         return {
             hotel: hotel.name,
             hotelId: hotelId,
-            hotelImages: hotelImages
+            hotelImages: hotelImages,
+            pagination: {
+                page: page,
+                limit: limit,
+                totalPages: Math.ceil(total / limit)
+            }
+        };
+    },
+
+
+
+    // Lấy tất cả ảnh phụ của tất cả khách sạn
+    getAllHotelImages: async function (page) {
+        const limit = 10;
+        const skip = (page - 1) * limit
+        const hotelImages = await prisma.hotelImage.findMany({
+            take: limit,
+            skip: skip
+        })
+        const total = await prisma.hotelImage.count()
+        return {
+            total: total,
+            hotelImages: hotelImages,
+            pagination: {
+                page: page,
+                limit: limit,
+                totalPages: Math.ceil(total / limit)
+            }
         }
     },
 
@@ -747,9 +841,28 @@ export const adminService = {
         });
     },
 
+    getAllHotelNames: async function () {
+        const hotelNames = await prisma.hotel.findMany({
+            select: {
+                id: true,
+                name: true
+            }
+        });
+        return {
+            hotelNames: hotelNames
+        }
+    },
     // Lấy danh sách phòng 
-    getAllRooms: async function () {
+    getAllRooms: async function (hotelId, page) {
+        const limit = 5;
+        const skip = (page - 1) * limit;
+        const whereCondition = hotelId
+            ? { hotelId: hotelId }
+            : {}
         const rooms = await prisma.room.findMany({
+            where: whereCondition,
+            take: limit,
+            skip: skip,
             include: {
                 hotel: true,
                 images: true,
@@ -760,54 +873,18 @@ export const adminService = {
                 }
             }
         });
+        const total = await prisma.room.count({
+            where: whereCondition
+        })
         return {
-            rooms: rooms
+            rooms: rooms,
+            pagination: {
+                page: page,
+                limit: limit,
+                totalPages: Math.ceil(total / limit)
+            }
         }
     },
-
-    // Lấy những khách sạn liên quan tới địa điểm và nhận phòng trả phòng và số người
-    // getSearchAvailableHotels: async function (data) {
-    //     const { locationId, checkIn, checkOut, guests } = data;
-    //     const parsedLocationId = parseInt(locationId);
-    //     const parsedGuests = parseInt(guests);
-
-    //     const rooms = await prisma.room.findMany({
-    //         where: {
-    //             maxGuests: {
-    //                 gte: parsedGuests
-    //             },
-    //             hotel: {
-    //                 locationId: parsedLocationId
-    //             },
-    //             bookings: {
-    //                 none: {
-    //                     OR: [
-    //                         {
-    //                             checkIn: { lte: new Date(checkOut) },
-    //                             checkOut: { gte: new Date(checkIn) }
-    //                         }
-    //                     ]
-    //                 }
-    //             }
-    //         },
-    //         include: {
-    //             hotel: {
-    //                 include: {
-    //                     location: true,
-    //                     images: true,
-    //                 }
-    //             }
-    //         }
-    //     });
-    //     const hotelMap = new Map();
-    //     for (const room of rooms) {
-    //         hotelMap.set(room.hotel.id, room.hotel);
-    //     }
-    //     return {
-    //         count: hotelMap.size,
-    //         hotels: Array.from(hotelMap.values())
-    //     }
-    // },
 
     // Tạo blog
     createBlog: async function (data, imageFile) {
@@ -983,26 +1060,112 @@ export const adminService = {
     },
 
     // Lấy danh sách người dùng
-    getAllUsers: async function (currentUser) {
-        const users = await prisma.user.findMany({
-            where: {
-                NOT: [
-                    { id: currentUser },
+    getAllUsers: async function (currentUser, page, fullName) {
+        const limit = 10;
+        const skip = (page - 1) * limit;
 
-                ]
+        const whereCondition = {
+            NOT: { id: currentUser },
+            ...(fullName && {
+                fullName: {
+                    contains: fullName.toLowerCase(),
+
+                }
+            })
+        };
+
+        const users = await prisma.user.findMany({
+            take: limit,
+            skip: skip,
+            where: whereCondition,
+        });
+
+        const total = await prisma.user.count({
+            where: whereCondition,
+        });
+
+        return {
+            users: users,
+            pagination: {
+                page: page,
+                limit: limit,
+                totalPages: Math.ceil(total / limit)
+            }
+        };
+    },
+
+
+    getAllBlogs: async function (locationId, page) {
+        const limit = 5;
+        const skip = (page - 1) * limit;
+        const whereCondition = locationId ?
+            { locationId: locationId }
+            : {}
+        const blogs = await prisma.blogPost.findMany({
+            where: whereCondition,
+            skip: skip,
+            take: limit,
+            orderBy: {
+                create_At: 'desc'
             },
             select: {
                 id: true,
-                firstName: true,
-                lastName: true,
-                email: true,
-                role: true,
-                gender: true
+                title: true,
+                summary: true,
+                image: true,
+                content: true,
+                slug: true,
+                create_At: true,
+                update_At: true,
             }
+        })
+        const total = await prisma.blogPost.count({
+            where: whereCondition
         });
+
         return {
-            users: users
+            blogs: blogs,
+            pagination: {
+                page: page,
+                limit: limit,
+                total: total,
+                totalPages: Math.ceil(total / limit)
+            }
         };
+    },
+
+    getAllBooking: async function (page) {
+        const limit = 5;
+        const skip = (page - 1) * limit
+        const bookings = await prisma.booking.findMany({
+            take: limit,
+            skip: skip,
+            where: {
+                status: { in: ['CONFIRMED', 'FINISHED'] }
+            },
+            include: {
+                user: true,
+                room: {
+                    include: {
+                        hotel: true
+                    }
+                }
+            }
+        })
+        const total = await prisma.booking.count({
+            where: {
+                status: { in: ['CONFIRMED', 'FINISHED'] }
+            },
+        })
+        return {
+            bookings: bookings,
+            pagination: {
+                page: page,
+                limit: limit,
+                total: total,
+                totalPages: Math.ceil(total / limit)
+            }
+        }
     }
 
 };

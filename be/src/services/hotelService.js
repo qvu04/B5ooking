@@ -22,8 +22,12 @@ export const hotelService = {
 
     },
     // Lấy danh sách khách sạn
-    getAllHotels: async function () {
+    getAllHotels: async function (page) {
+        const limit = 12;
+        const skip = (page - 1) * limit;
         const hotels = await prisma.hotel.findMany({
+            take: limit,
+            skip: skip,
             include: {
                 location: true,
                 reviews: true,
@@ -35,10 +39,17 @@ export const hotelService = {
                 }
             }
         });
+        const total = await prisma.hotel.count()
         return {
-            hotels: hotels
+            hotels: hotels,
+            pagination: {
+                page: page,
+                limit: limit,
+                totalPages: Math.ceil(total / limit)
+            }
         }
     },
+
     // Đánh giá sao 
     getRatingStatsByHotelId: async function (hotelId) {
         const reviews = await prisma.review.findMany({
