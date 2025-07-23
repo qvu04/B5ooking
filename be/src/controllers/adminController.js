@@ -466,7 +466,8 @@ export const adminController = {
 
         getAllBooking : async function (req,res,next) {
        try {
-         const bookings = await adminService.getAllBooking();
+        const page = parseInt(req.query.page) || 1
+         const bookings = await adminService.getAllBooking(page);
           const response = responseSuccess(bookings, "Lấy danh sách bookings thành công");
           res.status(response.status).json(response);
               } catch (err) {
