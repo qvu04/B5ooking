@@ -131,7 +131,7 @@ const NavBarOnly = () => {
 
                 {user ? (
                     <>
-                        <Link href={user?.role === "admin" ? "/admin" : "/profile"} className="flex items-center gap-4">
+                        <Link href={user?.role === "ADMIN" ? "/admin" : "/profile"} className="flex items-center gap-4">
                             <div className="flex items-center gap-2">
                                 {user?.avatar ? (
                                     <img

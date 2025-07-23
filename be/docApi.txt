@@ -94,7 +94,7 @@ Lấy danh sách phòng của khách sạn (Get) : http://localhost:7000/api/adm
 
 Lấy tổng doanh thu , khách sạn , người dùng (ROle :User), phòng (Get) : http://localhost:7000/api/admin/getTotal
 
-Lấy doanh thu theo ngày hoặc tháng hoặc năm dùng cho biểu cột hoặc đường (Get): http://localhost:7000/api/admin/getGroupedRevenue
+Lấy doanh thu theo ngày hoặc tháng hoặc năm dùng cho biểu cột hoặc đường (Get): http://localhost:7000/api/dashboard/getGroupedRevenue
 
 Lấy phần trăm doanh thu của các khách sạn dùng cho biểu đồ tròn (Get) : http://localhost:7000/api/admin/getHotelRevenuePercentage
 

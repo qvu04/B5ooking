@@ -1,7 +1,7 @@
 "use client";
 import { RootState } from "@/lib/store";
 import { useSelector } from "react-redux";
-import { FaUserAlt, FaCamera } from 'react-icons/fa';
+import { FaUserAlt } from 'react-icons/fa';
 import EditProfileUser from "./EditProfileUser";
 import { useState, useEffect } from 'react';
 import { hideLoading, showLoading } from '@/redux/features/loadingSlice';
