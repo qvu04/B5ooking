@@ -12,9 +12,10 @@ router.post('/createLocation',upload.single('imageFile'),authMiddleware,checkAdm
 router.put('/updateLocation/:id',upload.single('imageFile'),authMiddleware,checkAdmin,adminController.updateLocation);
 router.delete('/deleteLocation/:id',authMiddleware,checkAdmin,adminController.deleteLocation);
 
-// Lấy danh sách vị trí
-router.get('/getAllLocations',authMiddleware,checkAdmin,adminController.getAllLocations);
 
+// Lấy danh sách vị trí
+router.get('/getAllLocaltionsForAdmin',authMiddleware,checkAdmin,adminController.getAllLocaltionsForAdmin);
+router.get('/getAllLocaltionNames',authMiddleware,checkAdmin,adminController.getAllLocaltionNames);
 // Tạo sửa xóa tiện nghi
 router.post('/createAmenity',authMiddleware,checkAdmin,adminController.createAmenity);
 router.put('/updateAmenity/:id',authMiddleware,checkAdmin,adminService.updateAmenity);
@@ -29,7 +30,7 @@ router.delete('/deleteHotel/:id',authMiddleware,checkAdmin,adminController.delet
 
 // Lấy danh sách khách sạn
 router.get('/getAllHotels',authMiddleware,checkAdmin,adminController.getAllHotels);
-
+router.get('/getAllHotelNames',authMiddleware,checkAdmin,adminController.getAllHotelNames);
 router.get('/getAllRooms',authMiddleware,checkAdmin, adminController.getAllRooms)
 
 // // Lấy thông tin khách sạn theo id
@@ -37,7 +38,7 @@ router.get('/getAllRooms',authMiddleware,checkAdmin, adminController.getAllRooms
 
 // lấy danh sách ảnh phụ của khách sạn
 router.get('/getHotelImages/:hotelId',authMiddleware,checkAdmin,adminController.getHotelImages);
-
+router.get('/getAllHotelImages',authMiddleware,checkAdmin,adminController.getAllHotelImages);
 // Thêm sửa xóa ảnh phụ của khách sạn
 router.post('/addHotelImage/:hotelId',upload.array('imageFile',30),authMiddleware,checkAdmin,adminController.addHotelImage);
 router.put('/updateHotelImage/:id',upload.single('imageFile'),authMiddleware,checkAdmin,adminController.updateHotelImage);
@@ -61,6 +62,8 @@ router.post('/createBlog',upload.single('imageFile'),authMiddleware,checkAdmin,a
 router.put('/updateBlog/:id',upload.single('imageFile'),authMiddleware,checkAdmin,adminController.updateBlog);
 router.delete('/deleteBlog/:id',authMiddleware,checkAdmin,adminController.deleteBlog);
 
+router.get('/getAllBlogs', authMiddleware,checkAdmin,adminController.getAllBlogs);
+
 // Tạo người dùng 
 router.post('/createUser',authMiddleware,checkAdmin,adminController.createUser)
 // update người dùng 
@@ -73,6 +76,5 @@ router.get('/getAllUsers',authMiddleware,checkAdmin,adminController.getAllUsers)
 // Lấy danh sách phòng của khách sạn
 router.get('/getRoomsByHotel/:hotelId',authMiddleware,checkAdmin,adminController.getRoomsByHotelId);
 
-// // Lấy những khách sạn liên quan tới địa điểm và nhận phòng trả phòng và số người
-// router.get('/getSearchAvailableHotels',authMiddleware,checkAdmin,adminController.getSearchAvailableHotels);
+router.get('/getAllBooking',authMiddleware,checkAdmin,adminController.getAllBooking)
 export default router

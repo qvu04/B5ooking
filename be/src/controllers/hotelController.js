@@ -25,7 +25,8 @@ export const hotelController = {
     // Lấy danh sách khách sạn
     getAllHotels: async function (req, res, next) {
         try {
-            const hotels = await hotelService.getAllHotels();
+            const page = parseInt(req.query.page) || 1
+            const hotels = await hotelService.getAllHotels(page);
             const response = responseSuccess(hotels, "Lấy danh sách khách sạn thành công");
             res.status(response.status).json(response);
         } catch (err) {
