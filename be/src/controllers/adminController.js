@@ -127,9 +127,10 @@ export const adminController = {
     // Lấy danh sách khách sạn
     getAllHotels: async function (req, res, next) {
         try {
+            const hotelName = req.query.hotelName || "";
             const locationId = parseInt(req.query.locationId) || "";
             const page = parseInt(req.query.page) || 1
-            const hotels = await adminService.getAllHotels(locationId, page);
+            const hotels = await adminService.getAllHotels(locationId,hotelName, page);
             const response = responseSuccess(hotels, "Lấy danh sách khách sạn thành công");
             res.status(response.status).json(response);
         } catch (err) {

@@ -221,12 +221,13 @@ export const adminService = {
     },
 
     // Lấy danh sách khách sạn
-    getAllHotels: async function (locationId, page) {
+    getAllHotels: async function (locationId, hotelName, page) {
         const limit = 5;
         const skip = (page - 1) * limit;
-        const whereCondition = locationId
-            ? { locationId: locationId }
-            : {}
+        const whereCondition = {
+            ...(locationId ? { locationId: locationId } : {}),
+            ...(hotelName ? { name: { contains: hotelName.toLowerCase() } } : {})
+        };
         const hotels = await prisma.hotel.findMany({
             where: whereCondition,
             take: limit,
@@ -1134,7 +1135,7 @@ export const adminService = {
         };
     },
 
-    getAllBooking: async function (status,page) {
+    getAllBooking: async function (status, page) {
         const limit = 5;
         const skip = (page - 1) * limit;
         let statusFilter = undefined;

@@ -56,7 +56,7 @@ Sửa khách sạn (Put) : http://localhost:7000/api/admin/updateHotel/:id
 
 Xóa khách sạn (Delete) : http://localhost:7000/api/admin/deleteHotel/:id
 
-Lấy danh sách khách sạn (Get) : http://localhost:7000/api/admin/getAllHotels có thanh select khi hk chọn thì gọi http://localhost:7000/api/admin/getAllHotels còn khi bấm vô khu vực bất kì http://localhost:7000/api/admin/getAllHotels?locationId=3&page=1 có phân trang
+Lấy danh sách khách sạn (Get) : http://localhost:7000/api/admin/getAllHotels có thanh select khi hk chọn thì gọi http://localhost:7000/api/admin/getAllHotels còn khi bấm vô khu vực bất kì http://localhost:7000/api/admin/getAllHotels?locationId=3&page=1 có phân trang có thể tìm kiếm theo tên key là hotelName
 
 Lấy danh sách tên khách sạn (Get) : http://localhost:7000/api/admin/getAllHotelNames
 
