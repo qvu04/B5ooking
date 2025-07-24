@@ -129,7 +129,7 @@ export const adminController = {
         try {
             const locationId = parseInt(req.query.locationId) || "";
             const page = parseInt(req.query.page) || 1
-            const hotels = await adminService.getAllHotels(locationId,page);
+            const hotels = await adminService.getAllHotels(locationId, page);
             const response = responseSuccess(hotels, "Lấy danh sách khách sạn thành công");
             res.status(response.status).json(response);
         } catch (err) {
@@ -167,7 +167,7 @@ export const adminController = {
         const hotelId = parseInt(req.params.hotelId);
         const page = parseInt(req.query.page) || 1
         try {
-            const hotelImages = await adminService.getHotelImages(hotelId,page);
+            const hotelImages = await adminService.getHotelImages(hotelId, page);
             const response = responseSuccess(hotelImages, "Lấy danh sách ảnh phụ của khách sạn thành công");
             res.status(response.status).json(response);
         } catch (err) {
@@ -175,7 +175,7 @@ export const adminController = {
             next(err);
         }
     },
-     getAllHotelImages: async function (req, res, next) {
+    getAllHotelImages: async function (req, res, next) {
         try {
             const page = parseInt(req.query.page) || 1
             const hotelImages = await adminService.getAllHotelImages(page);
@@ -328,18 +328,18 @@ export const adminController = {
         }
     },
     // Lấy danh sách phòng 
-    getAllRooms : async function (req,res,next) {
-       try {
-        const hotelId = parseInt(req.query.hotelId) || "";
-        const page = parseInt(req.query.page) || 1;
-         const rooms = await adminService.getAllRooms(hotelId,page);
-          const response = responseSuccess(rooms, "Lấy danh sách phòng thành công");
+    getAllRooms: async function (req, res, next) {
+        try {
+            const hotelId = parseInt(req.query.hotelId) || "";
+            const page = parseInt(req.query.page) || 1;
+            const rooms = await adminService.getAllRooms(hotelId, page);
+            const response = responseSuccess(rooms, "Lấy danh sách phòng thành công");
             res.status(response.status).json(response);
-       } catch (err) {
+        } catch (err) {
             console.error("Lấy danh sách phòng không thành công", err);
             next(err);
         }
-        
+
     },
     // Tạo blog
     createBlog: async function (req, res, next) {
@@ -421,7 +421,7 @@ export const adminController = {
             const currentUser = req.user.id; // Lấy id của người dùng hiện tại
             const page = parseInt(req.query.page) || 1
             const fullName = req.query.fullName || "";
-            const users = await adminService.getAllUsers(currentUser,page,fullName);
+            const users = await adminService.getAllUsers(currentUser, page, fullName);
             const response = responseSuccess(users, "Lấy danh sách người dùng thành công");
             res.status(response.status).json(response);
         } catch (error) {
@@ -441,39 +441,40 @@ export const adminController = {
             next(err);
         }
     },
-      getAllBlogs: async function (req, res, next) {
+    getAllBlogs: async function (req, res, next) {
         try {
-          const locationId = parseInt(req.query.locationId) || "";
-          const page = parseInt(req.query.page) || 1;
-          const blogs = await adminService.getAllBlogs(locationId,page);
-          const response = responseSuccess(blogs, "Lấy danh sách blog thành công");
-          res.status(response.status).json(response);
+            const locationId = parseInt(req.query.locationId) || "";
+            const page = parseInt(req.query.page) || 1;
+            const blogs = await adminService.getAllBlogs(locationId, page);
+            const response = responseSuccess(blogs, "Lấy danh sách blog thành công");
+            res.status(response.status).json(response);
         } catch (err) {
-          console.error("Lấy danh sách blog không thành công", err);
-          next(err);
+            console.error("Lấy danh sách blog không thành công", err);
+            next(err);
         }
-      },
-      getAllHotelNames : async function (req,res,next) {
-       try {
-         const hotelNames = await adminService.getAllHotelNames();
-          const response = responseSuccess(hotelNames, "Lấy danh sách tên khách sạn thành công");
-          res.status(response.status).json(response);
-              } catch (err) {
-          console.error("Lấy danh sách tên khách sạn không thành công", err);
-          next(err);
+    },
+    getAllHotelNames: async function (req, res, next) {
+        try {
+            const hotelNames = await adminService.getAllHotelNames();
+            const response = responseSuccess(hotelNames, "Lấy danh sách tên khách sạn thành công");
+            res.status(response.status).json(response);
+        } catch (err) {
+            console.error("Lấy danh sách tên khách sạn không thành công", err);
+            next(err);
         }
-      },
+    },
 
-        getAllBooking : async function (req,res,next) {
-       try {
-        const page = parseInt(req.query.page) || 1
-         const bookings = await adminService.getAllBooking(page);
-          const response = responseSuccess(bookings, "Lấy danh sách bookings thành công");
-          res.status(response.status).json(response);
-              } catch (err) {
-          console.error("Lấy danh sách bookings không thành công", err);
-          next(err);
+    getAllBooking: async function (req, res, next) {
+        try {
+            const status = req.query.status;
+            const page = parseInt(req.query.page) || 1
+            const bookings = await adminService.getAllBooking(status, page);
+            const response = responseSuccess(bookings, `Lấy danh sách bookings ở trạng thái ${status ? status : "CONFIRMED & FINISHED"}  thành công`);
+            res.status(response.status).json(response);
+        } catch (err) {
+            console.error("Lấy danh sách bookings không thành công", err);
+            next(err);
         }
-      }
+    }
 
 }

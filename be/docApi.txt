@@ -90,7 +90,7 @@ Lấy doanh thu theo ngày hoặc tháng hoặc năm dùng cho biểu cột ho�
 
 Lấy phần trăm doanh thu của các khách sạn dùng cho biểu đồ tròn (Get) : http://localhost:7000/api/dashBoard/getHotelRevenuePercentage
 
-Lấy danh sách booking các trạng thái confirm và finish (Get) : http://localhost:7000/api/admin/getAllBooking
+Lấy danh sách booking các trạng thái confirm và finish (Get) : http://localhost:7000/api/admin/getAllBooking này là lấy tất cả 2 trạng thái còn muốn lấy 1 trong 2 trạng thái thì http://localhost:7000/api/admin/getAllBooking?status=CONFIRMED 
 Api công khai
 http://localhost:7000/api/blog/
 

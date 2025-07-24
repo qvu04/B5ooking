@@ -13,29 +13,31 @@ export const dashBoardController = {
         }
     },
 
-    getGroupedRevenue: async function (req, res, next) {
-        try {
-            let { type = 'day', fromDate, toDate } = req.query;
+    getGroupedRevenue: async function (req, res, next) { 
+    try {
+        let { type = 'day', fromDate, toDate } = req.query;
 
-            if (!fromDate || !toDate) {
-                return res.status(400).json({ message: "fromDate và toDate là bắt buộc" });
-            }
-
-            const start = new Date(fromDate);
-            const end = new Date(toDate);
-
-            if (isNaN(start.getTime()) || isNaN(end.getTime())) {
-                return res.status(400).json({ message: "fromDate hoặc toDate không hợp lệ" });
-            }
-
-            const result = await dashboardService.getGroupedRevenue(type, fromDate, toDate);
-            const response = responseSuccess(result, " Thống kê doanh thu theo ngày / tuần / tháng thành công");
-            res.status(response.status).json(response);
-        } catch (err) {
-            console.error(" Thống kê doanh thu thất bại:", err);
-            next(err);
+        if (!fromDate || !toDate) {
+            return res.status(400).json({ message: "fromDate và toDate là bắt buộc" });
         }
-    },
+
+        const start = new Date(fromDate);
+        const end = new Date(toDate);
+        end.setHours(23, 59, 59, 999); // thêm dòng này nếu muốn bao phủ tại controller
+
+        if (isNaN(start.getTime()) || isNaN(end.getTime())) {
+            return res.status(400).json({ message: "fromDate hoặc toDate không hợp lệ" });
+        }
+
+        const result = await dashboardService.getGroupedRevenue(type, fromDate, toDate);
+        const response = responseSuccess(result, `Thống kê doanh thu theo ${type} thành công`);
+        res.status(response.status).json(response);
+    } catch (err) {
+        console.error(`Thống kê doanh thu theo ${type} thất bại:`, err);
+        next(err);
+    }
+},
+
 
     getHotelRevenuePercentage: async function (req, res, next) {
         try {

@@ -1134,14 +1134,20 @@ export const adminService = {
         };
     },
 
-    getAllBooking: async function (page) {
+    getAllBooking: async function (status,page) {
         const limit = 5;
-        const skip = (page - 1) * limit
+        const skip = (page - 1) * limit;
+        let statusFilter = undefined;
+        if (status && status !== 'ALL') {
+            statusFilter = status;
+        } else {
+            statusFilter = { in: ['CONFIRMED', 'FINISHED'] };
+        }
         const bookings = await prisma.booking.findMany({
             take: limit,
             skip: skip,
             where: {
-                status: { in: ['CONFIRMED', 'FINISHED'] }
+                status: statusFilter
             },
             include: {
                 user: true,
@@ -1154,7 +1160,7 @@ export const adminService = {
         })
         const total = await prisma.booking.count({
             where: {
-                status: { in: ['CONFIRMED', 'FINISHED'] }
+                status: statusFilter
             },
         })
         return {
