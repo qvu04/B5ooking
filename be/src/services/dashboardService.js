@@ -28,65 +28,69 @@ export const dashboardService = {
     },
 
     getGroupedRevenue: async function (type = 'day', fromDate, toDate) {
-        const start = new Date(fromDate);
-        const end = new Date(toDate);
+    const start = new Date(fromDate);
+    const end = new Date(toDate);
+    end.setHours(23, 59, 59, 999); // bao phủ hết ngày toDate
 
-        if (type === 'day') {
-            const data = await prisma.booking.groupBy({
-                by: ['create_At'],
-                _sum: { totalPrice: true },
-                where: {
-                     status: { in: ['CONFIRMED', 'FINISHED'] },
-                    create_At: {
-                        gte: start,
-                        lte: end
-                    },
-                },
-                orderBy: { create_At: 'asc' }
-            });
+    if (type === 'day') {
+        const data = await prisma.booking.groupBy({
+            by: ['create_At'],
+            _sum: { totalPrice: true },
+            where: {
+                status: { in: ['CONFIRMED', 'FINISHED'] },
+                create_At: {
+                    gte: start,
+                    lte: end
+                }
+            },
+            orderBy: { create_At: 'asc' }
+        });
 
-            return data.map(item => ({
-                label: item.create_At.toISOString().split('T')[0],
-                revenue: item._sum.totalPrice || 0
-            }));
-        }
-        if (type === 'week') {
-            const data = await prisma.$queryRaw`
-                SELECT
-                YEARWEEK(create_At,1) AS Week,
-                MIN(DATE(create_At)) AS weekStart,
-                 SUM(totalPrice) AS revenue
-                  FROM Booking
-                  WHERE status IN ('CONFIRMED', 'FINISHED')
-                    AND create_At BETWEEN ${start} AND ${end}
-                          GROUP BY YEARWEEK(create_At, 1)
-                        ORDER BY week ASC;
-                `;
-            return data.map(item => ({
-                label: item.weekStart.toISOString().split('T')[0],
-                revenue: Number(item.revenue),
-            }));
-        };
+        return data.map(item => ({
+            label: item.create_At.toISOString().split('T')[0],
+            revenue: item._sum.totalPrice || 0
+        }));
+    }
 
-        if (type === 'month') {
-            const data = await prisma.$queryRaw`
+    if (type === 'week') {
+        const data = await prisma.$queryRaw`
             SELECT
-            DATE_FORMAT(create_At, '%Y-%m') AS month,
-            SUM(totalPrice) as revenue
+                YEARWEEK(create_At, 1) AS week,
+                MIN(DATE(create_At)) AS weekStart,
+                SUM(totalPrice) AS revenue
             FROM Booking
             WHERE status IN ('CONFIRMED', 'FINISHED')
-            AND create_At BETWEEN ${start} AND ${end}
+              AND create_At BETWEEN ${start} AND ${end}
+            GROUP BY YEARWEEK(create_At, 1)
+            ORDER BY week ASC;
+        `;
+
+        return data.map(item => ({
+            label: item.weekStart.toISOString().split('T')[0],
+            revenue: Number(item.revenue)
+        }));
+    }
+
+    if (type === 'month') {
+        const data = await prisma.$queryRaw`
+            SELECT
+                DATE_FORMAT(create_At, '%Y-%m') AS month,
+                SUM(totalPrice) AS revenue
+            FROM Booking
+            WHERE status IN ('CONFIRMED', 'FINISHED')
+              AND create_At BETWEEN ${start} AND ${end}
             GROUP BY month
             ORDER BY month ASC;
-            `
+        `;
 
-            return data.map(item => ({
-                label: item.month, // "2025-06"
-                revenue: Number(item.revenue),
-            }));
-        }
+        return data.map(item => ({
+            label: item.month,
+            revenue: Number(item.revenue)
+        }));
+    }
 
-    },
+    return []; 
+},
    getHotelRevenuePercentage: async function (fromDate, toDate) {
   const start = new Date(fromDate);
   const end = new Date(toDate);
