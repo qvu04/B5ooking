@@ -1,4 +1,5 @@
 import { https } from "./configService";
+import { BookingStatusEnum } from '@/app/types/bookingType';
 
 export const getRevenueChartService = (type: "day" | "week" | "month") => {
     const now = new Date();
@@ -57,6 +58,7 @@ export const getAllHotelService = (page: number, locationId: number) => {
 export const getAllRoomService = (page: number, hotelId: number) => {
     return https.get(`/api/admin/getAllRooms?hotelId=${hotelId}&page=${page}`);
 }
-export const getAllBookingService = () => {
-    return https.get("/api/admin/getAllBooking");
+export const getAllBookingService = (page: number, status?: BookingStatusEnum | "ALL") => {
+    const statusParam = status && status !== "ALL" ? `&status=${status}` : "";
+    return https.get(`/api/admin/getAllBooking?page=${page}${statusParam}`);
 }

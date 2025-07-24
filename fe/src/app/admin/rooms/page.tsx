@@ -48,7 +48,7 @@ export default function RoomsManager() {
             {/* Lọc đang bật */}
             {hotelId !== null && (
                 <div className="mb-4">
-                    <span className="text-blue-600 font-semibold mr-2">Đang lọc theo khu vực </span>
+                    <span className="text-blue-600 font-semibold mr-2">Đang lọc theo khách sạn </span>
                     <button
                         className="text-red-600 underline"
                         onClick={handleResetFilter}

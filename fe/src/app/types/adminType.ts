@@ -36,9 +36,31 @@ export interface RoomManager {
         name: string;
     }
 }
+export interface BookingManger {
+    id: number;
+    room: {
+        id: number;
+        name: string;
+        image: string;
+        type: string;
+    }
+    guests: number;
+    totalPrice: number
+    status: string;
+    checkIn: string;
+    checkOut: string;
+    user: {
+        id: number;
+        fullName: string;
+    }
+}
 export interface HotelRevenue {
     hotelId: number;
     name: string;
     revenue: number;
     precent: number;
+}
+export interface PaymentRevenue {
+    label: string;
+    revenue: number;
 }

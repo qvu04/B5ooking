@@ -1,100 +1,32 @@
 'use client';
-
 import { useEffect, useState } from 'react';
-import {
-    Card, CardContent, CardHeader, CardTitle,
-} from '@/components/ui/card';
-import {
-    Select, SelectTrigger, SelectValue, SelectContent, SelectItem,
-} from '@/components/ui/select';
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
 import { getRevenueChartService } from '@/app/api/adminService';
-import { Line } from 'react-chartjs-2';
-import {
-    Chart as ChartJS, LineElement, CategoryScale, LinearScale,
-    PointElement, Tooltip, Legend,
-} from 'chart.js';
+import { PaymentRevenue } from '@/app/types/adminType';
 
-ChartJS.register(LineElement, CategoryScale, LinearScale, PointElement, Tooltip, Legend);
 
-type RevenueData = {
-    label: string;
-    total: number;
-};
-
-export default function RevenueChart() {
+export default function RevenueBarChart() {
     const [type, setType] = useState<'day' | 'week' | 'month'>('month');
-    const [dataAPI, setDataAPI] = useState<RevenueData[]>([]);
+    const [data, setData] = useState<PaymentRevenue[]>([]);
 
     useEffect(() => {
-        getRevenueChartService(type)
-            .then((res) => {
-                if (res.data && Array.isArray(res.data.data)) {
-                    setDataAPI(res.data.data);
-                } else {
-                    setDataAPI([]);
-                }
-            })
-            .catch((err) => {
+        const fetchData = async () => {
+            try {
+                const res = await getRevenueChartService(type);
+                setData(res.data.data || []);
+            } catch (err) {
                 console.error(err);
-                setDataAPI([]);
-            });
+                setData([]);
+            }
+        };
+        fetchData();
     }, [type]);
 
-    const chartData = {
-        labels: dataAPI?.map((item) => item.label) || [],
-        datasets: [
-            {
-                label: 'Doanh thu',
-                data: dataAPI?.map((item) => item.total) || [],
-                fill: false,
-                borderColor: '#4f46e5',
-                tension: 0.3,
-                pointBackgroundColor: '#4f46e5',
-                pointBorderColor: '#fff',
-                pointRadius: 5,
-                pointHoverRadius: 7,
-            },
-        ],
-    };
-
-    const chartOptions = {
-        responsive: true,
-        plugins: {
-            legend: {
-                display: true,
-                position: 'top' as const,
-            },
-            tooltip: {
-                callbacks: {
-                    label: (context: any) =>
-                        `Doanh thu: ${context.raw.toLocaleString('vi-VN')} VND`,
-                },
-            },
-        },
-        scales: {
-            y: {
-                type: 'linear' as const,
-                beginAtZero: true,
-                ticks: {
-                    callback: function (value: string | number) {
-                        if (typeof value === 'number') {
-                            return `${value.toLocaleString('vi-VN')} VND`;
-                        }
-                        return value;
-                    },
-                },
-            },
-            x: {
-                type: 'category' as const,
-            },
-        },
-    };
-
-
-
     return (
-        <Card className="w-full mb-6">
-            <CardHeader className="flex flex-row items-center justify-between">
+        <Card className="h-full flex flex-col">
+            <CardHeader>
                 <CardTitle>Thống kê doanh thu</CardTitle>
                 <Select value={type} onValueChange={(value: 'day' | 'week' | 'month') => setType(value)}>
                     <SelectTrigger className="w-[140px]">
@@ -107,9 +39,24 @@ export default function RevenueChart() {
                     </SelectContent>
                 </Select>
             </CardHeader>
-            <CardContent>
-                {dataAPI.length > 0 ? (
-                    <Line data={chartData} options={chartOptions} />
+
+            <CardContent className="h-[700px]">
+                {data.length > 0 ? (
+                    <ResponsiveContainer width="100%" height="100%">
+                        <BarChart data={data}>
+                            <CartesianGrid strokeDasharray="3 3" />
+                            <XAxis dataKey="label" />
+                            <YAxis
+                                tickFormatter={(value) => `${(value / 1_000_000).toFixed(1)}tr`}
+                            />
+                            <Tooltip
+                                formatter={(value: number) =>
+                                    `${value.toLocaleString('vi-VN')} VND`
+                                }
+                            />
+                            <Bar dataKey="revenue" fill="#4f46e5" radius={[6, 6, 0, 0]} />
+                        </BarChart>
+                    </ResponsiveContainer>
                 ) : (
                     <p className="text-center text-muted-foreground py-10">Không có dữ liệu doanh thu</p>
                 )}
