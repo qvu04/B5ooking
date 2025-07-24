@@ -30,5 +30,7 @@ export const postBookingRoom = (data: {
 }
 export const deleteBookingRoom = (id: number) => {
     return https.post(`/api/user/CancelBooking/${id}`);
-
+}
+export const paymentBookingService = (id: number) => {
+    return https.post(`/api/user/ConfirmBooking/${id}`);
 }

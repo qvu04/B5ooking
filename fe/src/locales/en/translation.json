@@ -18,11 +18,20 @@
         "search_bar_text": "Where will you go next?",
         "search_bar_checkIn": "Check In",
         "search_bar_checkOut": "Check Out",
-        "plan_description": "Choose a destination, pack your bags, and start your journey!",
-        "promo_title": "Promotion",
-        "promo_1": "Special discounts and offers just for you",
-        "promo_2": "Buy over 10,000,000 VND",
-        "promo_3": "With many attractive offers for a better experience",
-        "promo_button": "Grab Now"
+        "popular_travel_tile": "Travel more, spend less",
+        "popular_travel_text_1": "Log in to save",
+        "popular_travel_text_2":" Just sign up to save", 
+        "popular_travel_text_discount":"10%", 
+        "popular_travel_text_2_1":"or more on participating properties", 
+        "popular_travel_button_1":"Log in",        
+        "popular_travel_button_2":"Sign up",        
+        "popular_travel_text_3":"Book now, pay at the property",
+        "popular_travel_free":"FREE",
+        "popular_travel_text_4":"book now, pay at the property",
+        "popular_travel_text_5":"Over 2 million properties worldwide",
+        "popular_travel_text_6":"Hotels, guest houses, apartments, and many other types of stays…",
+        "popular_travel_text_7":"Reliable customer service available 24/7",
+        "popular_travel_text_8":"We’re always here to help"
+        
     }
 }

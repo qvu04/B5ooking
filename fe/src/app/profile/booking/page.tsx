@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { deleteBookingRoom, getBookingByStatus } from "@/app/api/bookingService";
+import { deleteBookingRoom, getBookingByStatus, paymentBookingService } from "@/app/api/bookingService";
 import { BookingItem, BookingStatusEnum } from "@/app/types/bookingType";
 import {
     AlertDialog,
@@ -20,7 +20,8 @@ export default function Booking() {
     const [bookings, setBookings] = useState<BookingItem[]>([]);
     const [filteredStatus, setFilteredStatus] = useState<BookingStatusEnum | "ALL">("ALL");
     const [selectedBookingId, setSelectedBookingId] = useState<number | null>(null);
-    const [isOpen, setIsOpen] = useState(false);
+    const [isCancelDialogOpen, setIsCancelDialogOpen] = useState(false);
+    const [isPaymentDialogOpen, setIsPaymentDialogOpen] = useState(false);
 
     const fetchBookings = async () => {
         try {
@@ -43,21 +44,37 @@ export default function Booking() {
 
     const handleOpenCancelDialog = (id: number) => {
         setSelectedBookingId(id);
-        setIsOpen(true);
+        setIsCancelDialogOpen(true);
     };
-
+    const handleOpenPaymentDialog = (id: number) => {
+        setSelectedBookingId(id);
+        setIsPaymentDialogOpen(true);
+    };
     const confirmCancelBooking = async () => {
         if (!selectedBookingId) return;
 
         try {
             await deleteBookingRoom(selectedBookingId);
             setBookings(prev => prev.filter(b => b.id !== selectedBookingId));
-            setIsOpen(false);
+            setIsCancelDialogOpen(false);
             toast.success("Huỷ đặt phòng thành công.");
             fetchBookings();
         } catch (err) {
             console.error("Lỗi khi huỷ đặt phòng:", err);
             toast.error("Huỷ đặt phòng thất bại.");
+        }
+    };
+    const confirmPaymentBooking = async () => {
+        if (!selectedBookingId) return;
+
+        try {
+            await paymentBookingService(selectedBookingId);
+            toast.success("Thanh toán thành công.");
+            setIsPaymentDialogOpen(false);
+            fetchBookings(); // cập nhật lại danh sách sau khi thanh toán
+        } catch (error) {
+            console.log("✌️error --->", error);
+            toast.error("Thanh toán thất bại.");
         }
     };
 
@@ -109,7 +126,7 @@ export default function Booking() {
                                 {item.status === BookingStatusEnum.PENDING && (
                                     <div className="mt-4 flex gap-3">
                                         <button
-                                            // onClick={() => handlePayment(item.id)}
+                                            onClick={() => handleOpenPaymentDialog(item.id)}
                                             className="px-4 py-2 cursor-pointer rounded-lg bg-green-500 text-white font-medium hover:bg-green-600 transition"
                                         >
                                             Thanh toán
@@ -158,7 +175,7 @@ export default function Booking() {
             <h1 className="text-3xl font-bold mb-6 text-[#222]">Lịch sử đặt phòng</h1>
             {renderFilterButtons()}
             {renderBookingList()}
-            <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
+            <AlertDialog open={isCancelDialogOpen} onOpenChange={setIsCancelDialogOpen}>
                 <AlertDialogContent>
                     <AlertDialogHeader>
                         <AlertDialogTitle>Bạn có chắc muốn huỷ?</AlertDialogTitle>
@@ -170,6 +187,22 @@ export default function Booking() {
                         <AlertDialogCancel>Đóng</AlertDialogCancel>
                         <AlertDialogAction onClick={confirmCancelBooking}>
                             Đồng ý huỷ
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
+            <AlertDialog open={isPaymentDialogOpen} onOpenChange={setIsPaymentDialogOpen}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Xác nhận thanh toán?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            Bạn có chắc chắn muốn thanh toán đơn đặt phòng này không?
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel>Đóng</AlertDialogCancel>
+                        <AlertDialogAction onClick={confirmPaymentBooking}>
+                            Xác nhận thanh toán
                         </AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>

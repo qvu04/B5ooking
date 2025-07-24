@@ -40,7 +40,7 @@ const PopularHotel = () => {
     if (!mounted) return null;
     return (
         <div className="px-2 md:px-10 py-10 max-w-7xl mx-auto">
-            <h2 className="text-xl md:text-2xl font-bold italic mb-4 pl-4 md:pl-6 ">
+            <h2 className="text-xl md:text-2xl font-bold mb-4 pl-4 md:pl-6 ">
                 {t("home.popularHotels")}
             </h2>
 

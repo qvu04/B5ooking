@@ -16,7 +16,7 @@ export default function SidebarMenuAdmin() {
     const pathname = usePathname();
 
     return (
-        <aside className="w-64 p-6 border-r min-h-screen bg-white dark:bg-zinc-900 dark:border-zinc-800 shadow-md">
+        <aside className="fixed w-64 p-6 border-r min-h-screen bg-white dark:bg-zinc-900 dark:border-zinc-800 shadow-md">
             {/* Logo */}
             <Link href="/" className="flex items-center space-x-2 mb-10">
                 <img
