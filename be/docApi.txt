@@ -50,7 +50,7 @@ Xóa tiện nghi (Delete) : http://localhost:7000/api/admin/deleteAmenity/:id
 
 Lấy danh sách tiện nghi (Get) : http://localhost:7000/api/admin/getAllAmenities
 
-Tạo khách sạn (Post) : http://localhost:7000/api/admin/createHotel truyền name, address, description, locationId, defaultRating, amenities truyền ảnh thì key imageFile
+Tạo khách sạn (Post) : http://localhost:7000/api/admin/createHotel truyền name, address, description, locationId, defaultRating, amenities truyền ảnh thì key imageFile thêm tối đa 30 ảnh
 
 Sửa khách sạn (Put) : http://localhost:7000/api/admin/updateHotel/:id
 
@@ -62,7 +62,7 @@ Lấy danh sách tên khách sạn (Get) : http://localhost:7000/api/admin/getAl
 
 Lấy tất cả các blog (Get) : http://localhost:7000/api/admin/getAllBlogs có thanh select khi hk chọn thì gọi http://localhost:7000/api/admin/getAllBlogs còn khi bấm vô khu vực bất kì http://localhost:7000/api/admin/getAllBlogs?locationId=3&page=1 có phân trang
 
-Tạo phòng (Post) : http://localhost:7000/api/admin/createRoom  truyền hotelId, name, type, description, price, discount, maxGuests, amenities truyền ảnh thì key là imageFile
+Tạo phòng (Post) : http://localhost:7000/api/admin/createRoom  truyền hotelId, name, type, description, price, discount, maxGuests, amenities truyền ảnh thì key là imageFile thêm tối đa 5 ảnh
 
 Sửa phòng (Put) : http://localhost:7000/api/admin/updateRoom/:id
 
@@ -103,7 +103,7 @@ Lấy tất cả các ảnh phụ của tất cả khách sạn (Get) : http://l
 
 Lấy danh sách tên khách sạn (Get) : http://localhost:7000/api/admin/getAllHotelNames
 
-Tạo ảnh phụ của khách sạn theo id khách sạn đó (Get) : http://localhost:7000/api/admin/addHotelImage/:hotelId
+Tạo ảnh phụ của khách sạn theo id khách sạn đó (Get) : http://localhost:7000/api/admin/addHotelImage/:hotelId truyền ảnh thì key imageFile thêm đc tối đa 30 ảnh
 
 Sửa ảnh phụ của khách sạn theo id ảnh phụ muốn sửa đó (Post) : http://localhost:7000/api/admin/updateHotelImage/:id
 
@@ -113,7 +113,7 @@ Lấy danh sách tên phòng có trả về tên khách sạn của những phò
 
 Lấy tất cả các ảnh phụ của tất cả phòng : http://localhost:7000/api/admin/getRoomImages còn muốn lọc phòng cụ thể thì http://localhost:7000/api/admin/getRoomImages?roomId
 
-Tạo ảnh phụ của phòng theo id phòng đó (Post) : http://localhost:7000/api/admin/addRoomImage/:roomId
+Tạo ảnh phụ của phòng theo id phòng đó (Post) : http://localhost:7000/api/admin/addRoomImage/:roomId truyền ảnh thì key imageFile thêm đc tối đa 5 ảnh
 
 Sửa ảnh phụ của phòng theo id phòng đó (Put) : http://localhost:7000/api/admin/updateRoomImage/:id
 
