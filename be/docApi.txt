@@ -88,15 +88,38 @@ Lấy tổng doanh thu , khách sạn , người dùng (ROle :User), phòng (Get
 
 Lấy doanh thu theo ngày hoặc tháng hoặc năm dùng cho biểu cột hoặc đường (Get): http://localhost:7000/api/dashBoard/getGroupedRevenue
 
-<<<<<<< HEAD
+
 Lấy doanh thu theo ngày hoặc tháng hoặc năm dùng cho biểu cột hoặc đường (Get): http://localhost:7000/api/dashboard/getGroupedRevenue
 
 Lấy phần trăm doanh thu của các khách sạn dùng cho biểu đồ tròn (Get) : http://localhost:7000/api/admin/getHotelRevenuePercentage
-=======
+
 Lấy phần trăm doanh thu của các khách sạn dùng cho biểu đồ tròn (Get) : http://localhost:7000/api/dashBoard/getHotelRevenuePercentage
->>>>>>> ca5ffdc06be305eedff4a2ee90428129cfa4e04a
+
 
 Lấy danh sách booking các trạng thái confirm và finish (Get) : http://localhost:7000/api/admin/getAllBooking này là lấy tất cả 2 trạng thái còn muốn lấy 1 trong 2 trạng thái thì http://localhost:7000/api/admin/getAllBooking?status=CONFIRMED 
+
+Phần ảnh phụ của hotel và room:
+Lấy tất cả các ảnh phụ của tất cả khách sạn (Get) : http://localhost:7000/api/admin/getHotelImages còn muốn lọc ra ảnh phụ của khách sạn cụ thể http://localhost:7000/api/admin/getHotelImages?hotelId
+
+Lấy danh sách tên khách sạn (Get) : http://localhost:7000/api/admin/getAllHotelNames
+
+Tạo ảnh phụ của khách sạn theo id khách sạn đó (Get) : http://localhost:7000/api/admin/addHotelImage/:hotelId
+
+Sửa ảnh phụ của khách sạn theo id ảnh phụ muốn sửa đó (Post) : http://localhost:7000/api/admin/updateHotelImage/:id
+
+Xóa ảnh phụ của khách sạn theo id ảnh phụ muốn sửa đó (Delete) : http://localhost:7000/api/admin/deleteHotelImage/:id
+
+Lấy danh sách tên phòng có trả về tên khách sạn của những phòng đó (Get) : http://localhost:7000/api/admin/getAllRoomName
+
+Lấy tất cả các ảnh phụ của tất cả phòng : http://localhost:7000/api/admin/getRoomImages còn muốn lọc phòng cụ thể thì http://localhost:7000/api/admin/getRoomImages?roomId
+
+Tạo ảnh phụ của phòng theo id phòng đó (Post) : http://localhost:7000/api/admin/addRoomImage/:roomId
+
+Sửa ảnh phụ của phòng theo id phòng đó (Put) : http://localhost:7000/api/admin/updateRoomImage/:id
+
+Xóa ảnh phụ của phòng theo id phòng đó (Delete) : http://localhost:7000/api/admin/deleteRoomImage/:id
+
+
 Api công khai
 http://localhost:7000/api/blog/
 

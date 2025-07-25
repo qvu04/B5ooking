@@ -165,7 +165,7 @@ export const adminController = {
     },
     // Lấy danh sách ảnh phụ của khách sạn theo hotelId
     getHotelImages: async function (req, res, next) {
-        const hotelId = parseInt(req.params.hotelId);
+        const hotelId = parseInt(req.query.hotelId);
         const page = parseInt(req.query.page) || 1
         try {
             const hotelImages = await adminService.getHotelImages(hotelId, page);
@@ -173,6 +173,18 @@ export const adminController = {
             res.status(response.status).json(response);
         } catch (err) {
             console.error("Lấy danh sách ảnh phụ khách sạn đó không thành công", err);
+            next(err);
+        }
+    },
+     getRoomImages: async function (req, res, next) {
+        const roomId = parseInt(req.query.roomId);
+        const page = parseInt(req.query.page) || 1
+        try {
+            const roomImages = await adminService.getRoomImages(roomId, page);
+            const response = responseSuccess(roomImages, "Lấy danh sách ảnh phụ của phòng thành công");
+            res.status(response.status).json(response);
+        } catch (err) {
+            console.error("Lấy danh sách ảnh phụ phòng không thành công", err);
             next(err);
         }
     },
@@ -184,6 +196,16 @@ export const adminController = {
             res.status(response.status).json(response);
         } catch (err) {
             console.error("Lấy danh sách ảnh phụ khách sạn không thành công", err);
+            next(err);
+        }
+    },
+       getAllRoomName: async function (req, res, next) {
+        try {
+            const roomName = await adminService.getAllRoomName();
+            const response = responseSuccess(roomName, "Lấy danh sách tên phòng thành công thành công");
+            res.status(response.status).json(response);
+        } catch (err) {
+            console.error("Lấy danh sách tên phòng thành công không thành công", err);
             next(err);
         }
     },
@@ -286,7 +308,7 @@ export const adminController = {
     },
     // Tạo ảnh phụ cho phòng
     addRoomImage: async function (req, res, next) {
-        const roomId = parseInt(req.params.id);
+        const roomId = parseInt(req.params.roomId);
         const imageFile = req.files?.map(file => file.path) || [];
         if (!imageFile || imageFile.length === 0) {
             throw new BadrequestException("Ảnh không tải lên");

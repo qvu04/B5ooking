@@ -37,7 +37,9 @@ router.get('/getAllRooms',authMiddleware,checkAdmin, adminController.getAllRooms
 // router.get('/getHotelById/:id',authMiddleware,checkAdmin,adminController.getHotelById);
 
 // lấy danh sách ảnh phụ của khách sạn
-router.get('/getHotelImages/:hotelId',authMiddleware,checkAdmin,adminController.getHotelImages);
+router.get('/getHotelImages',authMiddleware,checkAdmin,adminController.getHotelImages);
+router.get('/getRoomImages',authMiddleware,checkAdmin,adminController.getRoomImages);
+router.get('/getAllRoomName',authMiddleware,checkAdmin,adminController.getAllRoomName);
 router.get('/getAllHotelImages',authMiddleware,checkAdmin,adminController.getAllHotelImages);
 // Thêm sửa xóa ảnh phụ của khách sạn
 router.post('/addHotelImage/:hotelId',upload.array('imageFile',30),authMiddleware,checkAdmin,adminController.addHotelImage);
@@ -53,7 +55,7 @@ router.put('/updateRoom/:id',upload.single('imageFile'),authMiddleware,checkAdmi
 router.delete('/deleteRoom/:id',authMiddleware,checkAdmin,adminController.deleteRoom);
 
 // Tạo sửa xóa ảnh phụ của phòng 
-router.post('/addRoomImage/:id',upload.array('imageFile',5),authMiddleware,checkAdmin,adminController.addRoomImage);
+router.post('/addRoomImage/:roomId',upload.array('imageFile',5),authMiddleware,checkAdmin,adminController.addRoomImage);
 router.put('/updateRoomImage/:id',upload.single('imageFile'),authMiddleware,checkAdmin,adminController.updateRoomImage);
 router.delete('/deleteRoomImage/:id',authMiddleware,checkAdmin,adminController.deleteRoomImage);
 
