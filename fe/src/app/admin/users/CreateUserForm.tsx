@@ -39,7 +39,6 @@ export default function CreateUserForm({ onSuccess }: Props) {
     };
     return (
         <form onSubmit={handleSubmit} className="space-y-4 max-w-md p-4 border rounded-xl shadow-md">
-            <h2 className="text-xl font-bold">Tạo người dùng mới</h2>
             <input
                 type="text"
                 name="firstName"

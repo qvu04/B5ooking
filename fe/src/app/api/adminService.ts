@@ -67,7 +67,6 @@ export const putUpdateUSerService = (id: number, data: {
     firstName: string;
     lastName: string;
     email: string;
-    password?: string;
     role: string;
     gender: string;
 }) => {

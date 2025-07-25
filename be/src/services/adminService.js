@@ -1,5 +1,4 @@
 import { PrismaClient } from '@prisma/client';
-import bcrypt from 'bcrypt'
 import { ConflictException, NotFoundException } from '../helpers/exception.helper.js';
 import { createSlug } from '../utils/createSlug.js';
 import bcrypt from "bcrypt";

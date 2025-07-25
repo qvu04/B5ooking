@@ -15,7 +15,6 @@ export default function UpdateUserForm({ user, onSuccess }: Props) {
         firstName: user.firstName,
         lastName: user.lastName,
         email: user.email,
-        password: '',
         role: user.role,
         gender: user.gender,
     });
@@ -23,9 +22,7 @@ export default function UpdateUserForm({ user, onSuccess }: Props) {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         const payload = {
-            ...formData,
-            firstName: formData.firstName ?? "",
-            lastName: formData.lastName ?? "",
+            ...formData
         };
 
         try {
@@ -45,8 +42,6 @@ export default function UpdateUserForm({ user, onSuccess }: Props) {
 
     return (
         <form onSubmit={handleSubmit} className="space-y-4 bg-white max-w-md p-4 border rounded-xl shadow-md">
-            <h2 className="text-2xl font-semibold text-center mb-4">Cập nhật người dùng</h2>
-
             <div>
                 <label className="block text-sm font-medium mb-1">Họ</label>
                 <input
@@ -79,19 +74,6 @@ export default function UpdateUserForm({ user, onSuccess }: Props) {
                     className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
             </div>
-
-            <div>
-                <label className="block text-sm font-medium mb-1">Mật khẩu mới (nếu có)</label>
-                <input
-                    name="password"
-                    type="password"
-                    value={formData.password}
-                    onChange={handleChange}
-                    placeholder="Đổi mật khẩu (tuỳ chọn)"
-                    className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-            </div>
-
             <div>
                 <label className="block text-sm font-medium mb-1">Vai trò</label>
                 <select
