@@ -67,7 +67,7 @@ router.get('/getAllBlogs', authMiddleware,checkAdmin,adminController.getAllBlogs
 // Tạo người dùng 
 router.post('/createUser',authMiddleware,checkAdmin,adminController.createUser)
 // update người dùng 
-router.put('/updateUser/:id',authMiddleware,checkAdmin,adminController.updateUser)
+router.put('/updateUser/:id',upload.single('avatar'),authMiddleware,checkAdmin,adminController.updateUser)
 // Xóa người dùng 
 router.delete('/deleteUser/:id',authMiddleware,checkAdmin,adminController.deleteUser)
 

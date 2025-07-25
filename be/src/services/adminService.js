@@ -998,7 +998,7 @@ export const adminService = {
                 password: hashedPassword,
                 role: role,
                 gender: gender,
-                avatarPath: avatarPath || ""
+                avatar: avatarPath || ""
             }
         });
         return {
