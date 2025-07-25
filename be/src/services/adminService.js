@@ -2,6 +2,7 @@ import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcrypt'
 import { ConflictException, NotFoundException } from '../helpers/exception.helper.js';
 import { createSlug } from '../utils/createSlug.js';
+import bcrypt from "bcrypt";
 const prisma = new PrismaClient();
 
 export const adminService = {
@@ -995,6 +996,7 @@ export const adminService = {
             data: {
                 firstName: firstName,
                 lastName: lastName,
+                fullName: `${firstName} ${lastName}`,
                 email: email,
                 password: hashedPassword,
                 role: role,
@@ -1070,7 +1072,6 @@ export const adminService = {
             ...(fullName && {
                 fullName: {
                     contains: fullName.toLowerCase(),
-
                 }
             })
         };

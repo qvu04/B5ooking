@@ -49,15 +49,42 @@ export const getRevenuePieChart = (type: "day" | "week" | "month") => {
 export const getTotalService = () => {
     return https.get("/api/dashboard/getTotal");
 }
+// quản lý người dùng
 export const getAllUserService = (page: number, fullName: string = '') => {
-    return https.get(`/api/admin/getAllUsers?page=${page}$fullName=${fullName}`)
+    return https.get(`/api/admin/getAllUsers?page=${page}&fullName=${fullName}`)
 }
+export const postCreateUserService = (data: {
+    firstName: string;
+    lastName: string;
+    email: string;
+    password: string;
+    role: string;
+    gender: string;
+}) => {
+    return https.post("/api/admin/createUser", data);
+}
+export const putUpdateUSerService = (id: number, data: {
+    firstName: string;
+    lastName: string;
+    email: string;
+    password?: string;
+    role: string;
+    gender: string;
+}) => {
+    return https.put(`/api/admin/updateUser/${id}`, data);
+}
+export const deleteUserService = (id: number) => {
+    return https.delete(`/api/admin/deleteUser/${id}`);
+}
+// quản lý khách sạn
 export const getAllHotelService = (page: number, locationId: number) => {
     return https.get(`/api/admin/getAllHotels?locationId=${locationId}&page=${page}`);
 }
+//quản lý chỗ ở
 export const getAllRoomService = (page: number, hotelId: number) => {
     return https.get(`/api/admin/getAllRooms?hotelId=${hotelId}&page=${page}`);
 }
+// quản lý booking
 export const getAllBookingService = (page: number, status?: BookingStatusEnum | "ALL") => {
     const statusParam = status && status !== "ALL" ? `&status=${status}` : "";
     return https.get(`/api/admin/getAllBooking?page=${page}${statusParam}`);

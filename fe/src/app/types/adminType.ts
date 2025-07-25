@@ -6,6 +6,9 @@ export interface TotalPayment {
 }
 export interface UserManger {
     id: number;
+    firstName: string;
+    lastName: string;
+    password: string;
     fullName: string;
     email: string;
     phone: string;
