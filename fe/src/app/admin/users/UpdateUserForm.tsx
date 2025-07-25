@@ -1,0 +1,132 @@
+"use client"
+
+import { putUpdateUSerService } from "@/app/api/adminService";
+import { useState } from "react";
+import toast from "react-hot-toast";
+import { UserManger } from '@/app/types/adminType';
+
+type Props = {
+    user: UserManger,
+    onSuccess: () => void;
+}
+
+export default function UpdateUserForm({ user, onSuccess }: Props) {
+    const [formData, setFormData] = useState({
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+        password: '',
+        role: user.role,
+        gender: user.gender,
+    });
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        const payload = {
+            ...formData,
+            firstName: formData.firstName ?? "",
+            lastName: formData.lastName ?? "",
+        };
+
+        try {
+            await putUpdateUSerService(user.id, payload);
+            toast.success("Cập nhật người dùng thành công");
+            onSuccess();
+        } catch (error) {
+            console.log('✌️error --->', error);
+            toast.error("Cập nhật người dùng thất bại");
+        }
+    };
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+        const { name, value } = e.target;
+        setFormData(prev => ({ ...prev, [name]: value }));
+    };
+
+    return (
+        <form onSubmit={handleSubmit} className="space-y-4 bg-white max-w-md p-4 border rounded-xl shadow-md">
+            <h2 className="text-2xl font-semibold text-center mb-4">Cập nhật người dùng</h2>
+
+            <div>
+                <label className="block text-sm font-medium mb-1">Họ</label>
+                <input
+                    name="firstName"
+                    value={formData.firstName}
+                    onChange={handleChange}
+                    placeholder="Nhập họ"
+                    className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+            </div>
+
+            <div>
+                <label className="block text-sm font-medium mb-1">Tên</label>
+                <input
+                    name="lastName"
+                    value={formData.lastName}
+                    onChange={handleChange}
+                    placeholder="Nhập tên"
+                    className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+            </div>
+
+            <div>
+                <label className="block text-sm font-medium mb-1">Email</label>
+                <input
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    placeholder="Nhập email"
+                    className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+            </div>
+
+            <div>
+                <label className="block text-sm font-medium mb-1">Mật khẩu mới (nếu có)</label>
+                <input
+                    name="password"
+                    type="password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    placeholder="Đổi mật khẩu (tuỳ chọn)"
+                    className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+            </div>
+
+            <div>
+                <label className="block text-sm font-medium mb-1">Vai trò</label>
+                <select
+                    name="role"
+                    value={formData.role}
+                    onChange={handleChange}
+                    className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                    <option value="ADMIN">ADMIN</option>
+                    <option value="USER">USER</option>
+                </select>
+            </div>
+
+            <div>
+                <label className="block text-sm font-medium mb-1">Giới tính</label>
+                <select
+                    name="gender"
+                    value={formData.gender}
+                    onChange={handleChange}
+                    className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                    <option value="MALE">Nam</option>
+                    <option value="FEMALE">Nữ</option>
+                    <option value="OTHER">Khác</option>
+                </select>
+            </div>
+
+            <div className="text-center">
+                <button
+                    type="submit"
+                    className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition duration-200"
+                >
+                    Cập nhật
+                </button>
+            </div>
+        </form>
+    );
+}

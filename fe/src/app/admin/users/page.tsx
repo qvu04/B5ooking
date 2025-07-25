@@ -1,17 +1,26 @@
 "use client"
-import { getAllUserService } from "@/app/api/adminService"
+import { deleteUserService, getAllUserService } from "@/app/api/adminService"
 import { Pagination } from "@/app/types/blogType"
 import { useEffect, useState } from "react"
 import { UserManger } from '@/app/types/adminType';
+import { useDebounce } from "use-debounce";
+import CreateUserForm from "./CreateUserForm";
+import { Modal } from "antd";
+import UpdateUserForm from "./UpdateUserForm";
+import toast from "react-hot-toast";
 
 export default function UsersManager() {
     const [pagination, setPagination] = useState<Pagination>()
     const [page, setPage] = useState(1)
     const [fullName, setFullName] = useState("");
     const [user, setUser] = useState<UserManger[]>([]);
+    const [showFormCreate, setShowFormCreate] = useState(false);
+    const [showFormUpdate, setShowFormUpdate] = useState(false);
+    const [selectedUser, setSelectedUser] = useState<UserManger | null>(null);
+    const [deboundedFullName] = useDebounce(fullName, 500);
     const fetchAllUser = async () => {
         try {
-            const res = await getAllUserService(page, fullName);
+            const res = await getAllUserService(page, deboundedFullName);
             setUser(res.data.data.users)
             setPagination(res.data.data.pagination)
             console.log('✌️res --->', res);
@@ -19,13 +28,29 @@ export default function UsersManager() {
             console.log('✌️error --->', error);
         }
     }
-    useEffect(() => {
-        fetchAllUser();
-    }, [page, fullName])
+    const handleDeleteUser = async (id: number) => {
+        try {
+            await deleteUserService(id);
+            toast.success("Xóa người dùng thành công")
+            fetchAllUser();
+        } catch (error) {
+            console.log('✌️error --->', error);
+            toast.error("Xóa người dùng thất bại")
+        }
+    }
     const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFullName(e.target.value);
         setPage(1);
     }
+    const toggleFormCreate = () => {
+        setShowFormCreate(prev => !prev);
+    };
+    const toggleFormUpdate = () => {
+        setShowFormUpdate(prev => !prev);
+    }
+    useEffect(() => {
+        fetchAllUser();
+    }, [page, deboundedFullName])
     return (
         <div className="p-4">
             <h2 className="text-2xl font-bold mb-4">Quản lý người dùng</h2>
@@ -37,7 +62,25 @@ export default function UsersManager() {
                     onChange={handleSearchChange}
                     className="border border-gray-300 p-2 rounded mb-4 w-full max-w-sm"
                 />
-                <button className="bg-[#7f5af0] text-[#fffffe] px-4 py-2 rounded">Thêm người dùng</button>
+                <button
+                    onClick={toggleFormCreate}
+                    className="mb-4 bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+                >
+                    Tạo người dùng mới
+                </button>
+                <Modal
+                    title="Tạo người dùng mới"
+                    open={showFormCreate}
+                    onCancel={() => setShowFormCreate(false)}
+                    footer={null}
+                >
+                    <CreateUserForm
+                        onSuccess={() => {
+                            setShowFormCreate(false);
+                            fetchAllUser();
+                        }}
+                    />
+                </Modal>
             </div>
             <table className="w-full border border-collapse">
                 <thead>
@@ -58,14 +101,25 @@ export default function UsersManager() {
                             <td className="border p-2">{user.fullName}</td>
                             <td className="border p-2">{user.email}</td>
                             <td className="border p-2">{user.phone}</td>
-                            <td className="border p-2">{user.gender}</td>
+                            <td className="px-4 py-2">
+                                {user.gender === 'MALE' ? 'Nam' :
+                                    user.gender === 'FEMALE' ? 'Nữ' :
+                                        user.gender === 'Nam' || user.gender === 'Nữ' ? user.gender :
+                                            'Không xác định'}
+                            </td>
                             <td className="border p-2">{user.role}</td>
                             <td className="border p-2 flex items-center justify-center">
                                 <div className="flex gap-5">
-                                    <button className="bg-[#7f5af0] text-[#fffffe] px-4 py-2 rounded">
+                                    <button onClick={() => {
+                                        setSelectedUser(user),
+                                            toggleFormUpdate()
+                                    }} className="bg-[#7f5af0] text-[#fffffe] px-4 py-2 rounded">
                                         Sửa
                                     </button>
-                                    <button className="bg-[#7f5af0] text-[#fffffe] px-4 py-2 rounded">
+
+                                    <button onClick={() => {
+                                        handleDeleteUser(user.id)
+                                    }} className="bg-[#7f5af0] text-[#fffffe] px-4 py-2 rounded">
                                         Xóa
                                     </button>
                                 </div>
@@ -73,6 +127,22 @@ export default function UsersManager() {
 
                         </tr>
                     ))}
+                    <Modal
+                        title="Cập nhật người dùng"
+                        open={showFormUpdate}
+                        onCancel={() => setShowFormUpdate(false)}
+                        footer={null}
+                    >
+                        {selectedUser && (
+                            <UpdateUserForm
+                                user={selectedUser}
+                                onSuccess={() => {
+                                    setShowFormUpdate(false);
+                                    fetchAllUser();
+                                }}
+                            />
+                        )}
+                    </Modal>
                 </tbody>
             </table>
 
