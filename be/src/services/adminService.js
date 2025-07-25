@@ -1,4 +1,5 @@
 import { PrismaClient } from '@prisma/client';
+import bcrypt from 'bcrypt'
 import { ConflictException, NotFoundException } from '../helpers/exception.helper.js';
 import { createSlug } from '../utils/createSlug.js';
 const prisma = new PrismaClient();
@@ -1008,9 +1009,9 @@ export const adminService = {
 
     // update người dùng
     updateUser: async function (userId, data, avatarPath) {
-        const { firstName, lastName, email, password, role, gender } = data;
+        const { firstName, lastName, email, role, gender } = data;
 
-        if (!firstName || !lastName || !email || !password || !role || !gender) {
+        if (!firstName || !lastName || !email  || !role || !gender) {
             throw new ConflictException("Thiếu trường nào đó");
         }
 
@@ -1021,14 +1022,13 @@ export const adminService = {
             throw new NotFoundException("Người dùng không tồn tại");
         }
 
-        const hashedPassword = await bcrypt.hash(password, 10);
         const updatedUser = await prisma.user.update({
             where: { id: userId },
             data: {
                 firstName: firstName,
                 lastName: lastName,
+                fullName : `${firstName} ${lastName}`,
                 email: email,
-                password: hashedPassword,
                 role: role,
                 gender: gender,
                 avatar: avatarPath
