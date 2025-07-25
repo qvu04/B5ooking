@@ -386,40 +386,35 @@ export const adminService = {
 
     // Lấy danh sách ảnh phụ của khách sạn
     getHotelImages: async function (hotelId, page) {
-        const limit = 10;
+        const whereCondition = hotelId
+            ? { hotelId: hotelId }
+            : {}
+        const limit = 5;
         const skip = (page - 1) * limit;
-
-        // Lấy tên khách sạn
-        const hotel = await prisma.hotel.findUnique({
-            where: { id: hotelId },
-            select: {
-                name: true
-            }
-        });
-
-        if (!hotel) {
-            throw new Error("Không tìm thấy khách sạn");
-        }
 
         // Lấy ảnh phân trang
         const hotelImages = await prisma.hotelImage.findMany({
-            where: { hotelId: hotelId },
+            where: whereCondition,
             skip: skip,
             take: limit,
             select: {
                 id: true,
                 imageUrl: true,
-                createdAt: true
-            }
+                createdAt: true,
+                hotel: {
+                    select: {
+                        id: true,
+                        name: true
+                    }
+                }
+            },
         });
 
         const total = await prisma.hotelImage.count({
-            where: { hotelId: hotelId }
+            where: whereCondition
         });
 
         return {
-            hotel: hotel.name,
-            hotelId: hotelId,
             hotelImages: hotelImages,
             pagination: {
                 page: page,
@@ -428,7 +423,65 @@ export const adminService = {
             }
         };
     },
+    getRoomImages: async function (roomId, page) {
+        const whereCondition = roomId
+            ? { RoomId: roomId }
+            : {}
+        const limit = 5;
+        const skip = (page - 1) * limit;
+        const roomImages = await prisma.roomImage.findMany({
+            where: whereCondition,
+            take: limit,
+            skip: skip,
+            select: {
+                id: true,
+                imageUrl: true,
+                createdAt: true,
+                room: {
+                    select: {
+                        id: true,
+                        name: true,
+                        hotel: {
+                            select: {
+                                id: true,
+                                name: true
+                            }
+                        }
+                    }
+                }
+            }
+        })
+        const total = await prisma.roomImage.count({
+            where: whereCondition
+        })
 
+        return {
+            roomImages: roomImages,
+            pagination: {
+                page: page,
+                limit: limit,
+                totalPages: Math.ceil(total / limit)
+            }
+        }
+    },
+
+    getAllRoomName : async function () {
+        const roomName = await prisma.room.findMany({
+            select :{
+                id : true,
+                name : true,
+                hotel : {
+                    select : {
+                        id : true,
+                        name : true
+                    }
+                }
+            }
+        });
+        return {
+            roomName : roomName
+        }
+    },
 
 
     // Lấy tất cả ảnh phụ của tất cả khách sạn
@@ -490,6 +543,7 @@ export const adminService = {
         const image = await prisma.hotelImage.findUnique({
             where: { id: imageId }
         });
+        console.log(image)
         if (!image) {
             throw new NotFoundException("Ảnh không tồn tại");
         }
@@ -1012,7 +1066,7 @@ export const adminService = {
     updateUser: async function (userId, data, avatarPath) {
         const { firstName, lastName, email, role, gender } = data;
 
-        if (!firstName || !lastName || !email  || !role || !gender) {
+        if (!firstName || !lastName || !email || !role || !gender) {
             throw new ConflictException("Thiếu trường nào đó");
         }
 
@@ -1028,7 +1082,7 @@ export const adminService = {
             data: {
                 firstName: firstName,
                 lastName: lastName,
-                fullName : `${firstName} ${lastName}`,
+                fullName: `${firstName} ${lastName}`,
                 email: email,
                 role: role,
                 gender: gender,
