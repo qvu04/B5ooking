@@ -1,18 +1,26 @@
 "use client"
-
-import { getAllHotelService } from "@/app/api/adminService";
+import { getAllHotelService, deleteHotelService } from '@/app/api/adminService';
 import { HotelManager } from "@/app/types/adminType";
 import { Pagination } from "@/app/types/blogType";
 import { useEffect, useState } from "react";
-
+import { useDebounce } from "use-debounce";
+import { Modal } from 'antd';
+import CreateHotelForm from "./CreateHotelForm";
+import UpdateHotelForm from './UpdateHotelForm';
+import toast from "react-hot-toast";
 export default function HotelsManger() {
     const [page, setPage] = useState(1);
     const [locationId, setLocationId] = useState<number | null>(null)
     const [hotel, setHotel] = useState<HotelManager[]>([]);
     const [pagination, setPagination] = useState<Pagination>()
+    const [showFormCreate, setShowFormCreate] = useState(false);
+    const [showFormUpdate, setShowFormUpdate] = useState(false);
+    const [hotelName, setHotelName] = useState('');
+    const [selectedHotel, setSelectedHotel] = useState<HotelManager | null>(null);
+    const [debouncedHotelName] = useDebounce(hotelName, 500);
     const fetchAllHotel = async () => {
         try {
-            const res = await getAllHotelService(page, locationId ?? 0)
+            const res = await getAllHotelService(page, locationId ?? 0, debouncedHotelName)
             setHotel(res.data.data.hotels);
             setPagination(res.data.data.pagination)
             console.log('✌️res --->', res);
@@ -20,9 +28,19 @@ export default function HotelsManger() {
             console.log('✌️error --->', error);
         }
     }
+    const handleDeleteHotel = async (id: number) => {
+        try {
+            await deleteHotelService(id);
+            toast.success("Xóa khách sạn thành công")
+            fetchAllHotel()
+        } catch (error) {
+            console.log('✌️error --->', error);
+            toast.error("Xóa khách sạn thất bại");
+        }
+    }
     useEffect(() => {
         fetchAllHotel()
-    }, [page, locationId])
+    }, [page, locationId, debouncedHotelName])
     const handleCityClick = (locId: number) => {
         setLocationId(locId);
         setPage(1); // reset về trang đầu khi lọc
@@ -33,9 +51,15 @@ export default function HotelsManger() {
         setPage(1);
     };
     const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        // setFullName(e.target.value);
+        setHotelName(e.target.value);
         setPage(1);
     }
+    const toggleFormCreate = () => {
+        setShowFormCreate(prev => !prev);
+    };
+    const toggleFormUpdate = () => {
+        setShowFormUpdate(prev => !prev);
+    };
     return (
         <div className="max-w-7xl mx-auto px-4 py-8">
             <h2 className="text-2xl font-bold mb-6">Quản lý khách sạn</h2>
@@ -43,12 +67,25 @@ export default function HotelsManger() {
                 <input
                     type="text"
                     placeholder="Tìm kiếm khách sạn..."
-                    // value={fullName}
-                    // onChange={handleSearchChange}
+                    value={hotelName}
+                    onChange={handleSearchChange}
                     className="border border-gray-300 p-2 rounded mb-4 w-full max-w-sm"
                 />
-                <button className="bg-[#7f5af0] text-[#fffffe] px-4 py-2 rounded">Thêm khách sạn</button>
+                <button onClick={toggleFormCreate} className="bg-[#7f5af0] text-[#fffffe] px-4 py-2 rounded">Tạo khách sạn mới</button>
             </div>
+            <Modal
+                title="Tạo khách sạn"
+                open={showFormCreate}
+                onCancel={() => setShowFormCreate(false)}
+                footer={null}
+            >
+                <CreateHotelForm
+                    onSuccess={() => {
+                        setShowFormCreate(false);
+                        fetchAllHotel();
+                    }}
+                />
+            </Modal>
 
             {/* Lọc đang bật */}
             {locationId !== null && (
@@ -98,16 +135,39 @@ export default function HotelsManger() {
                             </td>
                             <td className="border p-2">
                                 <div className="flex gap-5">
-                                    <button className="bg-[#7f5af0] text-[#fffffe] px-4 py-2 rounded">
+                                    <button onClick={() => {
+                                        setSelectedHotel(hotel); // gán khách sạn đang click vào
+                                        toggleFormUpdate();
+                                    }} className="bg-[#7f5af0] text-[#fffffe] px-4 py-2 rounded">
                                         Sửa
                                     </button>
-                                    <button className="bg-[#7f5af0] text-[#fffffe] px-4 py-2 rounded">
+                                    <button onClick={() => {
+                                        handleDeleteHotel(hotel.id)
+                                    }} className="bg-[#7f5af0] text-[#fffffe] px-4 py-2 rounded">
                                         Xóa
                                     </button>
                                 </div>
                             </td>
                         </tr>
                     ))}
+                    {selectedHotel && (
+                        <Modal
+                            title="Cập nhật khách sạn"
+                            open={showFormUpdate}
+                            onCancel={() => setShowFormUpdate(false)}
+                            footer={null}
+                        >
+                            <UpdateHotelForm
+                                onSuccess={() => {
+                                    setShowFormUpdate(false);
+                                    fetchAllHotel();
+                                }}
+                                hotelId={selectedHotel.id}
+                                hotelData={selectedHotel}
+                            />
+                        </Modal>
+                    )}
+
                 </tbody>
             </table>
 

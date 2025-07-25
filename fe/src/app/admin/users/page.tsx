@@ -64,7 +64,7 @@ export default function UsersManager() {
                 />
                 <button
                     onClick={toggleFormCreate}
-                    className="mb-4 bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+                    className="bg-[#7f5af0] text-[#fffffe] px-4 py-2 rounded"
                 >
                     Tạo người dùng mới
                 </button>

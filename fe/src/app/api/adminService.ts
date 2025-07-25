@@ -76,8 +76,20 @@ export const deleteUserService = (id: number) => {
     return https.delete(`/api/admin/deleteUser/${id}`);
 }
 // quản lý khách sạn
-export const getAllHotelService = (page: number, locationId: number) => {
-    return https.get(`/api/admin/getAllHotels?locationId=${locationId}&page=${page}`);
+export const getAllHotelService = (page: number, locationId: number, hotelName: string) => {
+    return https.get(`/api/admin/getAllHotels?locationId=${locationId}&page=${page}&hotelName=${hotelName}`);
+}
+export const postCreateHotelService = (data: FormData) => {
+    return https.post("/api/admin/createHotel", data)
+}
+export const putUpdateHotelService = (hotelId: number, data: FormData) => {
+    return https.put(`/api/admin/updateHotel/${hotelId}`, data)
+}
+export const deleteHotelService = (hotelId: number) => {
+    return https.delete(`/api/admin/deleteHotel/${hotelId}`);
+}
+export const getAllAmenitiesService = () => {
+    return https.get("/api/admin/getAllAmenities");
 }
 //quản lý chỗ ở
 export const getAllRoomService = (page: number, hotelId: number) => {

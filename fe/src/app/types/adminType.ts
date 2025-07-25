@@ -20,10 +20,47 @@ export interface HotelManager {
     address: string;
     description: string;
     image: string;
+    locationId: number;
+    defaultRating: number;
+    images: {
+        id: number;
+        url: string;
+    }[];
+    amenities: {
+        amenityId: number;
+        amenity: {
+            id: number;
+            name: string;
+        };
+    }[];
     location: {
         id: number;
         city: string;
     }
+}
+export interface HotelDetailManager {
+    id: number;
+    name: string;
+    address: string;
+    description: string;
+    defaultRating: number;
+    locationId: number;
+    image?: string;
+    location: {
+        id: number;
+        city: string;
+    };
+    images: {
+        id: number;
+        url: string;
+    }[];
+    amenities: {
+        amenityId: number;
+        amenity: {
+            id: number;
+            name: string;
+        };
+    }[];
 }
 export interface RoomManager {
     id: number;
