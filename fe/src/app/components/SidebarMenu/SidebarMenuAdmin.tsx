@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { FaUser, FaSuitcase } from 'react-icons/fa';
+import { FaUser, FaSuitcase, FaImage } from 'react-icons/fa';
 import { MdBedroomParent, MdMeetingRoom, MdArticle } from 'react-icons/md';
 
 const menuItems = [
@@ -10,6 +10,7 @@ const menuItems = [
     { label: 'Quản lý khách sạn', icon: <FaSuitcase />, href: '/admin/hotels' },
     { label: 'Quản lý chỗ ở', icon: <MdMeetingRoom />, href: '/admin/rooms' },
     { label: 'Quản lý bài viết', icon: <MdArticle />, href: '/admin/blogs' },
+    { label: 'Quản lý ảnh', icon: <FaImage />, href: '/admin/images' },
     { label: 'Quản lý đặt phòng', icon: <MdBedroomParent />, href: '/admin/bookings' }
 ];
 

@@ -107,7 +107,7 @@ Lấy tất cả các ảnh phụ của tất cả khách sạn (Get) : http://l
 Lấy danh sách tên khách sạn (Get) : http://localhost:7000/api/admin/getAllHotelNames
 
 Tạo ảnh phụ của khách sạn theo id khách sạn đó (Get) : http://localhost:7000/api/admin/addHotelImage/:hotelId truyền ảnh thì key imageFile thêm đc tối đa 30 ảnh
-
+ư
 Sửa ảnh phụ của khách sạn theo id ảnh phụ muốn sửa đó (Post) : http://localhost:7000/api/admin/updateHotelImage/:id
 
 Xóa ảnh phụ của khách sạn theo id ảnh phụ muốn sửa đó (Delete) : http://localhost:7000/api/admin/deleteHotelImage/:id

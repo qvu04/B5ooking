@@ -82,7 +82,7 @@ const NavBarOnly = () => {
                         <Link
                             key={href}
                             href={href}
-                            className={`group relative flex items-center gap-1 transition-all duration-300 ${isActive ? "text-[#6246ea] scale-[1.05]" : "hover:text-[#6246ea]"
+                            className={`group relative flex items-center gap-3 transition-all duration-300 ${isActive ? "text-[#6246ea] scale-[1.05]" : "hover:text-[#6246ea]"
                                 }`}
                         >
                             <img
