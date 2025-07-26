@@ -915,324 +915,325 @@ export const adminService = {
         const whereCondition = {
             ...(hotelId ? { hotelId: hotelId } : {}),
             ...(roomName ? { name: { contains: roomName.toLowerCase() } } : {})
+        };
         const rooms = await prisma.room.findMany({
-                where: whereCondition,
-                take: limit,
-                skip: skip,
-                include: {
-                    hotel: true,
-                    images: true,
-                    amenities: {
-                        include: {
-                            amenity: true
-                        }
-                    }
-                }
-            });
-            const total = await prisma.room.count({
-                where: whereCondition
-            })
-        return {
-                rooms: rooms,
-                pagination: {
-                    page: page,
-                    limit: limit,
-                    totalPages: Math.ceil(total / limit)
-                }
-            }
-        },
-
-            // Tạo blog
-            createBlog: async function (data, imageFile) {
-                const { title, content, author, locationId, summary } = data;
-
-                if (!title || !content || !author || !locationId || !imageFile || !summary) {
-                    throw new ConflictException("Thiếu trường nào đó");
-                }
-                const slug = createSlug(title);
-                const blog = await prisma.blogPost.findUnique({
-                    where: { slug: slug }
-                });
-                if (blog) { 
-                    throw new ConflictException("Blog đã tồn tại");
-                }
-                const newBlog = await prisma.blogPost.create({
-                    data: {
-                        title: title,
-                        content: content,
-                        author: author || "",
-                        locationId: parseInt(locationId),
-                        image: imageFile,
-                        slug: slug,
-                        summary: summary
-                    },
+            where: whereCondition,
+            take: limit,
+            skip: skip,
+            include: {
+                hotel: true,
+                images: true,
+                amenities: {
                     include: {
-                        location: true
+                        amenity: true
                     }
-                });
-                return {
-                    blog: newBlog
                 }
+            }
+        });
+        const total = await prisma.room.count({
+            where: whereCondition
+        })
+        return {
+            rooms: rooms,
+            pagination: {
+                page: page,
+                limit: limit,
+                totalPages: Math.ceil(total / limit)
+            }
+        }
+    },
+
+    // Tạo blog
+    createBlog: async function (data, imageFile) {
+        const { title, content, author, locationId, summary } = data;
+
+        if (!title || !content || !author || !locationId || !imageFile || !summary) {
+            throw new ConflictException("Thiếu trường nào đó");
+        }
+        const slug = createSlug(title);
+        const blog = await prisma.blogPost.findUnique({
+            where: { slug: slug }
+        });
+        if (blog) {
+            throw new ConflictException("Blog đã tồn tại");
+        }
+        const newBlog = await prisma.blogPost.create({
+            data: {
+                title: title,
+                content: content,
+                author: author || "",
+                locationId: parseInt(locationId),
+                image: imageFile,
+                slug: slug,
+                summary: summary
             },
-
-        // Cập nhật blog
-        // Cập nhật blog
-        updateBlog: async function (blogId, data, imageFile) {
-            const { title, content, author, locationId, summary } = data;
-
-            if (!title || !content || !author || !locationId || !imageFile || !summary) {
-                throw new ConflictException("Thiếu trường nào đó");
+            include: {
+                location: true
             }
+        });
+        return {
+            blog: newBlog
+        }
+    },
 
-            const blog = await prisma.blogPost.findUnique({
-                where: { id: blogId }
+    // Cập nhật blog
+    // Cập nhật blog
+    updateBlog: async function (blogId, data, imageFile) {
+        const { title, content, author, locationId, summary } = data;
+
+        if (!title || !content || !author || !locationId || !imageFile || !summary) {
+            throw new ConflictException("Thiếu trường nào đó");
+        }
+
+        const blog = await prisma.blogPost.findUnique({
+            where: { id: blogId }
+        });
+        if (!blog) {
+            throw new NotFoundException("Blog không tồn tại");
+        }
+
+        const slug = createSlug(title);
+        if (blog.slug !== slug) {
+            const slugExist = await prisma.blogPost.findUnique({
+                where: { slug }
             });
-            if (!blog) {
-                throw new NotFoundException("Blog không tồn tại");
-            }
-
-            const slug = createSlug(title);
-            if (blog.slug !== slug) {
-                const slugExist = await prisma.blogPost.findUnique({
-                    where: { slug }
-                });
-                if (slugExist) {
-                    throw new ConflictException("Slug đã tồn tại");
-                }
-            }
-
-            const updatedBlog = await prisma.blogPost.update({
-                where: { id: blogId },
-                data: {
-                    title: title,
-                    content: content,
-                    author: author || "",
-                    locationId: parseInt(locationId),
-                    image: imageFile,
-                    slug: slug,
-                    summary: summary
-                },
-                include: {
-                    location: true
-                }
-            });
-
-            return {
-                blog: updatedBlog
-            };
-        },
-
-        // Xoá blog
-        deleteBlog: async function (blogId) {
-            const blog = await prisma.blogPost.findUnique({
-                where: { id: blogId }
-            });
-            if (!blog) {
-                throw new NotFoundException("Blog không tồn tại");
-            }
-            await prisma.blogPost.delete({
-                where: { id: blogId }
-            });
-        },
-
-        // Tạo người dùng
-        createUser: async function (data, avatarPath) {
-            const { firstName, lastName, email, password, role, gender } = data;
-            if (!firstName || !lastName || !email || !password || !role || !gender) {
-                throw new ConflictException("Thiếu trường nào đó");
-            }
-            const existingUser = await prisma.user.findUnique({
-                where: { email: email }
-            });
-            if (existingUser) {
-                throw new ConflictException("Người dùng đã tồn tại với email này");
-            }
-
-            const hashedPassword = await bcrypt.hash(password, 10);
-            const newUser = await prisma.user.create({
-                data: {
-                    firstName: firstName,
-                    lastName: lastName,
-                    fullName: `${firstName} ${lastName}`,
-                    email: email,
-                    password: hashedPassword,
-                    role: role,
-                    gender: gender,
-                    avatar: avatarPath || ""
-                }
-            });
-            return {
-                user: newUser
-            }
-        },
-
-        // update người dùng
-        updateUser: async function (userId, data, avatarPath) {
-            const { firstName, lastName, email, role, gender } = data;
-
-            if (!firstName || !lastName || !email || !role || !gender) {
-                throw new ConflictException("Thiếu trường nào đó");
-            }
-
-            const existingUser = await prisma.user.findUnique({
-                where: { id: userId }
-            });
-            if (!existingUser) {
-                throw new NotFoundException("Người dùng không tồn tại");
-            }
-
-            const updatedUser = await prisma.user.update({
-                where: { id: userId },
-                data: {
-                    firstName: firstName,
-                    lastName: lastName,
-                    fullName: `${firstName} ${lastName}`,
-                    email: email,
-                    role: role,
-                    gender: gender,
-                    avatar: avatarPath
-                }
-            });
-            return {
-                user: updatedUser
-            };
-        },
-
-        // Xoá người dùng
-        deleteUser: async function (userId) {
-            const user = await prisma.user.findUnique({
-                where: { id: userId }
-            });
-
-            if (!user) {
-                throw new NotFoundException("Người dùng không tồn tại");
-            }
-
-            // Xoá các dữ liệu liên quan
-            await prisma.booking.deleteMany({ where: { userId } });
-            await prisma.review.deleteMany({ where: { userId } });
-            await prisma.favoriteHotel.deleteMany({ where: { userId } });
-
-            // Xoá người dùng
-            await prisma.user.delete({
-                where: { id: userId }
-            });
-        },
-
-        // Lấy danh sách người dùng
-        getAllUsers: async function (currentUser, page, fullName) {
-            const limit = 10;
-            const skip = (page - 1) * limit;
-
-            const whereCondition = {
-                NOT: { id: currentUser },
-                ...(fullName && {
-                    fullName: {
-                        contains: fullName.toLowerCase(),
-                    }
-                })
-            };
-
-            const users = await prisma.user.findMany({
-                take: limit,
-                skip: skip,
-                where: whereCondition,
-            });
-
-            const total = await prisma.user.count({
-                where: whereCondition,
-            });
-
-            return {
-                users: users,
-                pagination: {
-                    page: page,
-                    limit: limit,
-                    totalPages: Math.ceil(total / limit)
-                }
-            };
-        },
-
-
-        getAllBlogs: async function (locationId, blogTitle, page) {
-            const limit = 5;
-            const skip = (page - 1) * limit;
-            const whereCondition = {
-                ...(locationId ? { locationId: locationId } : {}),
-                ...(blogTitle ? { title: { contains: blogTitle.toLowerCase() } } : {})
-            }
-            const blogs = await prisma.blogPost.findMany({
-                where: whereCondition,
-                skip: skip,
-                take: limit,
-                orderBy: {
-                    create_At: 'desc'
-                },
-                select: {
-                    id: true,
-                    location: true,
-                    title: true,
-                    summary: true,
-                    image: true,
-                    content: true,
-                    slug: true,
-                    create_At: true,
-                    update_At: true,
-                }
-            })
-            const total = await prisma.blogPost.count({
-                where: whereCondition
-            });
-
-            return {
-                blogs: blogs,
-                pagination: {
-                    page: page,
-                    limit: limit,
-                    total: total,
-                    totalPages: Math.ceil(total / limit)
-                }
-            };
-        },
-
-        getAllBooking: async function (status, page) {
-            const limit = 5;
-            const skip = (page - 1) * limit;
-            let statusFilter = undefined;
-            if (status && status !== 'ALL') {
-                statusFilter = status;
-            } else {
-                statusFilter = { in: ['CONFIRMED', 'FINISHED'] };
-            }
-            const bookings = await prisma.booking.findMany({
-                take: limit,
-                skip: skip,
-                where: {
-                    status: statusFilter
-                },
-                include: {
-                    user: true,
-                    room: {
-                        include: {
-                            hotel: true
-                        }
-                    }
-                }
-            })
-            const total = await prisma.booking.count({
-                where: {
-                    status: statusFilter
-                },
-            })
-            return {
-                bookings: bookings,
-                pagination: {
-                    page: page,
-                    limit: limit,
-                    total: total,
-                    totalPages: Math.ceil(total / limit)
-                }
+            if (slugExist) {
+                throw new ConflictException("Slug đã tồn tại");
             }
         }
 
-    };
+        const updatedBlog = await prisma.blogPost.update({
+            where: { id: blogId },
+            data: {
+                title: title,
+                content: content,
+                author: author || "",
+                locationId: parseInt(locationId),
+                image: imageFile,
+                slug: slug,
+                summary: summary
+            },
+            include: {
+                location: true
+            }
+        });
+
+        return {
+            blog: updatedBlog
+        };
+    },
+
+    // Xoá blog
+    deleteBlog: async function (blogId) {
+        const blog = await prisma.blogPost.findUnique({
+            where: { id: blogId }
+        });
+        if (!blog) {
+            throw new NotFoundException("Blog không tồn tại");
+        }
+        await prisma.blogPost.delete({
+            where: { id: blogId }
+        });
+    },
+
+    // Tạo người dùng
+    createUser: async function (data, avatarPath) {
+        const { firstName, lastName, email, password, role, gender } = data;
+        if (!firstName || !lastName || !email || !password || !role || !gender) {
+            throw new ConflictException("Thiếu trường nào đó");
+        }
+        const existingUser = await prisma.user.findUnique({
+            where: { email: email }
+        });
+        if (existingUser) {
+            throw new ConflictException("Người dùng đã tồn tại với email này");
+        }
+
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const newUser = await prisma.user.create({
+            data: {
+                firstName: firstName,
+                lastName: lastName,
+                fullName: `${firstName} ${lastName}`,
+                email: email,
+                password: hashedPassword,
+                role: role,
+                gender: gender,
+                avatar: avatarPath || ""
+            }
+        });
+        return {
+            user: newUser
+        }
+    },
+
+    // update người dùng
+    updateUser: async function (userId, data, avatarPath) {
+        const { firstName, lastName, email, role, gender } = data;
+
+        if (!firstName || !lastName || !email || !role || !gender) {
+            throw new ConflictException("Thiếu trường nào đó");
+        }
+
+        const existingUser = await prisma.user.findUnique({
+            where: { id: userId }
+        });
+        if (!existingUser) {
+            throw new NotFoundException("Người dùng không tồn tại");
+        }
+
+        const updatedUser = await prisma.user.update({
+            where: { id: userId },
+            data: {
+                firstName: firstName,
+                lastName: lastName,
+                fullName: `${firstName} ${lastName}`,
+                email: email,
+                role: role,
+                gender: gender,
+                avatar: avatarPath
+            }
+        });
+        return {
+            user: updatedUser
+        };
+    },
+
+    // Xoá người dùng
+    deleteUser: async function (userId) {
+        const user = await prisma.user.findUnique({
+            where: { id: userId }
+        });
+
+        if (!user) {
+            throw new NotFoundException("Người dùng không tồn tại");
+        }
+
+        // Xoá các dữ liệu liên quan
+        await prisma.booking.deleteMany({ where: { userId } });
+        await prisma.review.deleteMany({ where: { userId } });
+        await prisma.favoriteHotel.deleteMany({ where: { userId } });
+
+        // Xoá người dùng
+        await prisma.user.delete({
+            where: { id: userId }
+        });
+    },
+
+    // Lấy danh sách người dùng
+    getAllUsers: async function (currentUser, page, fullName) {
+        const limit = 10;
+        const skip = (page - 1) * limit;
+
+        const whereCondition = {
+            NOT: { id: currentUser },
+            ...(fullName && {
+                fullName: {
+                    contains: fullName.toLowerCase(),
+                }
+            })
+        };
+
+        const users = await prisma.user.findMany({
+            take: limit,
+            skip: skip,
+            where: whereCondition,
+        });
+
+        const total = await prisma.user.count({
+            where: whereCondition,
+        });
+
+        return {
+            users: users,
+            pagination: {
+                page: page,
+                limit: limit,
+                totalPages: Math.ceil(total / limit)
+            }
+        };
+    },
+
+
+    getAllBlogs: async function (locationId, blogTitle, page) {
+        const limit = 5;
+        const skip = (page - 1) * limit;
+        const whereCondition = {
+            ...(locationId ? { locationId: locationId } : {}),
+            ...(blogTitle ? { title: { contains: blogTitle.toLowerCase() } } : {})
+        }
+        const blogs = await prisma.blogPost.findMany({
+            where: whereCondition,
+            skip: skip,
+            take: limit,
+            orderBy: {
+                create_At: 'desc'
+            },
+            select: {
+                id: true,
+                location: true,
+                title: true,
+                summary: true,
+                image: true,
+                content: true,
+                slug: true,
+                create_At: true,
+                update_At: true,
+            }
+        })
+        const total = await prisma.blogPost.count({
+            where: whereCondition
+        });
+
+        return {
+            blogs: blogs,
+            pagination: {
+                page: page,
+                limit: limit,
+                total: total,
+                totalPages: Math.ceil(total / limit)
+            }
+        };
+    },
+
+    getAllBooking: async function (status, page) {
+        const limit = 5;
+        const skip = (page - 1) * limit;
+        let statusFilter = undefined;
+        if (status && status !== 'ALL') {
+            statusFilter = status;
+        } else {
+            statusFilter = { in: ['CONFIRMED', 'FINISHED'] };
+        }
+        const bookings = await prisma.booking.findMany({
+            take: limit,
+            skip: skip,
+            where: {
+                status: statusFilter
+            },
+            include: {
+                user: true,
+                room: {
+                    include: {
+                        hotel: true
+                    }
+                }
+            }
+        })
+        const total = await prisma.booking.count({
+            where: {
+                status: statusFilter
+            },
+        })
+        return {
+            bookings: bookings,
+            pagination: {
+                page: page,
+                limit: limit,
+                total: total,
+                totalPages: Math.ceil(total / limit)
+            }
+        }
+    }
+
+};
