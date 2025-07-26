@@ -67,7 +67,7 @@ Tạo phòng (Post) : http://localhost:7000/api/admin/createRoom  truyền hotel
 Sửa phòng (Put) : http://localhost:7000/api/admin/updateRoom/:id
 
 Xóa phòng (Delete) : http://localhost:7000/api/admin/deleteRoom/:id
-
+    
 Lấy tất cả các phòng (Get) : http://localhost:7000/api/admin/getAllRooms tương tự như cái hotel thay cái locationId thành hotelId
 
 Tạo blog (Post) : http://localhost:7000/api/admin/createBlog truyền title, content, author, locationId, summary truyền ảnh thì key imageFile

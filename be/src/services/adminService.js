@@ -465,21 +465,21 @@ export const adminService = {
         }
     },
 
-    getAllRoomName : async function () {
+    getAllRoomName: async function () {
         const roomName = await prisma.room.findMany({
-            select :{
-                id : true,
-                name : true,
-                hotel : {
-                    select : {
-                        id : true,
-                        name : true
+            select: {
+                id: true,
+                name: true,
+                hotel: {
+                    select: {
+                        id: true,
+                        name: true
                     }
                 }
             }
         });
         return {
-            roomName : roomName
+            roomName: roomName
         }
     },
 
@@ -909,12 +909,14 @@ export const adminService = {
         }
     },
     // Lấy danh sách phòng 
-    getAllRooms: async function (hotelId, page) {
+    getAllRooms: async function (hotelId, page, roomName) {
         const limit = 5;
         const skip = (page - 1) * limit;
-        const whereCondition = hotelId
-            ? { hotelId: hotelId }
-            : {}
+        const whereCondition = {
+            ...(hotelId ? { hotelId: hotelId } : {}),
+            ...(roomName ? { name: { contains: roomName.toLowerCase() } } : {})
+        };
+        console.log("room từ FE -->", roomName)
         const rooms = await prisma.room.findMany({
             where: whereCondition,
             take: limit,

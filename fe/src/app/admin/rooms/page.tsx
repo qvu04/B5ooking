@@ -1,23 +1,43 @@
 "use client"
-
-import { getAllRoomService } from "@/app/api/adminService";
+import { deleteRoomService, getAllRoomService } from "@/app/api/adminService";
 import { RoomManager } from "@/app/types/adminType";
 import { Pagination } from "@/app/types/blogType";
 import { useEffect, useState } from "react";
-
+import { useDebounce } from "use-debounce";
+import { Modal } from 'antd';
+import CreateRoomForm from '@/app/admin/rooms/CreateRoomForm';
+import UpdateHotelForm from '@/app/admin/hotels/UpdateHotelForm';
+import UpdateRoomForm from "./UpdateRoomForm";
+import toast from "react-hot-toast";
 export default function RoomsManager() {
     const [page, setPage] = useState(1);
     const [pagination, setPagination] = useState<Pagination>()
     const [room, setRoom] = useState<RoomManager[]>([])
     const [hotelId, setHotelId] = useState<number | null>(null)
+    const [showFormCreate, setShowFormCreate] = useState(false);
+    const [showFormUpdate, setShowFormUpdate] = useState(false);
+    const [selectedRoom, setSelectedRoom] = useState<RoomManager | null>(null);
+    const [roomName, setRoomName] = useState('');
+    const [debouncedRoomName] = useDebounce(roomName, 500);
+    console.log('✌️debouncedRoomName --->', debouncedRoomName);
     const fetchAllRoom = async () => {
         try {
-            const res = await getAllRoomService(page, hotelId ?? 0);
+            const res = await getAllRoomService(page, hotelId ?? 0, debouncedRoomName);
             setPagination(res.data.data.pagination);
             setRoom(res.data.data.rooms);
             console.log('✌️res --->', res);
         } catch (error) {
             console.log('✌️error --->', error);
+        }
+    }
+    const handleDeleteRoom = async (id: number) => {
+        try {
+            await deleteRoomService(id);
+            toast.success("Xóa phòng thành công");
+            fetchAllRoom();
+        } catch (error) {
+            console.log('✌️error --->', error);
+            toast.error("Xóa phòng thất bại");
         }
     }
     const handleHotelClick = (locId: number) => {
@@ -28,9 +48,19 @@ export default function RoomsManager() {
         setHotelId(null);
         setPage(1);
     };
+    const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setRoomName(e.target.value);
+        setPage(1);
+    }
+    const toggleFormCreate = () => {
+        setShowFormCreate(prev => !prev);
+    }
+    const toggleFormUpdate = () => {
+        setShowFormUpdate(prev => !prev);
+    }
     useEffect(() => {
         fetchAllRoom();
-    }, [page, hotelId])
+    }, [page, hotelId, debouncedRoomName])
     return (
         <div className="max-w-7xl mx-auto px-4 py-8">
             <h2 className="text-2xl font-bold mb-6">Quản lý phòng ở</h2>
@@ -38,12 +68,25 @@ export default function RoomsManager() {
                 <input
                     type="text"
                     placeholder="Tìm kiếm phòng ở..."
-                    // value={fullName}
-                    // onChange={handleSearchChange}
+                    value={roomName}
+                    onChange={handleSearchChange}
                     className="border border-gray-300 p-2 rounded mb-4 w-full max-w-sm"
                 />
-                <button className="bg-[#7f5af0] text-[#fffffe] px-4 py-2 rounded">Thêm phòng ở</button>
+                <button onClick={toggleFormCreate} className="bg-[#7f5af0] text-[#fffffe] px-4 py-2 rounded">Tạo phòng ở</button>
             </div>
+            <Modal
+                title="Tạo phòng"
+                open={showFormCreate}
+                onCancel={() => setShowFormCreate(false)}
+                footer={null}
+            >
+                <CreateRoomForm
+                    onSuccess={() => {
+                        setShowFormCreate(false);
+                        fetchAllRoom();
+                    }}
+                />
+            </Modal>
 
             {/* Lọc đang bật */}
             {hotelId !== null && (
@@ -95,16 +138,38 @@ export default function RoomsManager() {
                             </td>
                             <td className="border p-2">
                                 <div className="flex gap-5">
-                                    <button className="bg-[#7f5af0] text-[#fffffe] px-4 py-2 rounded">
+                                    <button onClick={() => {
+                                        setSelectedRoom(room);
+                                        toggleFormUpdate();
+                                    }} className="bg-[#7f5af0] text-[#fffffe] px-4 py-2 rounded">
                                         Sửa
                                     </button>
-                                    <button className="bg-[#7f5af0] text-[#fffffe] px-4 py-2 rounded">
+                                    <button onClick={() => {
+                                        handleDeleteRoom(room.id);
+                                    }} className="bg-[#7f5af0] text-[#fffffe] px-4 py-2 rounded">
                                         Xóa
                                     </button>
                                 </div>
                             </td>
                         </tr>
                     ))}
+                    {selectedRoom && (
+                        <Modal
+                            title="Cập nhật khách sạn"
+                            open={showFormUpdate}
+                            onCancel={() => setShowFormUpdate(false)}
+                            footer={null}
+                        >
+                            <UpdateRoomForm
+                                onSuccess={() => {
+                                    setShowFormUpdate(false);
+                                    fetchAllRoom();
+                                }}
+                                roomId={selectedRoom.id}
+                                roomData={selectedRoom}
+                            />
+                        </Modal>
+                    )}
                 </tbody>
             </table>
 

@@ -1,6 +1,7 @@
 import { https } from "./configService";
 import { BookingStatusEnum } from '@/app/types/bookingType';
 
+// biểu đồ cột
 export const getRevenueChartService = (type: "day" | "week" | "month") => {
     const now = new Date();
     const toDate = now.toISOString();
@@ -25,6 +26,7 @@ export const getRevenueChartService = (type: "day" | "week" | "month") => {
 
     return https.get(`/api/dashboard/getGroupedRevenue?type=${type}&fromDate=${fromDate}&toDate=${toDate}`);
 };
+// biểu đồ hình tròn
 export const getRevenuePieChart = (type: "day" | "week" | "month") => {
     const now = new Date();
     const toDate = now.toISOString();
@@ -92,11 +94,27 @@ export const getAllAmenitiesService = () => {
     return https.get("/api/admin/getAllAmenities");
 }
 //quản lý chỗ ở
-export const getAllRoomService = (page: number, hotelId: number) => {
-    return https.get(`/api/admin/getAllRooms?hotelId=${hotelId}&page=${page}`);
+export const getAllRoomService = (page: number, hotelId: number, roomName: string) => {
+    return https.get(`/api/admin/getAllRooms?hotelId=${hotelId}&page=${page}&roomName=${roomName}`);
+}
+export const postCreateRoomService = (data: FormData) => {
+    return https.post("/api/admin/createRoom", data);
+}
+export const putUpdateRoomService = (roomId: number, data: FormData) => {
+    return https.put(`/api/admin/updateRoom/${roomId}`, data);
+}
+export const deleteRoomService = (roomId: number) => {
+    return https.delete(`/api/admin/deleteRoom/${roomId}`)
 }
 // quản lý booking
 export const getAllBookingService = (page: number, status?: BookingStatusEnum | "ALL") => {
     const statusParam = status && status !== "ALL" ? `&status=${status}` : "";
     return https.get(`/api/admin/getAllBooking?page=${page}${statusParam}`);
+}
+// quản lý blog
+export const getAllBlogService = (page: number, locationId: number) => {
+    return https.get(`/api/admin/getAllBlogs?locationId=${locationId}&page=${page}`)
+}
+export const postCreateBlogService = (data: FormData) => {
+    return https.post(`/api/admin/createBlog`, data)
 }
