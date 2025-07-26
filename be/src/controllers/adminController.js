@@ -354,8 +354,9 @@ export const adminController = {
     getAllRooms: async function (req, res, next) {
         try {
             const hotelId = parseInt(req.query.hotelId) || "";
+            const roomName = req.query.roomName || "";
             const page = parseInt(req.query.page) || 1;
-            const rooms = await adminService.getAllRooms(hotelId, page);
+            const rooms = await adminService.getAllRooms(hotelId,roomName, page);
             const response = responseSuccess(rooms, "Lấy danh sách phòng thành công");
             res.status(response.status).json(response);
         } catch (err) {
@@ -467,8 +468,9 @@ export const adminController = {
     getAllBlogs: async function (req, res, next) {
         try {
             const locationId = parseInt(req.query.locationId) || "";
+            const blogTitle = req.query.blogTitle || ""
             const page = parseInt(req.query.page) || 1;
-            const blogs = await adminService.getAllBlogs(locationId, page);
+            const blogs = await adminService.getAllBlogs(locationId,blogTitle, page);
             const response = responseSuccess(blogs, "Lấy danh sách blog thành công");
             res.status(response.status).json(response);
         } catch (err) {

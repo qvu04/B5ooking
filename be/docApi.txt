@@ -60,7 +60,7 @@ Lấy danh sách khách sạn (Get) : http://localhost:7000/api/admin/getAllHote
 
 Lấy danh sách tên khách sạn (Get) : http://localhost:7000/api/admin/getAllHotelNames
 
-Lấy tất cả các blog (Get) : http://localhost:7000/api/admin/getAllBlogs có thanh select khi hk chọn thì gọi http://localhost:7000/api/admin/getAllBlogs còn khi bấm vô khu vực bất kì http://localhost:7000/api/admin/getAllBlogs?locationId=3&page=1 có phân trang
+Lấy tất cả các blog (Get) : http://localhost:7000/api/admin/getAllBlogs còn khi bấm vô khu vực bất kì http://localhost:7000/api/admin/getAllBlogs?locationId=3&page=1 có phân trang và có tìm kiếm theo tên bài blog theo title key là blogTitle
 
 Tạo phòng (Post) : http://localhost:7000/api/admin/createRoom  truyền hotelId, name, type, description, price, discount, maxGuests, amenities truyền ảnh thì key là imageFile thêm tối đa 5 ảnh
 
@@ -68,7 +68,7 @@ Sửa phòng (Put) : http://localhost:7000/api/admin/updateRoom/:id
 
 Xóa phòng (Delete) : http://localhost:7000/api/admin/deleteRoom/:id
 
-Lấy tất cả các phòng (Get) : http://localhost:7000/api/admin/getAllRooms tương tự như cái hotel thay cái locationId thành hotelId
+Lấy tất cả các phòng (Get) : http://localhost:7000/api/admin/getAllRooms tương tự như cái hotel thay cái locationId thành hotelId có tìm kiếm tên phòng key là roomName
 
 Tạo blog (Post) : http://localhost:7000/api/admin/createBlog truyền title, content, author, locationId, summary truyền ảnh thì key imageFile
 

@@ -465,21 +465,21 @@ export const adminService = {
         }
     },
 
-    getAllRoomName : async function () {
+    getAllRoomName: async function () {
         const roomName = await prisma.room.findMany({
-            select :{
-                id : true,
-                name : true,
-                hotel : {
-                    select : {
-                        id : true,
-                        name : true
+            select: {
+                id: true,
+                name: true,
+                hotel: {
+                    select: {
+                        id: true,
+                        name: true
                     }
                 }
             }
         });
         return {
-            roomName : roomName
+            roomName: roomName
         }
     },
 
@@ -909,12 +909,13 @@ export const adminService = {
         }
     },
     // Lấy danh sách phòng 
-    getAllRooms: async function (hotelId, page) {
+    getAllRooms: async function (hotelId, roomName, page) {
         const limit = 5;
         const skip = (page - 1) * limit;
-        const whereCondition = hotelId
-            ? { hotelId: hotelId }
-            : {}
+        const whereCondition = {
+            ...(hotelId ? { hotelId: hotelId } : {}),
+            ...(roomName ? { name: { contains: roomName.toLowerCase() } } : {})
+        }
         const rooms = await prisma.room.findMany({
             where: whereCondition,
             take: limit,
@@ -976,12 +977,21 @@ export const adminService = {
     },
 
     // Cập nhật blog
+    // Cập nhật blog
     updateBlog: async function (blogId, data, imageFile) {
         const { title, content, author, locationId, summary } = data;
 
         if (!title || !content || !author || !locationId || !imageFile || !summary) {
             throw new ConflictException("Thiếu trường nào đó");
         }
+
+        const blog = await prisma.blogPost.findUnique({
+            where: { id: blogId }
+        });
+        if (!blog) {
+            throw new NotFoundException("Blog không tồn tại");
+        }
+
         const slug = createSlug(title);
         if (blog.slug !== slug) {
             const slugExist = await prisma.blogPost.findUnique({
@@ -992,12 +1002,6 @@ export const adminService = {
             }
         }
 
-        const blog = await prisma.blogPost.findUnique({
-            where: { id: blogId }
-        });
-        if (!blog) {
-            throw new NotFoundException("Blog không tồn tại");
-        }
         const updatedBlog = await prisma.blogPost.update({
             where: { id: blogId },
             data: {
@@ -1013,9 +1017,10 @@ export const adminService = {
                 location: true
             }
         });
+
         return {
             blog: updatedBlog
-        }
+        };
     },
 
     // Xoá blog
@@ -1150,12 +1155,13 @@ export const adminService = {
     },
 
 
-    getAllBlogs: async function (locationId, page) {
+    getAllBlogs: async function (locationId, blogTitle, page) {
         const limit = 5;
         const skip = (page - 1) * limit;
-        const whereCondition = locationId ?
-            { locationId: locationId }
-            : {}
+        const whereCondition = {
+            ...(locationId ? { locationId: locationId } : {}),
+            ...(blogTitle ? {title : {contains : blogTitle.toLowerCase()}} : {})
+        }
         const blogs = await prisma.blogPost.findMany({
             where: whereCondition,
             skip: skip,
