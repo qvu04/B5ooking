@@ -112,9 +112,15 @@ export const getAllBookingService = (page: number, status?: BookingStatusEnum | 
     return https.get(`/api/admin/getAllBooking?page=${page}${statusParam}`);
 }
 // quản lý blog
-export const getAllBlogService = (page: number, locationId: number) => {
-    return https.get(`/api/admin/getAllBlogs?locationId=${locationId}&page=${page}`)
+export const getAllBlogService = (page: number, locationId: number, blogTitle: string) => {
+    return https.get(`/api/admin/getAllBlogs?locationId=${locationId}&page=${page}&blogTitle=${blogTitle}`);
 }
 export const postCreateBlogService = (data: FormData) => {
     return https.post(`/api/admin/createBlog`, data)
+}
+export const putUpdateBlogService = (blogId: number, data: FormData) => {
+    return https.put(`/api/admin/updateBlog/${blogId}`, data);
+}
+export const deleteBlogService = (blogId: number) => {
+    return https.delete(`/api/admin/deleteBlog/${blogId}`);
 }

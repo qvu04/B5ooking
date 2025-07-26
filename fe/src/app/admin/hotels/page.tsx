@@ -119,7 +119,7 @@ export default function HotelsManger() {
                                 <img
                                     src={hotel.image}
                                     alt={hotel.name}
-                                    className="w-32 h-20 object-cover rounded-md shadow"
+                                    className="w-48 h-28 object-cover rounded-md shadow"
                                 />
                             </td>
                             <td className="p-5 border">{hotel.name}</td>

@@ -26,7 +26,7 @@ export default function RevenueBarChart() {
 
     return (
         <Card className="h-full flex flex-col">
-            <CardHeader>
+            <CardHeader className="flex items-center justify-between">
                 <CardTitle>Thống kê doanh thu</CardTitle>
                 <Select value={type} onValueChange={(value: 'day' | 'week' | 'month') => setType(value)}>
                     <SelectTrigger className="w-[140px]">

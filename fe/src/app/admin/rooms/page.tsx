@@ -6,7 +6,6 @@ import { useEffect, useState } from "react";
 import { useDebounce } from "use-debounce";
 import { Modal } from 'antd';
 import CreateRoomForm from '@/app/admin/rooms/CreateRoomForm';
-import UpdateHotelForm from '@/app/admin/hotels/UpdateHotelForm';
 import UpdateRoomForm from "./UpdateRoomForm";
 import toast from "react-hot-toast";
 export default function RoomsManager() {
@@ -19,7 +18,6 @@ export default function RoomsManager() {
     const [selectedRoom, setSelectedRoom] = useState<RoomManager | null>(null);
     const [roomName, setRoomName] = useState('');
     const [debouncedRoomName] = useDebounce(roomName, 500);
-    console.log('✌️debouncedRoomName --->', debouncedRoomName);
     const fetchAllRoom = async () => {
         try {
             const res = await getAllRoomService(page, hotelId ?? 0, debouncedRoomName);
@@ -121,7 +119,7 @@ export default function RoomsManager() {
                                 <img
                                     src={room.image}
                                     alt={room.name}
-                                    className="w-32 h-20 object-cover rounded-md shadow"
+                                    className="w-48 h-28 object-cover rounded-md shadow"
                                 />
                             </td>
                             <td className="p-5 border">{room.name}</td>

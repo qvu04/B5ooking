@@ -138,6 +138,24 @@ export interface BlogManager {
     image: string;
     summary: string;
     title: string;
+    content: string;
+    author: string;
+    location: {
+        id: number;
+        city: string;
+    }
+}
+export interface BlogDetailManager {
+    id: number;
+    image: string;
+    summary: string;
+    title: string;
+    content: string;
+    author: string;
+    location: {
+        id: number;
+        city: string;
+    }
 }
 export interface HotelRevenue {
     hotelId: number;

@@ -981,7 +981,7 @@ export const adminService = {
     updateBlog: async function (blogId, data, imageFile) {
         const { title, content, author, locationId, summary } = data;
 
-        if (!title || !content || !author || !locationId || !imageFile || !summary) {
+        if (!title || !content || !author || !locationId || !summary) {
             throw new ConflictException("Thiếu trường nào đó");
         }
 
@@ -1176,6 +1176,7 @@ export const adminService = {
                 summary: true,
                 image: true,
                 content: true,
+                author: true,
                 slug: true,
                 create_At: true,
                 update_At: true,
