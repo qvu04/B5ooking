@@ -1171,6 +1171,7 @@ export const adminService = {
             },
             select: {
                 id: true,
+                location : true,
                 title: true,
                 summary: true,
                 image: true,
