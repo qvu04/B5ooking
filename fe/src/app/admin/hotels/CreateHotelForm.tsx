@@ -22,7 +22,6 @@ export default function CreateHotelForm({ onSuccess }: Props) {
         { id: 5, name: "Lò nướng BBQ" },
         { id: 6, name: "Bàn đánh bóng chuyền" },
         { id: 7, name: "Dán sóng karaoke" },
-
     ];
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();

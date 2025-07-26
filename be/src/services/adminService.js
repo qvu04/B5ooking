@@ -909,13 +909,22 @@ export const adminService = {
         }
     },
     // Lấy danh sách phòng 
+<<<<<<< HEAD
     getAllRooms: async function (hotelId, roomName, page) {
+=======
+    getAllRooms: async function (hotelId, page, roomName) {
+>>>>>>> frontend
         const limit = 5;
         const skip = (page - 1) * limit;
         const whereCondition = {
             ...(hotelId ? { hotelId: hotelId } : {}),
             ...(roomName ? { name: { contains: roomName.toLowerCase() } } : {})
+<<<<<<< HEAD
         }
+=======
+        };
+        console.log("room từ FE -->", roomName)
+>>>>>>> frontend
         const rooms = await prisma.room.findMany({
             where: whereCondition,
             take: limit,

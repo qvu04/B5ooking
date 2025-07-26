@@ -68,13 +68,53 @@ export interface RoomManager {
     price: number;
     type: string;
     image: string;
+    discount: number;
+    maxGuests: number;
     description: string;
     hotelId: number;
     hotel: {
         id: number;
         name: string;
-    }
+    };
+    images: {
+        id: number;
+        url: string;
+    }[];
+    amenities: {
+        amenityId: number;
+        amenity: {
+            id: number;
+            name: string;
+        };
+    }[];
 }
+export interface RoomDetailManager {
+    id: number;
+    name: string;
+    type: string;
+    description: string;
+    price: number;
+    discount: number;
+    maxGuests: number;
+    hotelId: number;
+    image?: string;
+    hotel: {
+        id: number;
+        name: string;
+    };
+    images: {
+        id: number;
+        url: string;
+    }[];
+    amenities: {
+        amenityId: number;
+        amenity: {
+            id: number;
+            name: string;
+        };
+    }[];
+}
+
 export interface BookingManger {
     id: number;
     room: {
@@ -92,6 +132,12 @@ export interface BookingManger {
         id: number;
         fullName: string;
     }
+}
+export interface BlogManager {
+    id: number;
+    image: string;
+    summary: string;
+    title: string;
 }
 export interface HotelRevenue {
     hotelId: number;
