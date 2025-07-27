@@ -6,9 +6,12 @@ import EditProfileUser from "./EditProfileUser";
 import { useState, useEffect } from 'react';
 import { hideLoading, showLoading } from '@/redux/features/loadingSlice';
 import { useAppDispatch } from '@/redux/hook';
+import { useTranslation } from "react-i18next";
 export default function Profile() {
     const { user } = useSelector((state: RootState) => state.userSlice);
     const [isEditing, setIsEditing] = useState(false);
+    const { t } = useTranslation();
+    const [mounted, setMounted] = useState(false);
     const dispatch = useAppDispatch();
 
     useEffect(() => {
@@ -19,14 +22,17 @@ export default function Profile() {
 
         return () => clearTimeout(timeout);
     }, [dispatch]);
-    
+    useEffect(() => {
+        setMounted(true);
+    }, [])
+    if (!mounted) return null;
     return (
         <div className="max-w-4xl mx-auto mt-6 px-4 space-y-8">
             {/* Header */}
             <div className="flex items-center justify-between">
-                <h1 className="text-3xl font-bold text-gray-800">Giới thiệu bản thân</h1>
+                <h1 className="text-3xl font-bold text-gray-800">{t("profile.text_2")}</h1>
                 <button onClick={() => setIsEditing(true)} className="bg-gray-200 hover:bg-gray-300 cursor-pointer text-gray-800 font-semibold px-4 py-2 rounded-lg transition duration-200">
-                    Chỉnh sửa
+                    {t("profile.text_3")}
                 </button>
             </div>
             {/* Nếu đang ở chế độ chỉnh sửa */}
@@ -59,21 +65,21 @@ export default function Profile() {
                 )}
 
                 <div>
-                    <h2 className="text-xl font-semibold dark:text-black">{user?.fullName}</h2>
-                    <p className="text-gray-600 text-sm">Thành viên từ năm 2024</p>
+                    <h2 className="text-xl mb-1 font-semibold dark:text-black">{user?.fullName}</h2>
+                    <p className="text-gray-600 mb-1 text-sm">{t("profile.text_4")}</p>
                     <span className="inline-block bg-purple-100 text-purple-700 text-xs font-semibold px-3 py-1 rounded-full">
-                        {user?.role === "USER" ? "Người dùng" : user?.role}
+                        {user?.role}
                     </span>
                 </div>
             </div>
             {/* Phần hoàn tất hồ sơ */}
             <div className="bg-white rounded-xl p-6 shadow-md">
-                <h3 className="text-xl font-bold text-gray-800 mb-2">Hoàn tất hồ sơ của bạn</h3>
+                <h3 className="text-xl font-bold text-gray-800 mb-2">{t("profile.text_5")}</h3>
                 <p className="text-gray-600 mb-4">
-                    Hồ sơ B5ooking là một phần quan trọng của mọi lượt đặt. Hãy hoàn tất hồ sơ để giúp khách và các host khác hiểu hơn về bạn.
+                    {t("profile.text_6")}
                 </p>
                 <button className="bg-[#6246ea] hover:bg-[#5135c8] cursor-pointer text-white font-semibold px-6 py-2 rounded-lg transition duration-200">
-                    Bắt đầu
+                    {t("profile.text_7")}
                 </button>
             </div>
         </div>

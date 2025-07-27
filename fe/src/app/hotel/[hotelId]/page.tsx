@@ -6,7 +6,6 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
 import { translateText } from "@/lib/translate";
-import { TranslatedAvailableRoom } from '@/app/types/hotelTypes';
 
 export default function HotelDetailPage() {
     const { hotelId } = useParams();

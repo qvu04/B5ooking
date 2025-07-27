@@ -14,6 +14,8 @@ import 'swiper/css/thumbs';
 import { postBookingRoom } from '@/app/api/bookingService';
 import toast from 'react-hot-toast';
 import ShowConfirm from '@/app/hotel/[hotelId]/FormConfirmBooking';
+import { useTranslation } from 'react-i18next';
+import { translateText } from "@/lib/translate";
 
 type Props = {
     open: boolean;
@@ -30,6 +32,7 @@ export default function RoomDetailModal({ open, onClose, room, checkIn, checkOut
     const [thumbsSwiper, setThumbsSwiper] = useState<SwiperType | null>(null);
     const [isBooking, setIsBooking] = useState(false);
     const [showConfirm, setShowConfirm] = useState(false);
+    const { t, i18n } = useTranslation();
     const handleBooking = async (nights: number, checkInDate: string, checkOutDate: string) => {
         if (!room) return
         setIsBooking(true);
@@ -60,14 +63,26 @@ export default function RoomDetailModal({ open, onClose, room, checkIn, checkOut
         const fetchRoomDetail = async () => {
             try {
                 const res = await getRoomByRoomId(room.id);
-                console.log('✌️res --->', res);
-                setFullRoom(res.data.data.room);
+                let roomData = res.data.data.room;
+
+                // Dịch nếu ngôn ngữ không phải tiếng Việt
+                if (i18n.language !== 'vi') {
+                    const translatedName = await translateText(roomData.name, 'vi', i18n.language);
+                    const translatedDescription = await translateText(roomData.description, 'vi', i18n.language);
+                    roomData = {
+                        ...roomData,
+                        name: translatedName,
+                        description: translatedDescription,
+                    };
+                }
+
+                setFullRoom(roomData);
             } catch (error) {
                 console.error('❌ Lỗi khi lấy chi tiết phòng:', error);
             }
         };
         fetchRoomDetail();
-    }, [room, open]);
+    }, [room, open, i18n.language]);
 
     if (!room || !fullRoom) return null;
 
@@ -143,17 +158,17 @@ export default function RoomDetailModal({ open, onClose, room, checkIn, checkOut
                     <div>
                         <h2 className="text-2xl font-bold text-purple-700">{fullRoom.name}</h2>
                         <p className="text-gray-600 text-sm">
-                            1 giường đôi • Tối đa {fullRoom.maxGuests} khách
+                            {t("hotelId.text_43")} • {t("hotelId.text_44")} {fullRoom.maxGuests} {t("hotelId.text_45")}
                         </p>
                     </div>
 
                     <div className="bg-gray-50 p-4 rounded-lg shadow-sm border">
-                        <h3 className="font-semibold text-lg mb-2 text-gray-800">Mô tả:</h3>
+                        <h3 className="font-semibold text-lg mb-2 text-gray-800">{t("hotelId.text_46")}</h3>
                         <p className="text-sm text-gray-700 leading-relaxed">{fullRoom.description}</p>
                     </div>
 
                     <div>
-                        <h3 className="text-lg font-semibold">Tiện nghi:</h3>
+                        <h3 className="text-lg font-semibold">{t("hotelId.text_47")}</h3>
                         <ul className="grid grid-cols-2 gap-2 text-gray-700 text-sm">
                             {room.amenities.map((item, i) => (
                                 <li key={i} className="flex items-center gap-1">
@@ -165,33 +180,33 @@ export default function RoomDetailModal({ open, onClose, room, checkIn, checkOut
                     </div>
 
                     <div>
-                        <h3 className="text-lg font-semibold">Trong phòng tắm:</h3>
+                        <h3 className="text-lg font-semibold">{t("hotelId.text_48")}</h3>
                         <ul className="list-disc grid grid-cols-2 list-inside text-sm text-gray-700 leading-relaxed space-y-1">
-                            <li>Đồ vệ sinh cá nhân miễn phí</li>
-                            <li>Áo choàng tắm</li>
-                            <li>Chậu rửa vệ sinh (bidet)</li>
-                            <li>Nhà vệ sinh</li>
-                            <li>Bồn tắm hoặc Vòi sen</li>
-                            <li>Khăn tắm</li>
-                            <li>Dép</li>
-                            <li>Máy sấy tóc</li>
-                            <li>Toilet phụ</li>
-                            <li>Khăn tắm/Bộ khăn trải giường (có thu phí)</li>
-                            <li>Giấy vệ sinh</li>
+                            <li>{t("hotelId.text_49")}</li>
+                            <li>{t("hotelId.text_50")}</li>
+                            <li>{t("hotelId.text_51")}</li>
+                            <li>{t("hotelId.text_52")}</li>
+                            <li>{t("hotelId.text_53")}</li>
+                            <li>{t("hotelId.text_54")}</li>
+                            <li>{t("hotelId.text_55")}</li>
+                            <li>{t("hotelId.text_56")}</li>
+                            <li>{t("hotelId.text_57")}</li>
+                            <li>{t("hotelId.text_58")}</li>
+                            <li>{t("hotelId.text_59")}</li>
                         </ul>
                     </div>
 
                     <div>
-                        <h3 className="text-lg font-semibold">Hướng tầm nhìn:</h3>
-                        <p className="text-sm text-gray-700">Nhìn ra thành phố</p>
+                        <h3 className="text-lg font-semibold">{t("hotelId.text_60")}</h3>
+                        <p className="text-sm text-gray-700">{t("hotelId.text_61")}</p>
                     </div>
 
                     <div>
-                        <h3 className="text-lg font-semibold">Giá:</h3>
+                        <h3 className="text-lg font-semibold">{t("hotelId.text_62")}</h3>
                         {room.discount > 0 ? (
                             <div>
                                 <p className="text-gray-500 line-through">{room.price.toLocaleString()} VND</p>
-                                <p className="text-green-600">Giảm {room.discount}%</p>
+                                <p className="text-green-600">{t("hotelId.text_62")} {room.discount}%</p>
                                 <p className="text-pink-600 font-bold text-lg">
                                     {discountedPrice.toLocaleString()} VND
                                 </p>
@@ -204,12 +219,12 @@ export default function RoomDetailModal({ open, onClose, room, checkIn, checkOut
                     </div>
 
                     <div>
-                        <h3 className="text-lg font-semibold">Ưu đãi:</h3>
+                        <h3 className="text-lg font-semibold">{t("hotelId.text_63")}</h3>
                         <ul className="text-sm space-y-1">
-                            <li>✅ Hủy miễn phí trước 18:00, 7 tháng 7, 2025</li>
-                            <li>✅ Thanh toán tại nơi nghỉ</li>
-                            <li>✅ Không cần thẻ tín dụng</li>
-                            <li>✅ Giảm giá đặc biệt</li>
+                            <li>✅ {t("hotelId.text_64")}</li>
+                            <li>✅ {t("hotelId.text_65")}</li>
+                            <li>✅ {t("hotelId.text_66")}</li>
+                            <li>✅ {t("hotelId.text_67")}</li>
                         </ul>
                     </div>
 
@@ -218,7 +233,7 @@ export default function RoomDetailModal({ open, onClose, room, checkIn, checkOut
                         disabled={isBooking}
                         className="w-full bg-purple-600 cursor-pointer text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition disabled:opacity-50"
                     >
-                        {isBooking ? "Đang xử lý..." : "Đặt Phòng Ngay"}
+                        {isBooking ? t("hotelId.text_68") : t("hotelId.text_69")}
                     </button>
                     <ShowConfirm
                         visible={showConfirm}

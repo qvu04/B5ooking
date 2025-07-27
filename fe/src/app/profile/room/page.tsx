@@ -3,16 +3,45 @@
 import { useEffect, useState } from "react";
 import { getBookedRoom } from "@/app/api/bookingService";
 import { BookedRoom } from "@/app/types/roomType";
+import { useTranslation } from "react-i18next";
+import { translateText } from "@/lib/translate";
 
 export default function Room() {
     const [rooms, setRooms] = useState<BookedRoom[]>([]);
     const [loading, setLoading] = useState(true);
-
+    const [mounted, setMounted] = useState(false);
+    const { i18n, t } = useTranslation();
     const fetchBookedRoom = async () => {
         try {
             const res = await getBookedRoom();
-            console.log('✌️res --->', res);
-            setRooms(res.data.data.bookings);
+            let bookings = res.data.data.bookings;
+
+            if (i18n.language !== "vi") {
+                bookings = await Promise.all(
+                    bookings.map(async (booking: any) => {
+                        const roomName = await translateText(booking.room.name, "vi", i18n.language);
+                        const roomDesc = await translateText(booking.room.description, "vi", i18n.language);
+                        const hotelName = await translateText(booking.room.hotel.name, "vi", i18n.language);
+                        const hotelAddr = await translateText(booking.room.hotel.address, "vi", i18n.language);
+
+                        return {
+                            ...booking,
+                            room: {
+                                ...booking.room,
+                                name: roomName,
+                                description: roomDesc,
+                                hotel: {
+                                    ...booking.room.hotel,
+                                    name: hotelName,
+                                    address: hotelAddr,
+                                },
+                            },
+                        };
+                    })
+                );
+            }
+
+            setRooms(bookings);
         } catch (error) {
             console.error("Lỗi khi lấy danh sách phòng đã đặt:", error);
         } finally {
@@ -22,16 +51,19 @@ export default function Room() {
 
     useEffect(() => {
         fetchBookedRoom();
-    }, []);
-
+    }, [i18n.language]);
+    useEffect(() => {
+        setMounted(true);
+    }, [])
+    if (!mounted) return null;
     return (
         <div className="max-w-5xl mx-auto px-4 py-6">
-            <h2 className="text-3xl font-bold mb-6 text-center dark:text-black">Danh sách phòng đã đặt</h2>
+            <h2 className="text-3xl font-bold mb-6 text-center dark:text-black">{t("room.text_1")}</h2>
 
             {loading ? (
-                <p className="text-center text-gray-500">Đang tải dữ liệu...</p>
+                <p className="text-center text-gray-500">{t("room.text_2")}</p>
             ) : rooms.length === 0 ? (
-                <p className="text-center text-gray-500">Bạn chưa đặt phòng nào.</p>
+                <p className="text-center text-gray-500">{t("room.text_3")}</p>
             ) : (
                 <div className="space-y-6">
                     {rooms.map((booking) => (
@@ -51,18 +83,18 @@ export default function Room() {
                                 <div className="flex justify-between items-center">
                                     <h3 className="text-xl font-semibold dark:text-black">{booking.room.name}</h3>
                                     <span className="px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-700">
-                                        {booking.status === "FINISHED" ? "Đã đặt" : booking.status}
+                                        {t(`booking_status.${booking.status}`)}
                                     </span>
                                 </div>
                                 <p className="text-gray-600 text-sm line-clamp-2">{booking.room.description}</p>
                                 <div className="grid grid-cols-2 md:grid-cols-3 gap-2 text-sm text-gray-700">
-                                    <p><strong>Nhận phòng:</strong> {new Date(booking.checkIn).toLocaleDateString()}</p>
-                                    <p><strong>Trả phòng:</strong> {new Date(booking.checkOut).toLocaleDateString()}</p>
-                                    <p><strong>Số đêm:</strong> {booking.nights}</p>
-                                    <p><strong>Số khách:</strong> {booking.guests}</p>
-                                    <p><strong>Giá/đêm:</strong> {booking.pricePerNight.toLocaleString()}₫</p>
+                                    <p><strong>{t("room.text_4")}</strong> {new Date(booking.checkIn).toLocaleDateString()}</p>
+                                    <p><strong>{t("room.text_5")}</strong> {new Date(booking.checkOut).toLocaleDateString()}</p>
+                                    <p><strong>{t("room.text_6")}</strong> {booking.nights}</p>
+                                    <p><strong>{t("room.text_7")}</strong> {booking.guests}</p>
+                                    <p><strong>{t("room.text_8")}</strong> {booking.pricePerNight.toLocaleString()}₫</p>
                                     <p>
-                                        <strong>Tổng tiền:</strong>{" "}
+                                        <strong>{t("room.text_9")}</strong>{" "}
                                         <span className="text-red-600 font-semibold">
                                             {booking.totalPrice.toLocaleString()}₫
                                         </span>

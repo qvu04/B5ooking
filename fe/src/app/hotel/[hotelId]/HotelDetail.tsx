@@ -43,7 +43,7 @@ export default function HotelDetailClient({ hotel }: Props) {
     const [availableRooms, setAvailableRooms] = useState<RoomAvailable[]>([]);
     const [selectedRoom, setSelectedRoom] = useState<RoomAvailable | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
 
     useEffect(() => {
         if (hotel?.address) {
@@ -75,7 +75,7 @@ export default function HotelDetailClient({ hotel }: Props) {
                 checkIn,
                 checkOut,
                 guests,
-            });
+            }, i18n.language);
             setAvailableRooms(rooms);
         } catch (error) {
             console.error("Lỗi khi tìm kiếm phòng:", error);
@@ -97,7 +97,7 @@ export default function HotelDetailClient({ hotel }: Props) {
                     checkIn: "2025-07-20",
                     checkOut: "2025-07-22",
                     guests: 2,
-                });
+                }, i18n.language);
                 setAvailableRooms(rooms);
             } catch (error) {
                 console.error("Lỗi khi fetch phòng trống:", error);
@@ -232,10 +232,7 @@ export default function HotelDetailClient({ hotel }: Props) {
                 <div className='mt-5'>
                     <h2 className='font-bold text-2xl '>{t("hotelId.text_4")} - {hotel.address}</h2>
                     <p className='pt-3 dark:text-[#94a1b2]'>
-                        {t("hotelId.text_5")}
-                        {t("hotelId.text_6")}
-                        {t("hotelId.text_7")}
-                        {t("hotelId.text_8")}
+                        {t("hotelId.text_5")} {t("hotelId.text_6")} {t("hotelId.text_7")} {t("hotelId.text_8")}
                     </p>
                     <div className="flex items-center gap-3 mt-4">
                         <div className="flex items-center gap-1 text-yellow-400">
@@ -455,7 +452,7 @@ export default function HotelDetailClient({ hotel }: Props) {
                     <div className="space-y-3 mb-8">
                         {([5, 4, 3, 2, 1] as const).map((i) => (
                             <div key={i} className="flex items-center gap-4">
-                                <span className="w-10 text-sm font-medium">{i} sao</span>
+                                <span className="w-10 text-sm font-medium">{i} {t("hotelId.star")}</span>
                                 <div className="w-full bg-gray-200 rounded h-2 overflow-hidden">
                                     <div
                                         className="bg-yellow-400 h-full"
@@ -514,7 +511,7 @@ export default function HotelDetailClient({ hotel }: Props) {
                                 className="text-purple-600 dark:text-[#7f5af0] cursor-pointer hover:underline font-medium text-sm"
                                 onClick={() => setShowAllReviews(!showAllReviews)}
                             >
-                                {showAllReviews ? "Ẩn bớt" : "Hiển thị thêm"}
+                                {showAllReviews ? t("hotelId.text_42") : t("hotelId.text_41")}
                             </button>
                         </div>
                     )}

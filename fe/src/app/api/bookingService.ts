@@ -1,6 +1,5 @@
 import { https } from "./configService";
 import { BookingItem, BookingStatusEnum } from "../types/bookingType";
-import { BookedRoom } from "../types/roomType";
 
 // 👇 Đây là kiểu thực tế từ API bạn đã log ra
 interface BookingApiResponse {

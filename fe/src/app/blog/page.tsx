@@ -5,24 +5,42 @@ import { useEffect, useState } from 'react';
 import { getAllLocation } from '@/app/api/locationService';
 import { Locations } from '@/app/types/locationTypes';
 import Link from 'next/link';
+import { useTranslation } from 'react-i18next';
+import { translateText } from "@/lib/translate";
 export default function Article() {
     const [page, setPage] = useState(1);
     const [blogs, setBlogs] = useState<BlogsByPage[]>([]);
     const [pagination, setPagination] = useState<Pagination>();
     const [locations, setLocations] = useState<Locations[]>([]);
     const [selectedLocationId, setSelectedLocationId] = useState<number | 'all'>('all');
-
+    const [mounted, setMounted] = useState(false);
+    const { i18n, t } = useTranslation();
     useEffect(() => {
         const fetchLocations = async () => {
             try {
                 const res = await getAllLocation();
-                setLocations(res.data.data.locations);
+                let locationsData: Locations[] = res.data.data.locations;
+
+                // Nếu không phải tiếng Việt thì dịch từng city
+                if (i18n.language !== 'vi') {
+                    locationsData = await Promise.all(
+                        locationsData.map(async (loc) => {
+                            const translatedCity = await translateText(loc.city, "vi", i18n.language);
+                            return {
+                                ...loc,
+                                city: translatedCity,
+                            };
+                        })
+                    );
+                }
+
+                setLocations(locationsData);
             } catch (error) {
                 console.log('Lỗi lấy khu vực:', error);
             }
         };
         fetchLocations();
-    }, []);
+    }, [i18n.language]);
     useEffect(() => {
         const fetchBlogs = async () => {
             try {
@@ -32,23 +50,42 @@ export default function Article() {
                 } else {
                     res = await getBlogsByLocationId(selectedLocationId, page);
                 }
+                let blogs: BlogsByPage[] = res.data.data.blogs;
 
-                setBlogs(res.data.data.blogs);
+                // Nếu không phải tiếng Việt thì dịch
+                if (i18n.language !== 'vi') {
+                    blogs = await Promise.all(
+                        blogs.map(async (blog) => {
+                            const title = await translateText(blog.title, "vi", i18n.language);
+                            const summary = await translateText(blog.summary, "vi", i18n.language);
+                            return {
+                                ...blog,
+                                title,
+                                summary,
+                            };
+                        })
+                    );
+                }
+
+                setBlogs(blogs);
                 setPagination(res.data.data.pagination);
             } catch (error) {
                 console.log('Lỗi lấy blog:', error);
             }
         };
         fetchBlogs();
-    }, [selectedLocationId, page]);
+    }, [selectedLocationId, page, i18n.language]);
+    useEffect(() => {
+        setMounted(true);
+    }, [])
+    if (!mounted) return null;
     return (
         <div className="max-w-6xl mx-auto px-4 py-10">
             {/* Giới thiệu trang Booking */}
             <div className="text-center mb-12">
-                <h1 className="text-4xl text-[#fffffe] font-bold mb-4"><span>B5ooking: </span>Khám phá Sự đặc sắc
-                    và Cập nhật tin tức mới nhất</h1>
+                <h1 className="text-4xl text-black dark:text-[#fffffe] font-bold mb-4"><span>B5ooking:</span> {t("blog.text_1")}</h1>
                 <p className="text-gray-600 dark:text-[#94a1b2] text-lg">
-                    Cập nhật những kinh nghiệm, mẹo hay và địa điểm du lịch thú vị dành cho bạn.
+                    {t("blog.text_2")}
                 </p>
             </div>
 
@@ -61,7 +98,7 @@ export default function Article() {
                         setPage(1);
                     }}
                 >
-                    Tất cả
+                    {t("blog.text_3")}
                 </button>
                 {locations.map((loc) => (
                     <button
@@ -99,7 +136,7 @@ export default function Article() {
                         disabled={page === 1}
                         className="px-4 py-2 bg-[#7f5af0] text-[#fffffe] rounded disabled:opacity-50"
                     >
-                        Trang trước
+                        {t("blog.text_4")}
                     </button>
                     <span>
                         Trang {pagination.page} / {pagination.totalPages}
@@ -109,7 +146,7 @@ export default function Article() {
                         disabled={page === pagination.totalPages}
                         className="px-4 py-2 bg-[#7f5af0] text-[#fffffe] rounded disabled:opacity-50"
                     >
-                        Trang sau
+                        {t("blog.text_5")}
                     </button>
                 </div>
             )}
