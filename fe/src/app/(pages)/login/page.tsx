@@ -5,13 +5,11 @@ import { setUserLoginAction } from "@/redux/features/userSlice";
 import { useAppDispatch } from "@/redux/hook";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { FiEye, FiEyeOff } from "react-icons/fi";
 import toast from "react-hot-toast";
-import { useSelector } from "react-redux";
-import { RootState } from "@/lib/store";
-import { hideLoading, showLoading } from "@/redux/features/loadingSlice";
+import { useTranslation } from "react-i18next";
 
 type FormData = {
     email: string;
@@ -21,6 +19,8 @@ type FormData = {
 export default function LoginPage() {
     const { register, handleSubmit, formState: { errors } } = useForm<FormData>();
     const [showPassword, setShowPassword] = useState(false);
+    const { t } = useTranslation();
+    const [mounted, setMounted] = useState(false);
     const dispatch = useAppDispatch();
     const router = useRouter();
     const fetchUserLogin = async (formValues: { taiKhoan: string; matKhau: string }) => {
@@ -52,7 +52,10 @@ export default function LoginPage() {
             matKhau: data.password
         });
     };
-
+    useEffect(() => {
+        setMounted(true);
+    }, [])
+    if (!mounted) return null
     return (
         <div className="relative w-full h-screen overflow-hidden">
             {/* VIDEO BACKGROUND */}
@@ -72,19 +75,19 @@ export default function LoginPage() {
             <div className="relative z-20 flex flex-col items-center justify-center h-full px-4 ">
                 {/* Chào mừng */}
                 <h1 className="text-2xl md:text-3xl font-bold text-white drop-shadow-lg mb-6">
-                    Chào mừng bạn đến với <span className="text-[#6246ea]">B5ooking</span>
+                    {t("login.title")} <span className="text-[#6246ea]">B5ooking</span>
                 </h1>
 
                 {/* FORM LOGIN */}
                 <div className="bg-white/60 dark:bg-white/10 backdrop-blur-md p-10 rounded-2xl shadow-xl w-full max-w-md border border-gray-200 dark:border-white/20">
                     <h2 className="text-xl font-semibold text-center text-gray-800 dark:text-white mb-6">
-                        Đăng nhập
+                        {t("login.form_title")}
                     </h2>
 
                     <form className="space-y-5" onSubmit={handleSubmit(onSubmit)}>
                         {/* Email */}
                         <div>
-                            <label className="block text-sm font-medium text-black">Email</label>
+                            <label className="block text-sm font-medium text-black">{t("login.form_email")}</label>
                             <input
                                 type="email"
                                 {...register("email", { required: "Email không được để trống" })}
@@ -98,7 +101,7 @@ export default function LoginPage() {
 
                         {/* Password */}
                         <div>
-                            <label className="block text-sm font-medium text-black">Mật khẩu</label>
+                            <label className="block text-sm font-medium text-black">{t("login.form_password")}</label>
                             <div className="relative">
                                 <input
                                     type={showPassword ? "text" : "password"}
@@ -123,14 +126,14 @@ export default function LoginPage() {
                             type="submit"
                             className="w-full bg-[#6246ea] cursor-pointer hover:bg-blue-700 text-white py-2 rounded-xl font-semibold transition-all duration-200"
                         >
-                            Đăng nhập
+                            {t("login.form_button")}
                         </button>
                     </form>
 
                     <p className="text-sm text-black mt-4 text-center">
-                        Chưa có tài khoản?{" "}
+                        {t("login.form_text_1")}{" "}
                         <Link href="/register" className="text-[#6246ea] hover:underline">
-                            Đăng ký ngay
+                            {t("login.form_text_2")}
                         </Link>
                     </p>
                 </div>

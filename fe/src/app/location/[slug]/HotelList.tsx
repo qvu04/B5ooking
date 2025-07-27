@@ -2,11 +2,19 @@
 import { Hotels } from '@/app/types/hotelTypes';
 import { Carousel } from 'antd';
 import Link from 'next/link';
+import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 type Props = {
     hotels: Hotels[];
 };
 
 export default function HotelListClient({ hotels }: Props) {
+    const { t } = useTranslation();
+    const [mounted, setMounted] = useState(false);
+    useEffect(() => {
+        setMounted(true);
+    }, [])
+    if (!mounted) return null;
     return (
         <div className="w-full lg:w-[70%] pr-6 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
             {hotels.map((hotel) => (
@@ -44,7 +52,7 @@ export default function HotelListClient({ hotels }: Props) {
 
                         {/* Label yêu thích */}
                         <div className="absolute top-2 left-2 bg-white dark:text-black text-xs px-2 py-1 rounded-full shadow font-medium">
-                            Được khách yêu thích
+                            {t("locationId.title_4")}
                         </div>
                     </div>
 

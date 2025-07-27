@@ -10,6 +10,7 @@ export interface Hotels {
     image: string;
     averageRating: number;
     defaultRating: number;
+    availableRooms: RoomAvailable[];
     images: RoomImage[];
     amenities: {
         amenity: {
@@ -64,6 +65,10 @@ export type RoomAvailable = {
     update_At: string;
     images: RoomImage[];
     amenities: RoomAmenity[];
+};
+export type TranslatedAvailableRoom = Omit<RoomAvailable, 'name' | 'amenities'> & {
+  name: string;
+  amenities: RoomAmenity[]; // với RoomAmenity chứa amenity.name kiểu string đã dịch
 };
 export interface HotelInfo {
     id: number;

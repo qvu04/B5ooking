@@ -11,7 +11,7 @@ import { useTranslation } from 'react-i18next';
 const PopularLocation = () => {
     const [locations, setLocations] = useState<Locations[] | null>(null);
     const { i18n, t } = useTranslation();
-
+    const [mounted, setMounted] = useState(false);
     useEffect(() => {
         const fetchData = async () => {
             const translatedLocations = await fetchTranslateLocation(i18n.language);
@@ -19,6 +19,10 @@ const PopularLocation = () => {
         };
         fetchData();
     }, [i18n.language]);
+    useEffect(() => {
+        setMounted(true);
+    }, [])
+    if (!mounted) return null;
     return (
         <div>
             <h2 className="text-2xl font-bold mb-4 text-black dark:text-white">

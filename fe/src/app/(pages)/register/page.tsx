@@ -3,11 +3,12 @@
 import { registerService } from "@/app/api/authService";
 import { RegisterUser } from "@/app/types/authType";
 import Link from "next/link";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { FiEye, FiEyeOff } from "react-icons/fi";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
+import { useTranslation } from "react-i18next";
 
 type FormData = {
     firstName: string;
@@ -29,6 +30,8 @@ export default function RegisterPage() {
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const router = useRouter();
+    const { t } = useTranslation();
+    const [mounted, setMounted] = useState(false);
     const fetchUserRegister = async (formValues: FormData) => {
         try {
             const payload: RegisterUser = {
@@ -53,7 +56,10 @@ export default function RegisterPage() {
     const onSubmit = (data: FormData) => {
         fetchUserRegister(data);
     };
-
+    useEffect(() => {
+        setMounted(true);
+    }, [])
+    if (!mounted) return null;
     return (
         <div className="relative w-full h-screen overflow-hidden">
             {/* VIDEO BACKGROUND */}
@@ -73,20 +79,20 @@ export default function RegisterPage() {
             <div className="relative z-20 flex flex-col items-center justify-center h-full px-4">
                 {/* TIÊU ĐỀ */}
                 <h1 className="text-2xl md:text-3xl font-bold text-white drop-shadow-lg mb-6 text-center">
-                    Chào mừng bạn đến với <span className="text-[#6246ea]">B5ooking</span>
+                    {t("register.title")} <span className="text-[#6246ea]">B5ooking</span>
                 </h1>
 
                 {/* FORM */}
                 <div className="bg-white/60 dark:bg-white/10 backdrop-blur-md border border-gray-200 dark:border-white/20 shadow-xl rounded-2xl p-10 w-full max-w-md">
                     <h2 className="text-3xl font-bold text-center text-gray-800 dark:text-white mb-6">
-                        Đăng ký
+                        {t("register.form_title")}
                     </h2>
 
                     <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
                         {/* First + Last Name */}
                         <div className="flex space-x-4">
                             <div className="w-1/2">
-                                <label className="block text-sm font-medium text-black">Họ</label>
+                                <label className="block text-sm font-medium text-black">{t("register.form_text_1")}</label>
                                 <input
                                     type="text"
                                     {...register("firstName", { required: "Họ không được để trống" })}
@@ -98,7 +104,7 @@ export default function RegisterPage() {
                                 )}
                             </div>
                             <div className="w-1/2">
-                                <label className="block text-sm font-medium text-black">Tên</label>
+                                <label className="block text-sm font-medium text-black">{t("register.form_text_2")}</label>
                                 <input
                                     type="text"
                                     {...register("lastName", { required: "Tên không được để trống" })}
@@ -113,15 +119,15 @@ export default function RegisterPage() {
 
                         {/* Gender */}
                         <div>
-                            <label className="block text-sm font-medium text-black">Giới tính</label>
+                            <label className="block text-sm font-medium text-black">{t("register.form_text_3")}</label>
                             <select
                                 {...register("gender", { required: "Vui lòng chọn giới tính" })}
                                 className={`mt-1 w-full px-4 py-2 rounded-xl border ${errors.gender ? "border-red-500" : "border-gray-300"} focus:ring-2 focus:ring-blue-400 focus:outline-none dark:bg-transparent dark:text-white`}
                                 defaultValue=""
                             >
-                                <option value="" disabled>-- Vui lòng chọn giới tính --</option>
-                                <option value="male">Nam</option>
-                                <option value="female">Nữ</option>
+                                <option value="" disabled>{t("register.form_text_4")}</option>
+                                <option value="male">{t("register.form_male")}</option>
+                                <option value="female">{t("register.form_female")}</option>
                             </select>
                             {errors.gender && (
                                 <p className="text-red-500 text-sm mt-1">{errors.gender.message}</p>
@@ -130,7 +136,7 @@ export default function RegisterPage() {
 
                         {/* Email */}
                         <div>
-                            <label className="block text-sm font-medium text-black">Email</label>
+                            <label className="block text-sm font-medium text-black">{t("register.form_text_5")}</label>
                             <input
                                 type="email"
                                 {...register("email", { required: "Email không được để trống" })}
@@ -144,7 +150,7 @@ export default function RegisterPage() {
 
                         {/* Password */}
                         <div>
-                            <label className="block text-sm font-medium text-black">Mật khẩu</label>
+                            <label className="block text-sm font-medium text-black">{t("register.form_text_6")}</label>
                             <div className="relative">
                                 <input
                                     type={showPassword ? "text" : "password"}
@@ -166,7 +172,7 @@ export default function RegisterPage() {
 
                         {/* Confirm Password */}
                         <div>
-                            <label className="block text-sm font-medium text-black">Xác nhận mật khẩu</label>
+                            <label className="block text-sm font-medium text-black">{t("register.form_text_7")}</label>
                             <div className="relative">
                                 <input
                                     type={showConfirmPassword ? "text" : "password"}
@@ -194,13 +200,13 @@ export default function RegisterPage() {
                             type="submit"
                             className="w-full bg-[#6246ea] cursor-pointer hover:bg-blue-700 text-white py-2 rounded-xl font-semibold transition-all duration-200"
                         >
-                            Đăng ký
+                            {t("register.form_button")}
                         </button>
                     </form>
 
                     <p className="text-sm text-black mt-4 text-center">
-                        Đã có tài khoản?{" "}
-                        <Link href="/login" className="text-[#6246ea] hover:underline">Đăng nhập</Link>
+                        {t("register.form_text_8")}{" "}
+                        <Link href="/login" className="text-[#6246ea] hover:underline">{t("register.form_text_9")}</Link>
                     </p>
                 </div>
             </div>

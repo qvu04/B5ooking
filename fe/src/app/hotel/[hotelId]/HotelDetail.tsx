@@ -23,6 +23,7 @@ import { DatePicker } from "antd";
 import dayjs from "dayjs";
 import RoomDetailModal from './RoomDetailModal';
 import { addFavorite } from '@/app/api/favoriteService';
+import { useTranslation } from 'react-i18next';
 type Props = {
     hotel: Hotels;
 };
@@ -42,6 +43,7 @@ export default function HotelDetailClient({ hotel }: Props) {
     const [availableRooms, setAvailableRooms] = useState<RoomAvailable[]>([]);
     const [selectedRoom, setSelectedRoom] = useState<RoomAvailable | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const { t } = useTranslation();
 
     useEffect(() => {
         if (hotel?.address) {
@@ -148,7 +150,7 @@ export default function HotelDetailClient({ hotel }: Props) {
         <div className="max-w-7xl mx-auto px-4 py-8">
             {/* Tiêu đề */}
             <h1 className="text-2xl text-center md:text-3xl font-semibold mb-6 leading-snug">
-                {hotel.name} - Cùng với những dịch vụ và phong cách phòng sang trọng
+                {hotel.name} - {t("hotelId.title")}
             </h1>
 
             {/* Layout hình ảnh + bản đồ */}
@@ -203,18 +205,18 @@ export default function HotelDetailClient({ hotel }: Props) {
                     {coords && (
                         <>
                             <div className="flex justify-between items-center mb-4">
-                                <h2 className="text-lg font-medium mb-2">Vị trí trên bản đồ</h2>
+                                <h2 className="text-lg font-medium mb-2">{t("hotelId.text_1")}</h2>
                                 <div className="flex items-center gap-6 text-gray-700">
                                     <button className="flex items-center gap-1 cursor-pointer">
                                         <FiShare size={20} />
-                                        <span className='dark:text-[#94a1b2]'>Chia sẻ</span>
+                                        <span className='dark:text-[#94a1b2]'>{t("hotelId.text_2")}</span>
                                     </button>
 
                                     <button
                                         onClick={handleAddFavoriteHotel}
                                         className="flex items-center gap-1 cursor-pointer">
                                         <AiOutlineHeart className="text-gray-600 hover:text-red-500 transition-colors duration-300" size={20} />
-                                        <span className='dark:text-[#94a1b2]'>Lưu</span>
+                                        <span className='dark:text-[#94a1b2]'>{t("hotelId.text_3")}</span>
                                     </button>
                                 </div>
                             </div>
@@ -228,12 +230,12 @@ export default function HotelDetailClient({ hotel }: Props) {
             {/* Mô tả */}
             <div>
                 <div className='mt-5'>
-                    <h2 className='font-bold text-2xl '>Địa chỉ - {hotel.address}</h2>
+                    <h2 className='font-bold text-2xl '>{t("hotelId.text_4")} - {hotel.address}</h2>
                     <p className='pt-3 dark:text-[#94a1b2]'>
-                        2 khách,
-                        1 phòng ngủ,
-                        1 giường,
-                        1 phòng tắm
+                        {t("hotelId.text_5")}
+                        {t("hotelId.text_6")}
+                        {t("hotelId.text_7")}
+                        {t("hotelId.text_8")}
                     </p>
                     <div className="flex items-center gap-3 mt-4">
                         <div className="flex items-center gap-1 text-yellow-400">
@@ -252,12 +254,12 @@ export default function HotelDetailClient({ hotel }: Props) {
                         <span className="text-gray-800 dark:text-[#94a1b2] font-medium">
                             {(hotel.averageRating || hotel.defaultRating).toFixed(1)} / 5
                         </span>
-                        <span className="text-gray-500 dark:text-[#94a1b2]">({hotel.reviewCount} đánh giá)</span>
+                        <span className="text-gray-500 dark:text-[#94a1b2]">({hotel.reviewCount} {t("hotelId.text_9")})</span>
                     </div>
 
                 </div>
                 <div className="mt-10 space-y-3">
-                    <h2 className="text-xl font-semibold">Mô tả khách sạn</h2>
+                    <h2 className="text-xl font-semibold">{t("hotelId.text_10")}</h2>
                     <p className="text-gray-700 dark:text-[#94a1b2] whitespace-pre-line">{hotel.description}</p>
                 </div>
                 {/* Dịch vụ */}
@@ -266,8 +268,8 @@ export default function HotelDetailClient({ hotel }: Props) {
                     <div className="flex items-start gap-4 border-b border-gray-300 pb-6">
                         <img src="/images/door.png" alt="check" className="w-10 h-10 object-contain" />
                         <div>
-                            <h3 className="text-lg font-semibold dark:text-[#fffffe] text-gray-900">Tự nhận phòng</h3>
-                            <p className="text-gray-600 dark:text-[#94a1b2]">Tự nhận phòng với hộp khóa an toàn</p>
+                            <h3 className="text-lg font-semibold dark:text-[#fffffe] text-gray-900">{t("hotelId.text_12")}</h3>
+                            <p className="text-gray-600 dark:text-[#94a1b2]">{t("hotelId.text_13")}</p>
                         </div>
                     </div>
 
@@ -275,8 +277,8 @@ export default function HotelDetailClient({ hotel }: Props) {
                     <div className="flex items-start gap-4 border-b border-gray-200 pb-6">
                         <img src="/images/check_room.png" alt="check" className="w-10 h-10 object-contain" />
                         <div>
-                            <h3 className="text-lg font-semibold dark:text-[#fffffe] text-gray-900">Khu vực có cảnh đẹp</h3>
-                            <p className="text-gray-600 dark:text-[#94a1b2]">Khách rất thích vị trí tuyệt đẹp của nhà này</p>
+                            <h3 className="text-lg font-semibold dark:text-[#fffffe] text-gray-900">{t("hotelId.text_14")}</h3>
+                            <p className="text-gray-600 dark:text-[#94a1b2]">{t("hotelId.text_15")}</p>
                         </div>
                     </div>
 
@@ -284,14 +286,14 @@ export default function HotelDetailClient({ hotel }: Props) {
                     <div className="flex items-start gap-4">
                         <img src="/images/star.png" alt="check" className="w-10 h-10 object-contain" />
                         <div>
-                            <h3 className="text-lg font-semibold  text-gray-900 dark:text-[#fffffe]">Chủ nhà siêu cấp</h3>
-                            <p className="text-gray-600 dark:text-[#94a1b2]">Chủ nhà dày dặn kinh nghiệm, được đánh giá cao</p>
+                            <h3 className="text-lg font-semibold  text-gray-900 dark:text-[#fffffe]">{t("hotelId.text_11")}</h3>
+                            <p className="text-gray-600 dark:text-[#94a1b2]">{t("hotelId.text_16")}</p>
                         </div>
                     </div>
                 </div>
                 {/* Tiện nghi */}
                 <div className="mt-10">
-                    <h2 className="text-xl font-semibold mb-4">Tiện nghi nổi bật</h2>
+                    <h2 className="text-xl font-semibold mb-4">{t("hotelId.text_17")}</h2>
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
                         {hotel.amenities.map((item, index) => (
                             <div
@@ -306,14 +308,14 @@ export default function HotelDetailClient({ hotel }: Props) {
                 </div>
                 {/* Các phòng trống */}
                 <div className="mt-10">
-                    <h2 className="text-2xl font-bold mb-6">Tất cả các phòng còn trống</h2>
+                    <h2 className="text-2xl font-bold mb-6">{t("hotelId.text_18")}</h2>
                     {/* Thanh tìm kiếm phòng trống */}
                     <div className="mt-4 border border-gray-300 dark:bg-[#242629] p-6 rounded-lg shadow-sm space-y-4">
-                        <h3 className="text-xl font-semibold mb-2">Tìm kiếm phòng trống</h3>
+                        <h3 className="text-xl font-semibold mb-2">{t("hotelId.text_19")}</h3>
                         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                             {/* Chọn ngày */}
                             <div>
-                                <label className="block mb-1 font-medium text-gray-700 dark:text-[#94a1b2]">Chọn ngày</label>
+                                <label className="block mb-1 font-medium text-gray-700 dark:text-[#94a1b2]">{t("hotelId.text_20")}</label>
                                 <DatePicker.RangePicker
                                     format="YYYY-MM-DD"
                                     onChange={handleDateChange}
@@ -324,7 +326,7 @@ export default function HotelDetailClient({ hotel }: Props) {
 
                             {/* Số lượng khách */}
                             <div>
-                                <label className="block mb-1 font-medium text-gray-700 dark:text-[#94a1b2]">Số lượng khách</label>
+                                <label className="block mb-1 font-medium text-gray-700 dark:text-[#94a1b2]">{t("hotelId.text_21")}</label>
                                 <input
                                     type="number"
                                     min={1}
@@ -340,19 +342,19 @@ export default function HotelDetailClient({ hotel }: Props) {
                                     onClick={handleSearch}
                                     className="w-full bg-purple-600 dark:bg-[#7f5af0] cursor-pointer hover:bg-purple-700 text-white py-2 px-4 rounded-lg font-semibold"
                                 >
-                                    Tìm kiếm
+                                    {t("hotelId.text_22")}
                                 </button>
                             </div>
                         </div>
                     </div>
                     {availableRooms.length > 0 ? (
-                        <table className="w-full border border-gray-300 table-fixed mt-5">
+                        <table className="w-full border-t border-gray-300 table-fixed mt-5">
                             <thead>
-                                <tr className="bg-[#d1d1e9] dark:bg-[#242629] text-left">
-                                    <th className="w-[30%] border-r border-gray-300 p-4 font-semibold text-lg dark:text-">Loại phòng</th>
-                                    <th className="w-[10%] border-r border-gray-300 p-4 font-semibold text-lg text-center">Lượng khách</th>
-                                    <th className="w-[15%] border-r border-gray-300 p-4 font-semibold text-lg text-center">Giá hôm nay</th>
-                                    <th className="w-[45%] p-4 font-semibold text-lg text-center">Các ưu đãi</th>
+                                <tr className="bg-[#d1d1e9] border-r dark:bg-[#242629] text-left">
+                                    <th className="w-[30%] border-r border-gray-300 p-4 font-semibold text-lg dark:text-">{t("hotelId.text_23")}</th>
+                                    <th className="w-[10%] border-r border-gray-300 p-4 font-semibold text-lg text-center">{t("hotelId.text_24")}</th>
+                                    <th className="w-[15%] border-r border-gray-300 p-4 font-semibold text-lg text-center">{t("hotelId.text_25")}</th>
+                                    <th className="w-[45%] p-4 font-semibold text-lg text-center">{t("hotelId.text_26")}</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -364,8 +366,8 @@ export default function HotelDetailClient({ hotel }: Props) {
                                                 className="font-bold hover:text-[#6246ea] cursor-pointer text-lg"
                                                 onClick={() => handleOpenRoomDetail(room)}
                                             >{room.name}</button>
-                                            <p className="text-red-500 font-bold dark:text-[#7f5af0] text-sm mt-1">chỉ còn 1 phòng trên trang chúng tôi</p>
-                                            <p className="mt-2 dark:text-[#94a1b2]">1 giường đôi 🛏️</p>
+                                            <p className="text-red-500 font-bold dark:text-[#7f5af0] text-sm mt-1">{t("hotelId.text_27")}</p>
+                                            <p className="mt-2 dark:text-[#94a1b2]">{t("hotelId.text_28")} 🛏️</p>
                                             <div className="flex flex-wrap gap-x-4 gap-y-2 mt-3 text-sm text-gray-700">
                                                 {room.amenities.map((item, i) => (
                                                     <div key={i} className="flex items-center gap-1 dark:text-[#94a1b2] ">
@@ -411,25 +413,25 @@ export default function HotelDetailClient({ hotel }: Props) {
                                             <ul className="text-sm text-gray-700 dark:text-[#94a1b2] space-y-1">
                                                 <li className="flex items-start gap-2">
                                                     <AiOutlineCheck className="text-green-500 mt-1" size={16} />
-                                                    <span>Hủy miễn phí trước 18:00, 7 tháng 7, 2025</span>
+                                                    <span>{t("hotelId.text_29")}</span>
                                                 </li>
                                                 <li className="flex items-start gap-2">
                                                     <AiOutlineCheck className="text-green-500 mt-1" size={16} />
-                                                    <span>Không cần thanh toán trước - thanh toán tại chỗ nghỉ</span>
+                                                    <span>{t("hotelId.text_30")}</span>
                                                 </li>
                                                 <li className="flex items-start gap-2">
                                                     <AiOutlineCheck className="text-green-500 mt-1" size={16} />
-                                                    <span>Không cần thẻ tín dụng</span>
+                                                    <span>{t("hotelId.text_31")}</span>
                                                 </li>
                                                 <li className="flex items-start gap-2">
                                                     <AiOutlineCheck className="text-green-500 mt-1" size={16} />
-                                                    <span><strong className='dark:text-[#7f5af0]'>Giảm giá 10%</strong> trên giá trước thuế và phí</span>
+                                                    <span><strong className='dark:text-[#7f5af0]'>{t("hotelId.text_32")} {t("hotelId.text_discount")}</strong> {t("hotelId.text_33")}</span>
                                                 </li>
                                             </ul>
                                             <button
                                                 onClick={() => handleOpenRoomDetail(room)}
                                                 className="mt-4 bg-purple-500 dark:bg-[#7f5af0] cursor-pointer hover:bg-purple-600 text-white px-6 py-2 rounded-full font-semibold">
-                                                Xem chi tiết phòng
+                                                {t("hotelId.text_34")}
                                             </button>
                                         </td>
                                     </tr>
@@ -438,8 +440,8 @@ export default function HotelDetailClient({ hotel }: Props) {
                         </table>
                     ) : (
                         <div className="text-center mt-6 text-red-500 font-medium text-base">
-                            Hiện tại không có phòng theo ngày này và lượng khách không phù hợp.<br />
-                            Vui lòng giảm số lượng khách hoặc chọn ngày phù hợp hơn.
+                            {t("hotelId.text_35")}<br />
+                            {t("hotelId.text_36")}
                         </div>
                     )}
 
@@ -447,7 +449,7 @@ export default function HotelDetailClient({ hotel }: Props) {
                 {/* Comment */}
                 {/* Đánh giá của khách hàng */}
                 <div className="mt-12">
-                    <h2 className="text-2xl font-bold mb-6">Đánh giá của khách hàng</h2>
+                    <h2 className="text-2xl font-bold mb-6">{t("hotelId.text_37")}</h2>
 
                     {/* Tổng quan rating */}
                     <div className="space-y-3 mb-8">
@@ -461,7 +463,7 @@ export default function HotelDetailClient({ hotel }: Props) {
                                     />
                                 </div>
                                 <span className="text-sm text-gray-500 dark:text-[#94a1b2] w-20 text-right">
-                                    {hotel.ratingStats.count[i]} đánh giá
+                                    {hotel.ratingStats.count[i]} {t("hotelId.text_38")}
                                 </span>
                             </div>
                         ))}
@@ -520,7 +522,7 @@ export default function HotelDetailClient({ hotel }: Props) {
                 {/* Post bình luận */}
                 {/* Gửi đánh giá */}
                 <div className="mt-12">
-                    <h2 className="text-2xl font-bold mb-6">Gửi đánh giá của bạn</h2>
+                    <h2 className="text-2xl font-bold mb-6">{t("hotelId.text_39")}</h2>
 
                     <div className="bg-white dark:bg-[#242629]  border border-gray-200 rounded-xl shadow-sm p-6 space-y-6">
                         {/* Avatar + Tên + Chọn sao */}
@@ -558,7 +560,7 @@ export default function HotelDetailClient({ hotel }: Props) {
 
                         {/* Textarea */}
                         <textarea
-                            placeholder="Chia sẻ trải nghiệm của bạn tại khách sạn..."
+                            placeholder={t("hotelId.text_40")}
                             rows={4}
                             value={comment}
                             onChange={(e) => setComment(e.target.value)}
@@ -575,7 +577,7 @@ export default function HotelDetailClient({ hotel }: Props) {
                                     : "bg-gray-300 text-gray-500 cursor-not-allowed"
                                     }`}
                             >
-                                Đánh giá
+                                {t("hotelId.button")}
                             </button>
                         </div>
                     </div>

@@ -14,6 +14,7 @@ export default function HeaderBanner() {
     const [guestCount, setGuestCount] = useState(1);
     const [dateRange, setDateRange] = useState<[dayjs.Dayjs | null, dayjs.Dayjs | null] | null>(null);
     const [options, setOptions] = useState<{ value: string; label: React.ReactNode }[]>([]);
+    const [mounted, setMounted] = useState(false);
     const router = useRouter();
     const { RangePicker } = DatePicker;
     const { t, i18n } = useTranslation();
@@ -64,6 +65,10 @@ export default function HeaderBanner() {
             toast.error("Không tìm thấy địa điểm bạn đã nhập.");
         }
     };
+    useEffect(() => {
+        setMounted(true);
+    }, [])
+    if (!mounted) return null
     return (
         <>
             <header className="relative w-full h-[600px] overflow-hidden text-white">

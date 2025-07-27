@@ -1,10 +1,15 @@
 'use client';
 import Link from 'next/link';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 const PopularTravel = () => {
     const { t } = useTranslation();
+    const [mounted, setMounted] = useState(false);
+    useEffect(() => {
+        setMounted(true);
+    }, [])
+    if (!mounted) return null;
     return (
         <div className="max-w-6xl mx-auto px-4 py-10">
             <h2 className="text-2xl font-bold text-[#2b2c34] dark:text-[#fffffe] mb-6">{t("home.popular_travel_tile")}</h2>

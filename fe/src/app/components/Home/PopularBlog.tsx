@@ -3,26 +3,46 @@ import { getSomeBlogs } from '@/app/api/blogService';
 import { Blogs } from '@/app/types/blogType';
 import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
-
+import { translateText } from "@/lib/translate";
+import { useTranslation } from 'react-i18next';
 const PopularBlog = () => {
     const [blogs, setBlogs] = useState<Blogs[] | null>(null);
-
-    const fetchBlogs = async () => {
-        try {
-            const res = await getSomeBlogs();
-            setBlogs(res.data.data.blogs);
-        } catch (error) {
-            console.log('✌️error --->', error);
-        }
-    };
-
+    const { i18n, t } = useTranslation();
+    const [mounted, setMounted] = useState(false);
     useEffect(() => {
-        fetchBlogs();
-    }, []);
+        const fetchBlogs = async () => {
+            try {
+                const res = await getSomeBlogs();
+                const blogs: Blogs[] = res.data.data.blogs;
 
+                if (i18n.language === "vi") {
+                    setBlogs(blogs);
+                    return;
+                }
+
+                const translatedBlogs = await Promise.all(
+                    blogs.map(async (blog) => {
+                        const title = await translateText(blog.title, "vi", i18n.language);
+                        const summary = await translateText(blog.summary, "vi", i18n.language);
+                        return { ...blog, title, summary };
+                    })
+                );
+
+                setBlogs(translatedBlogs);
+            } catch (error) {
+                console.log('✌️error --->', error);
+            }
+        };
+
+        fetchBlogs();
+    }, [i18n.language]);
+    useEffect(() => {
+        setMounted(true);
+    }, [])
+    if (!mounted) return null;
     return (
         <div className="max-w-6xl mx-auto px-4 py-10">
-            <h2 className="text-2xl text-[#2b2c34] dark:text-[#fffffe] font-semibold mb-6">Bài viết nổi bật bạn nên xem</h2>
+            <h2 className="text-2xl text-[#2b2c34] dark:text-[#fffffe] font-semibold mb-6">{t("home.blog_title")}</h2>
 
             <div className="flex overflow-x-auto gap-6 scrollbar-hide snap-x snap-mandatory">
                 {blogs?.map((blog) => (
