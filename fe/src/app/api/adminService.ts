@@ -124,3 +124,43 @@ export const putUpdateBlogService = (blogId: number, data: FormData) => {
 export const deleteBlogService = (blogId: number) => {
     return https.delete(`/api/admin/deleteBlog/${blogId}`);
 }
+// quản lý ảnh phụ
+
+// quản lý ảnh khách sạn
+export const getAllImagesHotel = (hotelId?: number | null, page: number = 1) => {
+    const params: any = { page };
+
+    if (hotelId !== null && hotelId !== undefined) {
+        params.hotelId = hotelId;
+    }
+
+    return https.get(`/api/admin/getHotelImages`, { params });
+};
+export const postCreateImagesHotel = (hotelId: number, data: FormData) => {
+    return https.post(`/api/admin/addHotelImage/${hotelId}`, data)
+}
+export const putUpdateImagesHotel = (hotelId: number, data: FormData) => {
+    return https.put(`/api/admin/updateHotelImage/${hotelId}`, data)
+}
+export const deleteImagesHotel = (hotelId: number) => {
+    return https.delete(`/api/admin/deleteHotelImage/${hotelId}`)
+}
+// quản lý ảnh phòng
+export const getAllImagesRoom = (roomId?: number | null, page: number = 1) => {
+    const params: any = { page };
+
+    if (roomId !== null && roomId !== undefined) {
+        params.roomId = roomId;
+    }
+
+    return https.get(`/api/admin/getRoomImages`, { params });
+};
+export const postCreateImagesRoom = (roomId: number, data: FormData) => {
+    return https.post(`/api/admin/addRoomImage/${roomId}`, data)
+}
+export const putUpdateImagesRoom = (roomId: number, data: FormData) => {
+    return https.put(`/api/admin/updateRoomImage/${roomId}`, data)
+}
+export const deleteImagesRoom = (roomId: number) => {
+    return https.delete(`/api/admin/deleteRoomImage/${roomId}`)
+}

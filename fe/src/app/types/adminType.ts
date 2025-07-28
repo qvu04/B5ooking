@@ -167,3 +167,15 @@ export interface PaymentRevenue {
     label: string;
     revenue: number;
 }
+export interface ImageItem {
+    id: number;
+    imageUrl: string;
+    hotel: {
+        id: number;
+        name: string;
+    };
+    room: {
+        id: number;
+        name: string;
+    };
+}
