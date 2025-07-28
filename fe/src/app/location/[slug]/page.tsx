@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from 'react';
 import { use } from 'react';
-import { getSomeLocation } from '@/app/api/locationService';
+import { getAllLocation } from '@/app/api/locationService';
 import { getHotelsByLocation } from '@/app/api/hotelService';
 import { Hotels } from '@/app/types/hotelTypes';
 import { Locations } from '@/app/types/locationTypes';
@@ -25,9 +25,11 @@ export default function LocationPage({ params }: Props) {
     useEffect(() => {
         const fetchHotels = async () => {
             try {
-                const res = await getSomeLocation();
+                const res = await getAllLocation();
                 const locations: Locations[] = res.data.data.locations;
                 const matchedLocation = locations.find((loc) => toSlug(loc.city) === slug);
+                console.log("Slug:", slug);
+                console.log("All cities slugs:", locations.map((loc) => ({ city: loc.city, slug: toSlug(loc.city) })));
 
                 if (!matchedLocation) {
                     setHotels(null);
