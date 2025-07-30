@@ -1,10 +1,18 @@
 "use client";
 
-import { deleteImagesHotel, deleteImagesRoom, getAllImagesHotel, getAllImagesRoom } from "@/app/api/adminService";
+import {
+    deleteImagesHotel,
+    deleteImagesRoom,
+    getAllImagesHotel,
+    getAllImagesRoom,
+    getAllHotelNames,
+    getAllRoomNames
+} from "@/app/api/adminService";
+
 import { useEffect, useState } from "react";
 import { Modal, Select, Image } from "antd";
 import toast from "react-hot-toast";
-import { ImageItem } from '@/app/types/adminType';
+import { ImageItem, HotelOption, RoomOption } from '@/app/types/adminType';
 import { Pagination } from "@/app/types/blogType";
 import CreateImagesForm from "./CreateImagesForm";
 import UpdateImagesForm from "./UpdateImagesForm";
@@ -22,6 +30,9 @@ export default function ImageManager() {
     const [pagination, setPagination] = useState<Pagination>();
     const [activeTab, setActiveTab] = useState<'hotel' | 'room'>('hotel');
 
+    const [hotelOptions, setHotelOptions] = useState<HotelOption[]>([]);
+    const [roomOptions, setRoomOptions] = useState<RoomOption[]>([]);
+
     const fetchImages = async (filterId: number | null = null, pageParam: number = 1) => {
         try {
             let res;
@@ -31,7 +42,6 @@ export default function ImageManager() {
                 res = await getAllImagesRoom(filterId, pageParam);
             }
             const imageData = res.data.data;
-            console.log('✌️imageData --->', imageData);
             setImages(imageData.hotelImages || imageData.roomImages || []);
             setFilteredImages(imageData.hotelImages || imageData.roomImages || []);
             setPagination(imageData.pagination);
@@ -40,6 +50,28 @@ export default function ImageManager() {
             toast.error("Không thể lấy ảnh");
         }
     };
+
+    const fetchOptions = async () => {
+        try {
+            if (activeTab === 'hotel') {
+                const res = await getAllHotelNames();
+                console.log('✌️res --->', res);
+                setHotelOptions(res.data.data.hotelNames
+                    || []);
+            } else {
+                const res = await getAllRoomNames();
+                console.log('✌️res --->', res);
+                setRoomOptions(res.data.data.roomName || []);
+            }
+        } catch (error) {
+            console.error("Lỗi khi lấy danh sách filter:", error);
+        }
+    };
+
+    useEffect(() => {
+        fetchOptions();
+    }, [activeTab]);
+
     const handleDelete = async (img: ImageItem) => {
         try {
             if (!img.id) return;
@@ -57,21 +89,15 @@ export default function ImageManager() {
             toast.error("Xóa ảnh thất bại!");
         }
     };
+
     const handleFilterChange = (value: number | "all") => {
         setSelectedHotelId(value);
         fetchImages(value === "all" ? null : value);
     };
 
-    const filterOptions = Array.from(
-        new Map(
-            images
-                .filter(i => activeTab === 'hotel' ? i.hotel : i.room)
-                .map(i => [
-                    activeTab === 'hotel' ? i.hotel.id : i.room.id,
-                    activeTab === 'hotel' ? i.hotel.name : i.room.name,
-                ])
-        )
-    );
+    const filterOptions: [number, string][] = activeTab === 'hotel'
+        ? hotelOptions.map(h => [h.id, h.name] as [number, string])
+        : roomOptions.map(r => [r.id, `${r.name} (${r.hotel.name})`] as [number, string]);
 
     useEffect(() => {
         fetchImages(selectedHotelId === "all" ? null : selectedHotelId, page);
@@ -106,13 +132,13 @@ export default function ImageManager() {
 
             <div className="mb-4 flex justify-between items-center">
                 <Select
-                    style={{ width: 250 }}
+                    style={{ width: 350 }}
                     value={selectedHotelId}
                     onChange={handleFilterChange}
                 >
                     <Option value="all">Tất cả {activeTab === 'hotel' ? 'khách sạn' : 'phòng'}</Option>
-                    {filterOptions.map(([id, name]) => (
-                        <Option key={id} value={id}>{name}</Option>
+                    {filterOptions.map(([id, label]) => (
+                        <Option key={id} value={id}>{label}</Option>
                     ))}
                 </Select>
 
@@ -122,6 +148,7 @@ export default function ImageManager() {
                 >
                     Thêm ảnh mới
                 </button>
+
                 <CreateImagesForm
                     open={showCreateModal}
                     onClose={() => setShowCreateModal(false)}
@@ -191,7 +218,7 @@ export default function ImageManager() {
                     <button
                         disabled={page === 1}
                         onClick={() => setPage((p) => Math.max(p - 1, 1))}
-                        className="px-4 py-2 bg-[#7f5af0] text-[#fffffe] rounded disabled:opacity-50"
+                        className="px-4 py-2 bg-[#7f5af0] text-white rounded disabled:opacity-50"
                     >
                         Trang trước
                     </button>
@@ -199,7 +226,7 @@ export default function ImageManager() {
                     <button
                         disabled={page === pagination.totalPages}
                         onClick={() => setPage((p) => Math.min(p + 1, pagination.totalPages))}
-                        className="px-4 py-2 bg-[#7f5af0] text-[#fffffe] rounded disabled:opacity-50"
+                        className="px-4 py-2 bg-[#7f5af0] text-white rounded disabled:opacity-50"
                     >
                         Trang sau
                     </button>

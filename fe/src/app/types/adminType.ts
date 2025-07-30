@@ -179,3 +179,15 @@ export interface ImageItem {
         name: string;
     };
 }
+export interface HotelOption {
+    id: number;
+    name: string;
+}
+export interface RoomOption {
+    id: number;
+    name: string;
+    hotel: {
+        id: number;
+        name: string;
+    }
+}

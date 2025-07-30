@@ -127,6 +127,9 @@ export const deleteBlogService = (blogId: number) => {
 // quản lý ảnh phụ
 
 // quản lý ảnh khách sạn
+export const getAllHotelNames = () => {
+    return https.get("/api/admin/getAllHotelNames");
+}
 export const getAllImagesHotel = (hotelId?: number | null, page: number = 1) => {
     const params: any = { page };
 
@@ -146,6 +149,9 @@ export const deleteImagesHotel = (hotelId: number) => {
     return https.delete(`/api/admin/deleteHotelImage/${hotelId}`)
 }
 // quản lý ảnh phòng
+export const getAllRoomNames = () => {
+    return https.get("/api/admin/getAllRoomName");
+}
 export const getAllImagesRoom = (roomId?: number | null, page: number = 1) => {
     const params: any = { page };
 

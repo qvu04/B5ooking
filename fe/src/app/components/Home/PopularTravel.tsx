@@ -16,17 +16,32 @@ const PopularTravel = () => {
 
             {/* Box Đăng nhập */}
             <div className="bg-[#d1d1e9] dark:bg-[#242629] border border-gray-300 rounded-xl p-6 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-10">
-                <div>
-                    <h3 className="text-lg text-[#2b2c34] dark:text-[#fffffe] font-semibold mb-1">{t("home.popular_travel_text_1")}</h3>
+                {/* Text */}
+                <div className="flex-1">
+                    <h3 className="text-lg text-[#2b2c34] dark:text-[#fffffe] font-semibold mb-1">
+                        {t("home.popular_travel_text_1")}
+                    </h3>
                     <p className="text-[#2b2c34] dark:text-[#94a1b2]">
-                        {t("home.popular_travel_text_2")} <span className="text-[#e45858] dark:text-[#7f5af0] font-semibold">{t("home.popular_travel_text_discount")}</span> {t("home.popular_travel_text_2_1")}
+                        {t("home.popular_travel_text_2")}{' '}
+                        <span className="text-[#e45858] dark:text-[#7f5af0] font-semibold">
+                            {t("home.popular_travel_text_discount")}
+                        </span>{' '}
+                        {t("home.popular_travel_text_2_1")}
                     </p>
                 </div>
-                <div className="flex gap-3">
-                    <Link href="/login" className="bg-[#6246ea]  hover:bg-[#5135c8] cursor-pointer text-white px-5 py-2 rounded-full text-sm font-medium transition">
+
+                {/* Nút đăng nhập + đăng ký */}
+                <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+                    <Link
+                        href="/login"
+                        className="bg-[#6246ea] hover:bg-[#5135c8] text-white px-5 py-2 rounded-full text-sm font-medium text-center w-full sm:w-auto transition"
+                    >
                         {t("home.popular_travel_button_1")}
                     </Link>
-                    <Link href="/register" className="border border-[#6246ea] text-[#6246ea] cursor-pointer hover:bg-gray-100 px-5 py-2 rounded-full text-sm font-medium transition">
+                    <Link
+                        href="/register"
+                        className="border border-[#6246ea] text-[#6246ea] hover:bg-gray-100 px-5 py-2 rounded-full text-sm font-medium text-center w-full sm:w-auto transition"
+                    >
                         {t("home.popular_travel_button_2")}
                     </Link>
                 </div>
