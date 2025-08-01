@@ -16,7 +16,14 @@ import toast from 'react-hot-toast';
 import ShowConfirm from '@/app/hotel/[hotelId]/FormConfirmBooking';
 import { useTranslation } from 'react-i18next';
 import { translateText } from "@/lib/translate";
-
+import { CheckDesktop, CheckMobilePhone, CheckTablet } from '@/app/components/HOC/ResponsiveCustom.';
+import {
+    Carousel,
+    CarouselContent,
+    CarouselItem,
+    CarouselNext,
+    CarouselPrevious,
+} from "@/components/ui/carousel"
 type Props = {
     open: boolean;
     onClose: () => void;
@@ -92,67 +99,147 @@ export default function RoomDetailModal({ open, onClose, room, checkIn, checkOut
     const handleConfirmBooking = () => {
         setShowConfirm(true);
     };
+    if (!fullRoom || !fullRoom.images || fullRoom.images.length === 0) {
+        return <div>Loading images...</div>;
+    }
     return (
         <Modal open={open} onCancel={onClose} footer={null} width={1000}>
             <div className="grid md:grid-cols-2 gap-6">
                 {/* BÊN TRÁI: Hình ảnh */}
-                <div className="space-y-4">
-                    {/* Swiper ảnh chính */}
-                    <Swiper
-                        modules={[Thumbs]}
-                        thumbs={{ swiper: thumbsSwiper }}
-                        loop={true}
-                        spaceBetween={10}
-                        className="rounded-lg overflow-hidden mb-2 h-[300px]"
-                    >
-                        <SwiperSlide>
-                            <img
-                                src={fullRoom.image}
-                                alt="main-room"
-                                className="w-full h-full object-cover"
-                            />
-                        </SwiperSlide>
-                        {Array.isArray(fullRoom.images) &&
-                            fullRoom.images.map((img, i) => (
-                                <SwiperSlide key={i}>
+                <CheckDesktop>
+                    <div className="space-y-4">
+                        {/* Swiper ảnh chính */}
+                        <Swiper
+                            modules={[Thumbs]}
+                            thumbs={{ swiper: thumbsSwiper && !thumbsSwiper.destroyed ? thumbsSwiper : null }}
+                            loop={true}
+                            spaceBetween={10}
+                            className="rounded-lg overflow-hidden mb-2 h-[300px]"
+                        >
+                            <SwiperSlide>
+                                <img
+                                    src={fullRoom.image}
+                                    alt="main-room"
+                                    className="w-full h-full object-cover"
+                                />
+                            </SwiperSlide>
+                            {Array.isArray(fullRoom.images) &&
+                                fullRoom.images.map((img, i) => (
+                                    <SwiperSlide key={i}>
+                                        <img
+                                            src={img.imageUrl}
+                                            alt={`room-${i}`}
+                                            className="w-full h-full object-cover"
+                                        />
+                                    </SwiperSlide>
+                                ))}
+                        </Swiper>
+
+                        {/* Swiper thumbnail */}
+                        <Swiper
+                            modules={[Thumbs]}
+                            onSwiper={setThumbsSwiper}
+                            thumbs={{ swiper: thumbsSwiper && !thumbsSwiper.destroyed ? thumbsSwiper : null }}
+                            slidesPerView={5}
+                            spaceBetween={10}
+                            watchSlidesProgress
+                            className="h-20"
+                        >
+                            <SwiperSlide>
+                                <img
+                                    src={fullRoom.image}
+                                    alt="thumb-main"
+                                    className="w-full h-full object-cover rounded border"
+                                />
+                            </SwiperSlide>
+                            {Array.isArray(fullRoom.images) &&
+                                fullRoom.images.map((img, i) => (
+                                    <SwiperSlide key={i}>
+                                        <img
+                                            src={img.imageUrl}
+                                            alt={`thumb-${i}`}
+                                            className="w-full h-full object-cover rounded border"
+                                        />
+                                    </SwiperSlide>
+                                ))}
+                        </Swiper>
+                    </div>
+                </CheckDesktop>
+                <CheckTablet>
+                    <div className="space-y-4">
+                        {/* Swiper ảnh chính */}
+                        <Swiper
+                            modules={[Thumbs]}
+                            thumbs={{ swiper: thumbsSwiper && !thumbsSwiper.destroyed ? thumbsSwiper : null }}
+                            loop={true}
+                            spaceBetween={10}
+                            className="rounded-lg overflow-hidden mb-2 h-[300px]"
+                        >
+                            <SwiperSlide>
+                                <img
+                                    src={fullRoom.image}
+                                    alt="main-room"
+                                    className="mt-5 w-full h-[400px] object-cover"
+                                />
+                            </SwiperSlide>
+                            {Array.isArray(fullRoom.images) &&
+                                fullRoom.images.map((img, i) => (
+                                    <SwiperSlide key={i}>
+                                        <img
+                                            src={img.imageUrl}
+                                            alt={`room-${i}`}
+                                            className="w-full h-full object-cover"
+                                        />
+                                    </SwiperSlide>
+                                ))}
+                        </Swiper>
+
+                        {/* Swiper thumbnail */}
+                        <Swiper
+                            modules={[Thumbs]}
+                            onSwiper={setThumbsSwiper}
+                            slidesPerView={5}
+                            spaceBetween={10}
+                            watchSlidesProgress
+                            className="h-20"
+                        >
+                            <SwiperSlide>
+                                <img
+                                    src={fullRoom.image}
+                                    alt="thumb-main"
+                                    className="w-full h-full object-cover rounded border"
+                                />
+                            </SwiperSlide>
+                            {Array.isArray(fullRoom.images) &&
+                                fullRoom.images.map((img, i) => (
+                                    <SwiperSlide key={i}>
+                                        <img
+                                            src={img.imageUrl}
+                                            alt={`thumb-${i}`}
+                                            className="w-full h-full object-cover rounded border"
+                                        />
+                                    </SwiperSlide>
+                                ))}
+                        </Swiper>
+                    </div>
+                </CheckTablet>
+                <CheckMobilePhone>
+                    <Carousel>
+                        <CarouselContent>
+                            {fullRoom.images.map((img, i) => (
+                                <CarouselItem key={i}>
                                     <img
                                         src={img.imageUrl}
                                         alt={`room-${i}`}
-                                        className="w-full h-full object-cover"
+                                        className="w-full h-[350px] object-cover"
                                     />
-                                </SwiperSlide>
+                                </CarouselItem>
                             ))}
-                    </Swiper>
-
-                    {/* Swiper thumbnail */}
-                    <Swiper
-                        modules={[Thumbs]}
-                        onSwiper={setThumbsSwiper}
-                        slidesPerView={5}
-                        spaceBetween={10}
-                        watchSlidesProgress
-                        className="h-20"
-                    >
-                        <SwiperSlide>
-                            <img
-                                src={fullRoom.image}
-                                alt="thumb-main"
-                                className="w-full h-full object-cover rounded border"
-                            />
-                        </SwiperSlide>
-                        {Array.isArray(fullRoom.images) &&
-                            fullRoom.images.map((img, i) => (
-                                <SwiperSlide key={i}>
-                                    <img
-                                        src={img.imageUrl}
-                                        alt={`thumb-${i}`}
-                                        className="w-full h-full object-cover rounded border"
-                                    />
-                                </SwiperSlide>
-                            ))}
-                    </Swiper>
-                </div>
-
+                        </CarouselContent>
+                        <CarouselPrevious />
+                        <CarouselNext />
+                    </Carousel>
+                </CheckMobilePhone>
                 {/* BÊN PHẢI: Thông tin */}
                 <div className="space-y-6">
                     <div>

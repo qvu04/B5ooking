@@ -92,7 +92,7 @@ export default function Article() {
             {/* Filter Location */}
             <div className="flex gap-4 mb-6 overflow-x-auto">
                 <button
-                    className={`px-4 py-2 rounded ${selectedLocationId === 'all' ? 'bg-white dark:bg-[#7f5af0] dark:text-[#fffffe] shadow font-semibold' : 'dark:text-[#94a1b2]'}`}
+                    className={`px-4 py-2 text-xs rounded ${selectedLocationId === 'all' ? 'bg-white dark:bg-[#7f5af0] dark:text-[#fffffe] shadow font-semibold' : 'dark:text-[#94a1b2]'}`}
                     onClick={() => {
                         setSelectedLocationId('all');
                         setPage(1);
@@ -107,7 +107,7 @@ export default function Article() {
                             setSelectedLocationId(loc.id);
                             setPage(1);
                         }}
-                        className={`px-4 py-2 rounded ${selectedLocationId === loc.id ? 'bg-white dark:bg-[#7f5af0] dark:text-[#fffffe] shadow font-semibold' : 'dark:text-[#94a1b2]'}`}
+                        className={`px-2 text-xs py-2 rounded ${selectedLocationId === loc.id ? 'bg-white dark:bg-[#7f5af0] dark:text-[#fffffe] shadow font-semibold' : 'dark:text-[#94a1b2]'}`}
                     >
                         {loc.city}
                     </button>
@@ -115,7 +115,7 @@ export default function Article() {
             </div>
 
             {/* Blog Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {blogs.map((blog) => (
                     <Link href={`/blog/${blog.slug}`} key={blog.id} className="border rounded p-4 shadow">
                         <img src={blog.image} alt={blog.title} className="w-full h-48 object-cover rounded" />

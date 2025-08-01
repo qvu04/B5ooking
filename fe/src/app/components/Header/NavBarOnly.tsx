@@ -259,7 +259,7 @@ const NavBarOnly = () => {
                         open={open}
                         onClose={() => setOpen(false)}
                         width={280}
-                        title={t("home.menu")}
+                        title="Menu"
                         className="dark:bg-black"
                     >
                         <div className="flex flex-col gap-4">

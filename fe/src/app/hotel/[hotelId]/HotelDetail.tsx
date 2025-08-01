@@ -24,6 +24,14 @@ import dayjs from "dayjs";
 import RoomDetailModal from './RoomDetailModal';
 import { addFavorite } from '@/app/api/favoriteService';
 import { useTranslation } from 'react-i18next';
+import { CheckDesktop, CheckMobilePhone, CheckTablet } from '@/app/components/HOC/ResponsiveCustom.';
+import {
+    Carousel,
+    CarouselContent,
+    CarouselItem,
+    CarouselNext,
+    CarouselPrevious,
+} from "@/components/ui/carousel"
 type Props = {
     hotel: Hotels;
 };
@@ -146,449 +154,803 @@ export default function HotelDetailClient({ hotel }: Props) {
         setSelectedRoom(null);
         setIsModalOpen(false);
     };
+    if (!hotel || !hotel.images || hotel.images.length === 0) {
+        return <div>Loading images...</div>;
+    }
     return (
-        <div className="max-w-7xl mx-auto px-4 py-8">
-            {/* Tiêu đề */}
-            <h1 className="text-2xl text-center md:text-3xl font-semibold mb-6 leading-snug">
-                {hotel.name} - {t("hotelId.title")}
-            </h1>
-
-            {/* Layout hình ảnh + bản đồ */}
-            <div className="grid md:grid-cols-3 gap-4">
-                {/* Ảnh lớn + thumbnail */}
-                <div className="col-span-2 space-y-4">
-                    <div className="w-full h-[360px] rounded-lg overflow-hidden">
-                        <Swiper
-                            modules={[Autoplay, Thumbs]}
-                            autoplay={{ delay: 4000, disableOnInteraction: false }}
-                            loop={true}
-                            thumbs={{ swiper: thumbsSwiper }}
-                            slidesPerView={1}
-                            className="w-full h-full"
-                        >
+        <>
+            <div className="max-w-7xl mx-auto px-4 py-8">
+                {/* Tiêu đề */}
+                <h1 className="text-2xl text-center md:text-xl font-semibold mb-6 leading-snug">
+                    {hotel.name} - {t("hotelId.title")}
+                </h1>
+                <CheckMobilePhone>
+                    <Carousel>
+                        <CarouselContent>
                             {hotel.images.map((img, i) => (
-                                <SwiperSlide key={i}>
+                                <CarouselItem key={i}>
                                     <img
                                         src={img.imageUrl}
-                                        alt={`Slide ${i}`}
-                                        className="w-full h-full object-cover"
+                                        alt={hotel.name}
+                                        className="w-full h-[400px] object-cover"
                                     />
-                                </SwiperSlide>
+                                </CarouselItem>
                             ))}
-                        </Swiper>
-                    </div>
-
-                    <div>
-                        <Swiper
-                            onSwiper={setThumbsSwiper}
-                            modules={[Thumbs]}
-                            slidesPerView={5}
-                            spaceBetween={10}
-                            watchSlidesProgress
-                            className="w-full h-20"
-                        >
-                            {hotel.images.map((img, i) => (
-                                <SwiperSlide key={i}>
-                                    <img
-                                        src={img.imageUrl}
-                                        alt={`Thumbnail ${i}`}
-                                        className="w-full h-full object-cover rounded-md border"
-                                    />
-                                </SwiperSlide>
-                            ))}
-                        </Swiper>
-                    </div>
-                </div>
-
-                {/* Bản đồ */}
-                <div className="h-[460px] w-full">
-                    {coords && (
-                        <>
-                            <div className="flex justify-between items-center mb-4">
-                                <h2 className="text-lg font-medium mb-2">{t("hotelId.text_1")}</h2>
-                                <div className="flex items-center gap-6 text-gray-700">
-                                    <button className="flex items-center gap-1 cursor-pointer">
-                                        <FiShare size={20} />
-                                        <span className='dark:text-[#94a1b2]'>{t("hotelId.text_2")}</span>
-                                    </button>
-
-                                    <button
-                                        onClick={handleAddFavoriteHotel}
-                                        className="flex items-center gap-1 cursor-pointer">
-                                        <AiOutlineHeart className="text-gray-600 hover:text-red-500 transition-colors duration-300" size={20} />
-                                        <span className='dark:text-[#94a1b2]'>{t("hotelId.text_3")}</span>
-                                    </button>
-                                </div>
-                            </div>
-                            <div className='relative z-0 w-full h-[460px] overflow-hidden'>
-                                <MapView lat={coords.lat} lng={coords.lng} name={hotel.name} />
-                            </div>
-                        </>
-                    )}
-                </div>
-            </div>
-            {/* Mô tả */}
-            <div>
-                <div className='mt-5'>
-                    <h2 className='font-bold text-2xl '>{t("hotelId.text_4")} - {hotel.address}</h2>
-                    <p className='pt-3 dark:text-[#94a1b2]'>
-                        {t("hotelId.text_5")} {t("hotelId.text_6")} {t("hotelId.text_7")} {t("hotelId.text_8")}
-                    </p>
-                    <div className="flex items-center gap-3 mt-4">
-                        <div className="flex items-center gap-1 text-yellow-400">
-                            {Array.from({ length: 5 }).map((_, index) => (
-                                <AiFillStar
-                                    key={index}
-                                    className={
-                                        index < Math.round(hotel.averageRating || hotel.defaultRating)
-                                            ? "text-yellow-400"
-                                            : "text-gray-300"
-                                    }
-                                    size={20}
-                                />
-                            ))}
-                        </div>
-                        <span className="text-gray-800 dark:text-[#94a1b2] font-medium">
-                            {(hotel.averageRating || hotel.defaultRating).toFixed(1)} / 5
-                        </span>
-                        <span className="text-gray-500 dark:text-[#94a1b2]">({hotel.reviewCount} {t("hotelId.text_9")})</span>
-                    </div>
-
-                </div>
-                <div className="mt-10 space-y-3">
-                    <h2 className="text-xl font-semibold">{t("hotelId.text_10")}</h2>
-                    <p className="text-gray-700 dark:text-[#94a1b2] whitespace-pre-line">{hotel.description}</p>
-                </div>
-                {/* Dịch vụ */}
-                <div className="mt-10 space-y-6">
-                    {/* 1 */}
-                    <div className="flex items-start gap-4 border-b border-gray-300 pb-6">
-                        <img src="/images/door.png" alt="check" className="w-10 h-10 object-contain" />
-                        <div>
-                            <h3 className="text-lg font-semibold dark:text-[#fffffe] text-gray-900">{t("hotelId.text_12")}</h3>
-                            <p className="text-gray-600 dark:text-[#94a1b2]">{t("hotelId.text_13")}</p>
-                        </div>
-                    </div>
-
-                    {/* 2 */}
-                    <div className="flex items-start gap-4 border-b border-gray-200 pb-6">
-                        <img src="/images/check_room.png" alt="check" className="w-10 h-10 object-contain" />
-                        <div>
-                            <h3 className="text-lg font-semibold dark:text-[#fffffe] text-gray-900">{t("hotelId.text_14")}</h3>
-                            <p className="text-gray-600 dark:text-[#94a1b2]">{t("hotelId.text_15")}</p>
-                        </div>
-                    </div>
-
-                    {/* 3 */}
-                    <div className="flex items-start gap-4">
-                        <img src="/images/star.png" alt="check" className="w-10 h-10 object-contain" />
-                        <div>
-                            <h3 className="text-lg font-semibold  text-gray-900 dark:text-[#fffffe]">{t("hotelId.text_11")}</h3>
-                            <p className="text-gray-600 dark:text-[#94a1b2]">{t("hotelId.text_16")}</p>
-                        </div>
-                    </div>
-                </div>
-                {/* Tiện nghi */}
-                <div className="mt-10">
-                    <h2 className="text-xl font-semibold mb-4">{t("hotelId.text_17")}</h2>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-                        {hotel.amenities.map((item, index) => (
-                            <div
-                                key={index}
-                                className="flex items-center gap-2 text-gray-700 dark:text-[#94a1b2]"
-                            >
-                                <AiOutlineCheckCircle className="text-green-500" size={20} />
-                                <span>{item.amenity.name}</span>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-                {/* Các phòng trống */}
-                <div className="mt-10">
-                    <h2 className="text-2xl font-bold mb-6">{t("hotelId.text_18")}</h2>
-                    {/* Thanh tìm kiếm phòng trống */}
-                    <div className="mt-4 border border-gray-300 dark:bg-[#242629] p-6 rounded-lg shadow-sm space-y-4">
-                        <h3 className="text-xl font-semibold mb-2">{t("hotelId.text_19")}</h3>
-                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                            {/* Chọn ngày */}
-                            <div>
-                                <label className="block mb-1 font-medium text-gray-700 dark:text-[#94a1b2]">{t("hotelId.text_20")}</label>
-                                <DatePicker.RangePicker
-                                    format="YYYY-MM-DD"
-                                    onChange={handleDateChange}
-                                    className="w-full"
-                                    disabledDate={(current) => current && current < dayjs().startOf("day")}
-                                />
-                            </div>
-
-                            {/* Số lượng khách */}
-                            <div>
-                                <label className="block mb-1 font-medium text-gray-700 dark:text-[#94a1b2]">{t("hotelId.text_21")}</label>
-                                <input
-                                    type="number"
-                                    min={1}
-                                    value={guests}
-                                    onChange={(e) => setGuests(parseInt(e.target.value))}
-                                    className="w-full border border-gray-300 rounded-lg px-3 py-2"
-                                />
-                            </div>
-
-                            {/* Nút tìm kiếm */}
-                            <div className="flex items-end">
-                                <button
-                                    onClick={handleSearch}
-                                    className="w-full bg-purple-600 dark:bg-[#7f5af0] cursor-pointer hover:bg-purple-700 text-white py-2 px-4 rounded-lg font-semibold"
-                                >
-                                    {t("hotelId.text_22")}
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                    {availableRooms.length > 0 ? (
-                        <table className="w-full border-t border-gray-300 table-fixed mt-5">
-                            <thead>
-                                <tr className="bg-[#d1d1e9] border-r dark:bg-[#242629] text-left">
-                                    <th className="w-[30%] border-r border-gray-300 p-4 font-semibold text-lg dark:text-">{t("hotelId.text_23")}</th>
-                                    <th className="w-[10%] border-r border-gray-300 p-4 font-semibold text-lg text-center">{t("hotelId.text_24")}</th>
-                                    <th className="w-[15%] border-r border-gray-300 p-4 font-semibold text-lg text-center">{t("hotelId.text_25")}</th>
-                                    <th className="w-[45%] p-4 font-semibold text-lg text-center">{t("hotelId.text_26")}</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {availableRooms.map((room, index) => (
-                                    <tr key={index} className="border-t border-gray-300">
-                                        {/* Cột loại phòng */}
-                                        <td className="align-top border-r border-gray-300 p-4">
-                                            <button
-                                                className="font-bold hover:text-[#6246ea] cursor-pointer text-lg"
-                                                onClick={() => handleOpenRoomDetail(room)}
-                                            >{room.name}</button>
-                                            <p className="text-red-500 font-bold dark:text-[#7f5af0] text-sm mt-1">{t("hotelId.text_27")}</p>
-                                            <p className="mt-2 dark:text-[#94a1b2]">{t("hotelId.text_28")} 🛏️</p>
-                                            <div className="flex flex-wrap gap-x-4 gap-y-2 mt-3 text-sm text-gray-700">
-                                                {room.amenities.map((item, i) => (
-                                                    <div key={i} className="flex items-center gap-1 dark:text-[#94a1b2] ">
-                                                        <AiOutlineCheck className="text-green-500" size={14} />
-                                                        <span>{item.amenity.name}</span>
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        </td>
-
-                                        {/* Cột lượng khách */}
-                                        <td className="align-top border-r border-gray-300 p-4 text-center">
-                                            <div className="flex justify-center gap-1 mt-2">
-                                                {Array.from({ length: room.maxGuests }).map((_, i) => (
-                                                    <AiOutlineUser key={i} size={18} />
-                                                ))}
-                                            </div>
-                                        </td>
-
-                                        {/* Cột giá */}
-                                        <td className="align-top border-r border-gray-300 p-4 text-center">
-                                            {room.discount > 0 ? (
-                                                <div className="mt-2 space-y-1">
-                                                    <p className="text-gray-400 line-through text-sm">
-                                                        {room.price.toLocaleString()} VND
-                                                    </p>
-                                                    <p className="text-green-600 text-xs font-medium">
-                                                        Giảm {room.discount}%
-                                                    </p>
-                                                    <p className="text-pink-600 text-lg font-semibold">
-                                                        {(room.price * (1 - room.discount / 100)).toLocaleString()} VND
-                                                    </p>
-                                                </div>
-                                            ) : (
-                                                <p className="text-pink-600 text-lg font-semibold mt-2">
-                                                    {room.price.toLocaleString()} VND
-                                                </p>
-                                            )}
-                                        </td>
-
-                                        {/* Cột ưu đãi */}
-                                        <td className="align-top p-4 space-y-2">
-                                            <ul className="text-sm text-gray-700 dark:text-[#94a1b2] space-y-1">
-                                                <li className="flex items-start gap-2">
-                                                    <AiOutlineCheck className="text-green-500 mt-1" size={16} />
-                                                    <span>{t("hotelId.text_29")}</span>
-                                                </li>
-                                                <li className="flex items-start gap-2">
-                                                    <AiOutlineCheck className="text-green-500 mt-1" size={16} />
-                                                    <span>{t("hotelId.text_30")}</span>
-                                                </li>
-                                                <li className="flex items-start gap-2">
-                                                    <AiOutlineCheck className="text-green-500 mt-1" size={16} />
-                                                    <span>{t("hotelId.text_31")}</span>
-                                                </li>
-                                                <li className="flex items-start gap-2">
-                                                    <AiOutlineCheck className="text-green-500 mt-1" size={16} />
-                                                    <span><strong className='dark:text-[#7f5af0]'>{t("hotelId.text_32")} {t("hotelId.text_discount")}</strong> {t("hotelId.text_33")}</span>
-                                                </li>
-                                            </ul>
-                                            <button
-                                                onClick={() => handleOpenRoomDetail(room)}
-                                                className="mt-4 bg-purple-500 dark:bg-[#7f5af0] cursor-pointer hover:bg-purple-600 text-white px-6 py-2 rounded-full font-semibold">
-                                                {t("hotelId.text_34")}
-                                            </button>
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    ) : (
-                        <div className="text-center mt-6 text-red-500 font-medium text-base">
-                            {t("hotelId.text_35")}<br />
-                            {t("hotelId.text_36")}
-                        </div>
-                    )}
-
-                </div>
-                {/* Comment */}
-                {/* Đánh giá của khách hàng */}
-                <div className="mt-12">
-                    <h2 className="text-2xl font-bold mb-6">{t("hotelId.text_37")}</h2>
-
-                    {/* Tổng quan rating */}
-                    <div className="space-y-3 mb-8">
-                        {([5, 4, 3, 2, 1] as const).map((i) => (
-                            <div key={i} className="flex items-center gap-4">
-                                <span className="w-10 text-sm font-medium">{i} {t("hotelId.star")}</span>
-                                <div className="w-full bg-gray-200 rounded h-2 overflow-hidden">
-                                    <div
-                                        className="bg-yellow-400 h-full"
-                                        style={{ width: `${hotel.ratingStats.percentages[i]}%` }}
-                                    />
-                                </div>
-                                <span className="text-sm text-gray-500 dark:text-[#94a1b2] w-20 text-right">
-                                    {hotel.ratingStats.count[i]} {t("hotelId.text_38")}
-                                </span>
-                            </div>
-                        ))}
-                    </div>
-
-                    {/* Danh sách bình luận với Show More */}
-                    <div className="grid gap-6 ">
-                        {(showAllReviews ? reviews : reviews.slice(0, 2)).map((review, index) => (
-                            <div
-                                key={index}
-                                className="bg-white dark:bg-[#242629] rounded-lg shadow-md p-5 border border-gray-300"
-                            >
-                                <div className="flex items-center gap-4 mb-3">
-                                    {review.user?.avatar ? (
-                                        <img
-                                            src={review.user.avatar}
-                                            alt="avatar"
-                                            className="w-12 h-12 rounded-full object-cover border"
-                                        />
-                                    ) : (
-                                        <div className="w-12 h-12 rounded-full bg-gray-300 flex items-center justify-center text-white">
-                                            <FaUserAlt className="text-sm" />
-                                        </div>
-                                    )}
-
-                                    <div>
-                                        <p className="font-semibold text-gray-900 dark:text-[#fffffe]">{review.user?.fullName}</p>
-                                        <div className="flex items-center gap-1">
-                                            {Array.from({ length: 5 }).map((_, i) => (
-                                                <AiFillStar
-                                                    key={i}
-                                                    size={16}
-                                                    className={i < review.rating ? "text-yellow-400" : "text-gray-300"}
-                                                />
+                        </CarouselContent>
+                        <CarouselPrevious />
+                        <CarouselNext />
+                    </Carousel>
+                </CheckMobilePhone>
+                {/* Layout hình ảnh + bản đồ */}
+                <div className="grid md:grid-cols-3 gap-4">
+                    {/* Ảnh lớn + thumbnail */}
+                    <div className="col-span-2 space-y-4">
+                        <CheckDesktop>
+                            <div className="w-full h-[360px] rounded-lg overflow-hidden">
+                                {hotel?.images?.length > 0 && (
+                                    <div className="w-full h-[200px] sm:h-[300px] md:h-[360px] rounded-lg overflow-hidden">
+                                        <Swiper
+                                            modules={[Autoplay, Thumbs]}
+                                            autoplay={{ delay: 4000, disableOnInteraction: false }}
+                                            loop={true}
+                                            thumbs={{ swiper: thumbsSwiper && !thumbsSwiper.destroyed ? thumbsSwiper : null }}
+                                            slidesPerView={1}
+                                            className="w-full h-full"
+                                        >
+                                            {hotel.images.map((img, i) => (
+                                                <SwiperSlide key={i}>
+                                                    <img
+                                                        src={img.imageUrl}
+                                                        alt={`Slide ${i}`}
+                                                        className="w-full h-full object-cover"
+                                                    />
+                                                </SwiperSlide>
                                             ))}
-                                        </div>
+                                        </Swiper>
+                                    </div>
+                                )}
+                            </div>
+
+                            <div className="w-full overflow-hidden">
+                                <Swiper
+                                    onSwiper={setThumbsSwiper}
+                                    modules={[Thumbs]}
+                                    watchSlidesProgress
+                                    spaceBetween={10}
+                                    breakpoints={{
+                                        0: {
+                                            slidesPerView: 2,
+                                            spaceBetween: 4,
+                                        },
+                                        600: {
+                                            slidesPerView: 4,
+                                            spaceBetween: 10,
+                                        },
+                                        1025: {
+                                            slidesPerView: 5,
+                                            spaceBetween: 12,
+                                        },
+                                    }}
+                                    className="w-full h-[64px] sm:h-[72px] md:h-[80px] lg:h-[88px]"
+                                >
+                                    {hotel.images.map((img, i) => (
+                                        <SwiperSlide key={i}>
+                                            <img
+                                                src={img.imageUrl}
+                                                alt={`Thumbnail ${i}`}
+                                                className="w-full h-full object-cover rounded-md border"
+                                            />
+                                        </SwiperSlide>
+                                    ))}
+                                </Swiper>
+                            </div>
+                        </CheckDesktop>
+                        <CheckTablet>
+                            <div className="w-full h-[360px] rounded-lg overflow-hidden">
+                                {hotel?.images?.length > 0 && (
+                                    <div className="w-full h-[200px] sm:h-[300px] md:h-[360px] rounded-lg overflow-hidden">
+                                        <Swiper
+                                            modules={[Autoplay, Thumbs]}
+                                            autoplay={{ delay: 4000, disableOnInteraction: false }}
+                                            loop={true}
+                                            thumbs={{ swiper: thumbsSwiper && !thumbsSwiper.destroyed ? thumbsSwiper : null }}
+                                            slidesPerView={1}
+                                            className="w-full h-full"
+                                        >
+                                            {hotel.images.map((img, i) => (
+                                                <SwiperSlide key={i}>
+                                                    <img
+                                                        src={img.imageUrl}
+                                                        alt={`Slide ${i}`}
+                                                        className="w-full h-full object-cover"
+                                                    />
+                                                </SwiperSlide>
+                                            ))}
+                                        </Swiper>
+                                    </div>
+                                )}
+                            </div>
+
+                            <div className="w-full overflow-hidden">
+                                <Swiper
+                                    onSwiper={setThumbsSwiper}
+                                    modules={[Thumbs]}
+                                    watchSlidesProgress
+                                    spaceBetween={10}
+                                    breakpoints={{
+                                        0: {
+                                            slidesPerView: 2,
+                                            spaceBetween: 4,
+                                        },
+                                        600: {
+                                            slidesPerView: 4,
+                                            spaceBetween: 10,
+                                        },
+                                        1025: {
+                                            slidesPerView: 5,
+                                            spaceBetween: 12,
+                                        },
+                                    }}
+                                    className="w-full h-[64px] sm:h-[72px] md:h-[80px] lg:h-[88px]"
+                                >
+                                    {hotel.images.map((img, i) => (
+                                        <SwiperSlide key={i}>
+                                            <img
+                                                src={img.imageUrl}
+                                                alt={`Thumbnail ${i}`}
+                                                className="w-full h-full object-cover rounded-md border"
+                                            />
+                                        </SwiperSlide>
+                                    ))}
+                                </Swiper>
+                            </div>
+                        </CheckTablet>
+                    </div>
+                    <CheckTablet>
+                        {coords && (
+                            <div className="block h-[400px] w-full mt-6">
+                                <div className="flex flex-col mb-4">
+                                    <h2 className="text-lg font-medium mb-2">{t("hotelId.text_1")}</h2>
+                                    <div className="flex items-center gap-6 text-gray-700">
+                                        <button className="flex items-center gap-1 cursor-pointer">
+                                            <FiShare size={20} />
+                                            <span className='dark:text-[#94a1b2]'>{t("hotelId.text_2")}</span>
+                                        </button>
+
+                                        <button
+                                            onClick={handleAddFavoriteHotel}
+                                            className="flex items-center gap-1 cursor-pointer">
+                                            <AiOutlineHeart className="text-gray-600 hover:text-red-500 transition-colors duration-300" size={20} />
+                                            <span className='dark:text-[#94a1b2]'>{t("hotelId.text_3")}</span>
+                                        </button>
                                     </div>
                                 </div>
-                                <p className="text-gray-700 dark:text-[#94a1b2] leading-relaxed text-sm">{review.comment}</p>
-                            </div>
-                        ))}
-                    </div>
-
-                    {/* Nút hiển thị thêm */}
-                    {hotel.reviews.length > 2 && (
-                        <div className="mt-6 text-center">
-                            <button
-                                className="text-purple-600 dark:text-[#7f5af0] cursor-pointer hover:underline font-medium text-sm"
-                                onClick={() => setShowAllReviews(!showAllReviews)}
-                            >
-                                {showAllReviews ? t("hotelId.text_42") : t("hotelId.text_41")}
-                            </button>
-                        </div>
-                    )}
-                </div>
-                {/* Post bình luận */}
-                {/* Gửi đánh giá */}
-                <div className="mt-12">
-                    <h2 className="text-2xl font-bold mb-6">{t("hotelId.text_39")}</h2>
-
-                    <div className="bg-white dark:bg-[#242629]  border border-gray-200 rounded-xl shadow-sm p-6 space-y-6">
-                        {/* Avatar + Tên + Chọn sao */}
-                        {mounted && (
-                            <div className="flex flex-col gap-4">
-                                <div className="flex items-center gap-3">
-                                    {user?.avatar ? (
-                                        <img
-                                            src={user.avatar}
-                                            alt="Avatar"
-                                            className="w-12 h-12 rounded-full object-cover shadow-md"
-                                        />
-                                    ) : (
-                                        <div className="w-12 h-12 rounded-full bg-gray-300 flex items-center justify-center text-white shadow-md">
-                                            <FaUserAlt className="text-base" />
-                                        </div>
-                                    )}
-                                    <p className="font-semibold text-lg text-gray-800 dark:text-[#fffffe]">
-                                        {user?.fullName}
-                                    </p>
-                                </div>
-
-                                <div className="flex gap-1">
-                                    {Array.from({ length: 5 }).map((_, i) => (
-                                        <AiFillStar
-                                            key={i}
-                                            size={24}
-                                            onClick={() => setRating(i + 1)}
-                                            className={`cursor-pointer transition-all duration-150 ${i < rating ? "text-yellow-400" : "text-gray-300"}`}
-                                        />
-                                    ))}
+                                <div className='relative z-0 w-full h-[460px] overflow-hidden rounded-lg shadow'>
+                                    <MapView lat={coords.lat} lng={coords.lng} name={hotel.name} />
                                 </div>
                             </div>
                         )}
+                    </CheckTablet>
 
-                        {/* Textarea */}
-                        <textarea
-                            placeholder={t("hotelId.text_40")}
-                            rows={4}
-                            value={comment}
-                            onChange={(e) => setComment(e.target.value)}
-                            className="w-full border border-gray-300 rounded-lg p-4 shadow-sm resize-none focus:outline-none focus:ring-2 focus:ring-purple-500 text-gray-700 dark:text-[#94a1b2]"
-                        ></textarea>
+                    {/* Hiển thị bên phải cho desktop */}
+                    <CheckDesktop>
+                        {coords && (
+                            <div className="block h-[460px] w-full mt-6">
+                                <div className="flex justify-between items-center mb-4">
+                                    <h2 className="text-lg font-medium mb-2">{t("hotelId.text_1")}</h2>
+                                    <div className="flex items-center gap-6 text-gray-700">
+                                        <button className="flex items-center gap-1 cursor-pointer">
+                                            <FiShare size={20} />
+                                            <span className='dark:text-[#94a1b2]'>{t("hotelId.text_2")}</span>
+                                        </button>
 
-                        {/* Nút gửi */}
-                        <div className="text-right">
-                            <button
-                                disabled={!comment || rating === 0}
-                                onClick={handlePostSubmitReview}
-                                className={`px-6 py-2 rounded-full cursor-pointer font-semibold transition duration-300 ${comment && rating
-                                    ? "bg-purple-600 text-white hover:bg-purple-700"
-                                    : "bg-gray-300 text-gray-500 cursor-not-allowed"
-                                    }`}
-                            >
-                                {t("hotelId.button")}
-                            </button>
+                                        <button
+                                            onClick={handleAddFavoriteHotel}
+                                            className="flex items-center gap-1 cursor-pointer">
+                                            <AiOutlineHeart className="text-gray-600 hover:text-red-500 transition-colors duration-300" size={20} />
+                                            <span className='dark:text-[#94a1b2]'>{t("hotelId.text_3")}</span>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div className='relative z-0 w-full h-[460px] overflow-hidden rounded-lg shadow'>
+                                    <MapView lat={coords.lat} lng={coords.lng} name={hotel.name} />
+                                </div>
+                            </div>
+                        )}
+                    </CheckDesktop>
+                </div>
+
+                {/* Mô tả */}
+                <div>
+                    <div className='mt-5'>
+                        <h2 className='font-bold lg:text-2xl text-xl '>{t("hotelId.text_4")} - {hotel.address}</h2>
+                        <p className='pt-3 dark:text-[#94a1b2]'>
+                            {t("hotelId.text_5")} {t("hotelId.text_6")} {t("hotelId.text_7")} {t("hotelId.text_8")}
+                        </p>
+                        <div className="flex items-center gap-3 mt-4">
+                            <div className="flex items-center gap-1 text-yellow-400">
+                                {Array.from({ length: 5 }).map((_, index) => (
+                                    <AiFillStar
+                                        key={index}
+                                        className={
+                                            index < Math.round(hotel.averageRating || hotel.defaultRating)
+                                                ? "text-yellow-400"
+                                                : "text-gray-300"
+                                        }
+                                        size={20}
+                                    />
+                                ))}
+                            </div>
+                            <span className="text-gray-800 dark:text-[#94a1b2] font-medium">
+                                {(hotel.averageRating || hotel.defaultRating).toFixed(1)} / 5
+                            </span>
+                            <span className="text-gray-500 dark:text-[#94a1b2]">({hotel.reviewCount} {t("hotelId.text_9")})</span>
+                        </div>
+
+                    </div>
+                    <div className="mt-10 space-y-3">
+                        <h2 className="text-xl font-semibold">{t("hotelId.text_10")}</h2>
+                        <p className="text-gray-700 dark:text-[#94a1b2] whitespace-pre-line">{hotel.description}</p>
+                    </div>
+                    {/* Dịch vụ */}
+                    <div className="mt-10 space-y-6">
+                        {/* 1 */}
+                        <div className="flex items-start gap-4 border-b border-gray-300 pb-6">
+                            <img src="/images/door.png" alt="check" className="w-10 h-10 object-contain" />
+                            <div>
+                                <h3 className="text-lg font-semibold dark:text-[#fffffe] text-gray-900">{t("hotelId.text_12")}</h3>
+                                <p className="text-gray-600 dark:text-[#94a1b2]">{t("hotelId.text_13")}</p>
+                            </div>
+                        </div>
+
+                        {/* 2 */}
+                        <div className="flex items-start gap-4 border-b border-gray-200 pb-6">
+                            <img src="/images/check_room.png" alt="check" className="w-10 h-10 object-contain" />
+                            <div>
+                                <h3 className="text-lg font-semibold dark:text-[#fffffe] text-gray-900">{t("hotelId.text_14")}</h3>
+                                <p className="text-gray-600 dark:text-[#94a1b2]">{t("hotelId.text_15")}</p>
+                            </div>
+                        </div>
+
+                        {/* 3 */}
+                        <div className="flex items-start gap-4">
+                            <img src="/images/star.png" alt="check" className="w-10 h-10 object-contain" />
+                            <div>
+                                <h3 className="text-lg font-semibold  text-gray-900 dark:text-[#fffffe]">{t("hotelId.text_11")}</h3>
+                                <p className="text-gray-600 dark:text-[#94a1b2]">{t("hotelId.text_16")}</p>
+                            </div>
                         </div>
                     </div>
-                    {selectedRoom && (
-                        <RoomDetailModal
-                            open={isModalOpen}
-                            onClose={handleCloseRoomDetail}
-                            room={selectedRoom}
-                            checkIn={checkIn}
-                            checkOut={checkOut}
-                        />
-                    )}
+                    {/* Tiện nghi */}
+                    <div className="mt-10">
+                        <h2 className="text-xl font-semibold mb-4">{t("hotelId.text_17")}</h2>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                            {hotel.amenities.map((item, index) => (
+                                <div
+                                    key={index}
+                                    className="flex items-center gap-2 text-gray-700 dark:text-[#94a1b2]"
+                                >
+                                    <AiOutlineCheckCircle className="text-green-500" size={20} />
+                                    <span>{item.amenity.name}</span>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                    {/* Các phòng trống */}
+                    <div className="mt-10">
+                        <h2 className="text-2xl font-bold mb-6">{t("hotelId.text_18")}</h2>
+                        {/* Thanh tìm kiếm phòng trống */}
+                        <div className="mt-4 border border-gray-300 dark:bg-[#242629] p-6 rounded-lg shadow-sm space-y-4">
+                            <h3 className="text-xl font-semibold mb-2">{t("hotelId.text_19")}</h3>
+                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                {/* Chọn ngày */}
+                                <div>
+                                    <label className="block mb-1 font-medium text-gray-700 dark:text-[#94a1b2]">{t("hotelId.text_20")}</label>
+                                    <DatePicker.RangePicker
+                                        format="YYYY-MM-DD"
+                                        onChange={handleDateChange}
+                                        className="w-full"
+                                        disabledDate={(current) => current && current < dayjs().startOf("day")}
+                                    />
+                                </div>
+
+                                {/* Số lượng khách */}
+                                <div>
+                                    <label className="block mb-1 font-medium text-gray-700 dark:text-[#94a1b2]">{t("hotelId.text_21")}</label>
+                                    <input
+                                        type="number"
+                                        min={1}
+                                        value={guests}
+                                        onChange={(e) => setGuests(parseInt(e.target.value))}
+                                        className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                                    />
+                                </div>
+
+                                {/* Nút tìm kiếm */}
+                                <div className="flex items-end">
+                                    <button
+                                        onClick={handleSearch}
+                                        className="w-full bg-purple-600 dark:bg-[#7f5af0] cursor-pointer hover:bg-purple-700 text-white py-2 px-4 rounded-lg font-semibold"
+                                    >
+                                        {t("hotelId.text_22")}
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <CheckDesktop>
+                            {availableRooms.length > 0 ? (
+                                <table className="w-full border-t border-gray-300 table-fixed mt-5">
+                                    <thead>
+                                        <tr className="bg-[#d1d1e9] border-r dark:bg-[#242629] text-left">
+                                            <th className="w-[30%] border-r border-gray-300 p-4 font-semibold text-lg dark:text-">{t("hotelId.text_23")}</th>
+                                            <th className="w-[10%] border-r border-gray-300 p-4 font-semibold text-lg text-center">{t("hotelId.text_24")}</th>
+                                            <th className="w-[15%] border-r border-gray-300 p-4 font-semibold text-lg text-center">{t("hotelId.text_25")}</th>
+                                            <th className="w-[45%] p-4 font-semibold text-lg text-center">{t("hotelId.text_26")}</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {availableRooms.map((room, index) => (
+                                            <tr key={index} className="border-t border-gray-300">
+                                                {/* Cột loại phòng */}
+                                                <td className="align-top border-r border-gray-300 p-4">
+                                                    <button
+                                                        className="font-bold hover:text-[#6246ea] cursor-pointer text-lg"
+                                                        onClick={() => handleOpenRoomDetail(room)}
+                                                    >{room.name}</button>
+                                                    <p className="text-red-500 font-bold dark:text-[#7f5af0] text-sm mt-1">{t("hotelId.text_27")}</p>
+                                                    <p className="mt-2 dark:text-[#94a1b2]">{t("hotelId.text_28")} 🛏️</p>
+                                                    <div className="flex flex-wrap gap-x-4 gap-y-2 mt-3 text-sm text-gray-700">
+                                                        {room.amenities.map((item, i) => (
+                                                            <div key={i} className="flex items-center gap-1 dark:text-[#94a1b2] ">
+                                                                <AiOutlineCheck className="text-green-500" size={14} />
+                                                                <span>{item.amenity.name}</span>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                </td>
+
+                                                {/* Cột lượng khách */}
+                                                <td className="align-top border-r border-gray-300 p-4 text-center">
+                                                    <div className="flex justify-center gap-1 mt-2">
+                                                        {Array.from({ length: room.maxGuests }).map((_, i) => (
+                                                            <AiOutlineUser key={i} size={18} />
+                                                        ))}
+                                                    </div>
+                                                </td>
+
+                                                {/* Cột giá */}
+                                                <td className="align-top border-r border-gray-300 p-4 text-center">
+                                                    {room.discount > 0 ? (
+                                                        <div className="mt-2 space-y-1">
+                                                            <p className="text-gray-400 line-through text-sm">
+                                                                {room.price.toLocaleString()} VND
+                                                            </p>
+                                                            <p className="text-green-600 text-xs font-medium">
+                                                                Giảm {room.discount}%
+                                                            </p>
+                                                            <p className="text-pink-600 text-lg font-semibold">
+                                                                {(room.price * (1 - room.discount / 100)).toLocaleString()} VND
+                                                            </p>
+                                                        </div>
+                                                    ) : (
+                                                        <p className="text-pink-600 text-lg font-semibold mt-2">
+                                                            {room.price.toLocaleString()} VND
+                                                        </p>
+                                                    )}
+                                                </td>
+
+                                                {/* Cột ưu đãi */}
+                                                <td className="align-top p-4 space-y-2">
+                                                    <ul className="text-sm text-gray-700 dark:text-[#94a1b2] space-y-1">
+                                                        <li className="flex items-start gap-2">
+                                                            <AiOutlineCheck className="text-green-500 mt-1" size={16} />
+                                                            <span>{t("hotelId.text_29")}</span>
+                                                        </li>
+                                                        <li className="flex items-start gap-2">
+                                                            <AiOutlineCheck className="text-green-500 mt-1" size={16} />
+                                                            <span>{t("hotelId.text_30")}</span>
+                                                        </li>
+                                                        <li className="flex items-start gap-2">
+                                                            <AiOutlineCheck className="text-green-500 mt-1" size={16} />
+                                                            <span>{t("hotelId.text_31")}</span>
+                                                        </li>
+                                                        <li className="flex items-start gap-2">
+                                                            <AiOutlineCheck className="text-green-500 mt-1" size={16} />
+                                                            <span><strong className='dark:text-[#7f5af0]'>{t("hotelId.text_32")} {t("hotelId.text_discount")}</strong> {t("hotelId.text_33")}</span>
+                                                        </li>
+                                                    </ul>
+                                                    <button
+                                                        onClick={() => handleOpenRoomDetail(room)}
+                                                        className="mt-4 bg-purple-500 dark:bg-[#7f5af0] cursor-pointer hover:bg-purple-600 text-white px-6 py-2 rounded-full font-semibold">
+                                                        {t("hotelId.text_34")}
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            ) : (
+                                <div className="text-center mt-6 text-red-500 font-medium text-base">
+                                    {t("hotelId.text_35")}<br />
+                                    {t("hotelId.text_36")}
+                                </div>
+                            )}
+                        </CheckDesktop>
+                        <CheckTablet>
+                            {availableRooms.length > 0 ? (
+                                <div className="w-full mt-5 overflow-x-auto">
+                                    <table className="w-full border border-gray-300 rounded-lg overflow-hidden">
+                                        <thead>
+                                            <tr className="bg-[#e0e0f2] dark:bg-[#242629] text-left">
+                                                <th className="w-[40%] border-r border-gray-300 p-3 text-base font-semibold dark:text-white">
+                                                    {t("hotelId.text_23")}
+                                                </th>
+                                                <th className="w-[15%] border-r border-gray-300 p-3 text-base font-semibold text-center dark:text-white">
+                                                    {t("hotelId.text_24")}
+                                                </th>
+                                                <th className="w-[20%] border-r border-gray-300 p-3 text-base font-semibold text-center dark:text-white">
+                                                    {t("hotelId.text_25")}
+                                                </th>
+                                                <th className="w-[25%] p-3 text-base font-semibold text-center dark:text-white">
+                                                    {t("hotelId.text_26")}
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {availableRooms.map((room, index) => (
+                                                <tr key={index} className="border-t border-gray-300">
+                                                    {/* Cột loại phòng */}
+                                                    <td className="p-3 border-r border-gray-300 align-top">
+                                                        <button
+                                                            className="text-base font-semibold text-[#6246ea] hover:underline"
+                                                            onClick={() => handleOpenRoomDetail(room)}
+                                                        >
+                                                            {room.name}
+                                                        </button>
+                                                        <p className="text-sm font-medium text-red-500 dark:text-[#7f5af0] mt-1">
+                                                            {t("hotelId.text_27")}
+                                                        </p>
+                                                        <p className="text-sm mt-1 dark:text-[#94a1b2]">
+                                                            {t("hotelId.text_28")} 🛏️
+                                                        </p>
+                                                        <div className="flex flex-wrap gap-2 mt-2 text-sm dark:text-[#94a1b2]">
+                                                            {room.amenities.map((item, i) => (
+                                                                <div key={i} className="flex items-center gap-1">
+                                                                    <AiOutlineCheck className="text-green-500" size={14} />
+                                                                    <span>{item.amenity.name}</span>
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    </td>
+
+                                                    {/* Cột lượng khách */}
+                                                    <td className="p-3 border-r border-gray-300 text-center align-top">
+                                                        <div className="flex justify-center gap-1 mt-2">
+                                                            {Array.from({ length: room.maxGuests }).map((_, i) => (
+                                                                <AiOutlineUser key={i} size={16} />
+                                                            ))}
+                                                        </div>
+                                                    </td>
+
+                                                    {/* Cột giá */}
+                                                    <td className="p-3 border-r border-gray-300 text-center align-top">
+                                                        {room.discount > 0 ? (
+                                                            <div className="space-y-1 mt-1">
+                                                                <p className="text-sm line-through text-gray-400">
+                                                                    {room.price.toLocaleString()} VND
+                                                                </p>
+                                                                <p className="text-xs text-green-600">
+                                                                    Giảm {room.discount}%
+                                                                </p>
+                                                                <p className="text-base font-semibold text-pink-600">
+                                                                    {(room.price * (1 - room.discount / 100)).toLocaleString()} VND
+                                                                </p>
+                                                            </div>
+                                                        ) : (
+                                                            <p className="text-base font-semibold text-pink-600 mt-2">
+                                                                {room.price.toLocaleString()} VND
+                                                            </p>
+                                                        )}
+                                                    </td>
+
+                                                    {/* Cột ưu đãi */}
+                                                    <td className="p-3 space-y-2 align-top">
+                                                        <ul className="text-sm text-gray-700 dark:text-[#94a1b2] space-y-1">
+                                                            <li className="flex items-start gap-2">
+                                                                <AiOutlineCheck className="text-green-500 mt-1" size={16} />
+                                                                <span>{t("hotelId.text_29")}</span>
+                                                            </li>
+                                                            <li className="flex items-start gap-2">
+                                                                <AiOutlineCheck className="text-green-500 mt-1" size={16} />
+                                                                <span>{t("hotelId.text_30")}</span>
+                                                            </li>
+                                                            <li className="flex items-start gap-2">
+                                                                <AiOutlineCheck className="text-green-500 mt-1" size={16} />
+                                                                <span>{t("hotelId.text_31")}</span>
+                                                            </li>
+                                                            <li className="flex items-start gap-2">
+                                                                <AiOutlineCheck className="text-green-500 mt-1" size={16} />
+                                                                <span>
+                                                                    <strong className="dark:text-[#7f5af0]">
+                                                                        {t("hotelId.text_32")} {t("hotelId.text_discount")}
+                                                                    </strong> {t("hotelId.text_33")}
+                                                                </span>
+                                                            </li>
+                                                        </ul>
+                                                        <button
+                                                            onClick={() => handleOpenRoomDetail(room)}
+                                                            className="w-full mt-3 bg-purple-500 hover:bg-purple-600 dark:bg-[#7f5af0] text-white text-sm py-2 rounded-full font-medium"
+                                                        >
+                                                            {t("hotelId.text_34")}
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            ) : (
+                                <div className="text-center mt-6 text-red-500 font-medium text-base">
+                                    {t("hotelId.text_35")}<br />
+                                    {t("hotelId.text_36")}
+                                </div>
+                            )}
+                        </CheckTablet>
+
+                    </div>
+                    <CheckMobilePhone>
+                        <div className="space-y-4 mt-5">
+                            {availableRooms.map((room, index) => (
+                                <div key={index} className="border border-gray-300 dark:border-gray-700 rounded-lg p-4 shadow-sm bg-white dark:bg-[#1f1f2b]">
+                                    <div className="flex justify-between items-center">
+                                        <h3 className="font-semibold text-lg">{room.name}</h3>
+                                        <button
+                                            onClick={() => handleOpenRoomDetail(room)}
+                                            className="text-sm text-purple-600 dark:text-[#7f5af0] underline"
+                                        >
+                                            {t("hotelId.text_34")}
+                                        </button>
+                                    </div>
+                                    <p className="text-sm text-red-500 font-medium dark:text-[#7f5af0] mt-1">
+                                        {t("hotelId.text_27")}
+                                    </p>
+                                    <p className="mt-1 text-sm dark:text-[#94a1b2]">{t("hotelId.text_28")} 🛏️</p>
+
+                                    <div className="flex flex-wrap gap-2 mt-2 text-sm text-gray-700 dark:text-[#94a1b2]">
+                                        {room.amenities.map((item, i) => (
+                                            <div key={i} className="flex items-center gap-1">
+                                                <AiOutlineCheck className="text-green-500" size={14} />
+                                                <span>{item.amenity.name}</span>
+                                            </div>
+                                        ))}
+                                    </div>
+
+                                    <div className="mt-3">
+                                        <p className="text-sm text-gray-500">{t("hotelId.text_24")}:</p>
+                                        <div className="flex gap-1 mt-1">
+                                            {Array.from({ length: room.maxGuests }).map((_, i) => (
+                                                <AiOutlineUser key={i} size={18} />
+                                            ))}
+                                        </div>
+                                    </div>
+
+                                    <div className="mt-3">
+                                        {room.discount > 0 ? (
+                                            <div className="space-y-1">
+                                                <p className="text-gray-400 line-through text-sm">
+                                                    {room.price.toLocaleString()} VND
+                                                </p>
+                                                <p className="text-green-600 text-xs font-medium">
+                                                    Giảm {room.discount}%
+                                                </p>
+                                                <p className="text-pink-600 text-lg font-semibold">
+                                                    {(room.price * (1 - room.discount / 100)).toLocaleString()} VND
+                                                </p>
+                                            </div>
+                                        ) : (
+                                            <p className="text-pink-600 text-lg font-semibold">
+                                                {room.price.toLocaleString()} VND
+                                            </p>
+                                        )}
+                                    </div>
+
+                                    <ul className="mt-3 text-sm text-gray-700 dark:text-[#94a1b2] space-y-1">
+                                        <li className="flex items-start gap-2">
+                                            <AiOutlineCheck className="text-green-500 mt-1" size={16} />
+                                            <span>{t("hotelId.text_29")}</span>
+                                        </li>
+                                        <li className="flex items-start gap-2">
+                                            <AiOutlineCheck className="text-green-500 mt-1" size={16} />
+                                            <span>{t("hotelId.text_30")}</span>
+                                        </li>
+                                        <li className="flex items-start gap-2">
+                                            <AiOutlineCheck className="text-green-500 mt-1" size={16} />
+                                            <span>{t("hotelId.text_31")}</span>
+                                        </li>
+                                        <li className="flex items-start gap-2">
+                                            <AiOutlineCheck className="text-green-500 mt-1" size={16} />
+                                            <span>
+                                                <strong className="dark:text-[#7f5af0]">{t("hotelId.text_32")} {t("hotelId.text_discount")}</strong> {t("hotelId.text_33")}
+                                            </span>
+                                        </li>
+                                    </ul>
+                                </div>
+                            ))}
+                        </div>
+                    </CheckMobilePhone>
+
+                    {/* Comment */}
+                    {/* Đánh giá của khách hàng */}
+                    <div className="mt-12">
+                        <h2 className="text-2xl font-bold mb-6">{t("hotelId.text_37")}</h2>
+                        {/* Tổng quan rating */}
+                        <CheckMobilePhone>
+                            <div className="space-y-4 mb-8 px-2">
+                                {([5, 4, 3, 2, 1] as const).map((i) => (
+                                    <div key={i} className="flex items-center gap-3">
+                                        {/* Số sao */}
+                                        <span className="min-w-[44px] text-sm font-medium text-gray-800 dark:text-white">
+                                            {i} {t("hotelId.star")}
+                                        </span>
+
+                                        {/* Progress bar */}
+                                        <div className="flex-1 bg-gray-200 dark:bg-[#33354a] rounded-full h-2 overflow-hidden relative">
+                                            <div
+                                                className="bg-yellow-400 h-full rounded-full transition-all duration-500 ease-in-out"
+                                                style={{ width: `${hotel.ratingStats.percentages[i]}%` }}
+                                            />
+                                        </div>
+
+                                        {/* Số lượt */}
+                                        <span className="text-sm text-gray-500 dark:text-[#94a1b2] min-w-[48px] text-right">
+                                            {hotel.ratingStats.count[i]} {t("hotelId.text_38")}
+                                        </span>
+                                    </div>
+                                ))}
+                            </div>
+                        </CheckMobilePhone>
+                        <CheckDesktop>
+                            <div className="space-y-3 mb-8">
+                                {([5, 4, 3, 2, 1] as const).map((i) => (
+                                    <div key={i} className="flex items-center gap-4">
+                                        <span className="w-10 text-sm font-medium">{i} {t("hotelId.star")}</span>
+                                        <div className="w-full bg-gray-200 rounded h-2 overflow-hidden">
+                                            <div
+                                                className="bg-yellow-400 h-full"
+                                                style={{ width: `${hotel.ratingStats.percentages[i]}%` }}
+                                            />
+                                        </div>
+                                        <span className="text-sm text-gray-500 dark:text-[#94a1b2] w-20 text-right">
+                                            {hotel.ratingStats.count[i]} {t("hotelId.text_38")}
+                                        </span>
+                                    </div>
+                                ))}
+                            </div>
+                        </CheckDesktop>
+                        {/* Danh sách bình luận với Show More */}
+                        <div className="grid gap-6 ">
+                            {(showAllReviews ? reviews : reviews.slice(0, 2)).map((review, index) => (
+                                <div
+                                    key={index}
+                                    className="bg-white dark:bg-[#242629] rounded-lg shadow-md p-5 border border-gray-300"
+                                >
+                                    <div className="flex items-center gap-4 mb-3">
+                                        {review.user?.avatar ? (
+                                            <img
+                                                src={review.user.avatar}
+                                                alt="avatar"
+                                                className="w-12 h-12 rounded-full object-cover border"
+                                            />
+                                        ) : (
+                                            <div className="w-12 h-12 rounded-full bg-gray-300 flex items-center justify-center text-white">
+                                                <FaUserAlt className="text-sm" />
+                                            </div>
+                                        )}
+
+                                        <div>
+                                            <p className="font-semibold text-gray-900 dark:text-[#fffffe]">{review.user?.fullName}</p>
+                                            <div className="flex items-center gap-1">
+                                                {Array.from({ length: 5 }).map((_, i) => (
+                                                    <AiFillStar
+                                                        key={i}
+                                                        size={16}
+                                                        className={i < review.rating ? "text-yellow-400" : "text-gray-300"}
+                                                    />
+                                                ))}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <p className="text-gray-700 dark:text-[#94a1b2] leading-relaxed text-sm">{review.comment}</p>
+                                </div>
+                            ))}
+                        </div>
+
+                        {/* Nút hiển thị thêm */}
+                        {hotel.reviews.length > 2 && (
+                            <div className="mt-6 text-center">
+                                <button
+                                    className="text-purple-600 dark:text-[#7f5af0] cursor-pointer hover:underline font-medium text-sm"
+                                    onClick={() => setShowAllReviews(!showAllReviews)}
+                                >
+                                    {showAllReviews ? t("hotelId.text_42") : t("hotelId.text_41")}
+                                </button>
+                            </div>
+                        )}
+                    </div>
+                    {/* Post bình luận */}
+                    {/* Gửi đánh giá */}
+                    <div className="mt-12">
+                        <h2 className="text-2xl font-bold mb-6">{t("hotelId.text_39")}</h2>
+
+                        <div className="bg-white dark:bg-[#242629]  border border-gray-200 rounded-xl shadow-sm p-6 space-y-6">
+                            {/* Avatar + Tên + Chọn sao */}
+                            {mounted && (
+                                <div className="flex flex-col gap-4">
+                                    <div className="flex items-center gap-3">
+                                        {user?.avatar ? (
+                                            <img
+                                                src={user.avatar}
+                                                alt="Avatar"
+                                                className="w-12 h-12 rounded-full object-cover shadow-md"
+                                            />
+                                        ) : (
+                                            <div className="w-12 h-12 rounded-full bg-gray-300 flex items-center justify-center text-white shadow-md">
+                                                <FaUserAlt className="text-base" />
+                                            </div>
+                                        )}
+                                        <p className="font-semibold text-lg text-gray-800 dark:text-[#fffffe]">
+                                            {user?.fullName}
+                                        </p>
+                                    </div>
+
+                                    <div className="flex gap-1">
+                                        {Array.from({ length: 5 }).map((_, i) => (
+                                            <AiFillStar
+                                                key={i}
+                                                size={24}
+                                                onClick={() => setRating(i + 1)}
+                                                className={`cursor-pointer transition-all duration-150 ${i < rating ? "text-yellow-400" : "text-gray-300"}`}
+                                            />
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Textarea */}
+                            <textarea
+                                placeholder={t("hotelId.text_40")}
+                                rows={4}
+                                value={comment}
+                                onChange={(e) => setComment(e.target.value)}
+                                className="w-full border border-gray-300 rounded-lg p-4 shadow-sm resize-none focus:outline-none focus:ring-2 focus:ring-purple-500 text-gray-700 dark:text-[#94a1b2]"
+                            ></textarea>
+
+                            {/* Nút gửi */}
+                            <div className="text-right">
+                                <button
+                                    disabled={!comment || rating === 0}
+                                    onClick={handlePostSubmitReview}
+                                    className={`px-6 py-2 rounded-full cursor-pointer font-semibold transition duration-300 ${comment && rating
+                                        ? "bg-purple-600 text-white hover:bg-purple-700"
+                                        : "bg-gray-300 text-gray-500 cursor-not-allowed"
+                                        }`}
+                                >
+                                    {t("hotelId.button")}
+                                </button>
+                            </div>
+                        </div>
+                        {selectedRoom && (
+                            <RoomDetailModal
+                                open={isModalOpen}
+                                onClose={handleCloseRoomDetail}
+                                room={selectedRoom}
+                                checkIn={checkIn}
+                                checkOut={checkOut}
+                            />
+                        )}
+                    </div>
                 </div>
             </div>
-        </div>
+        </>
     );
 }
