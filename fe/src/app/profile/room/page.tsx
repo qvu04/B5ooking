@@ -80,9 +80,9 @@ export default function Room() {
 
                             {/* Thông tin phòng */}
                             <div className="col-span-2 space-y-2">
-                                <div className="flex justify-between items-center">
+                                <div className="flex flex-wrap justify-between items-center">
                                     <h3 className="text-xl font-semibold dark:text-black">{booking.room.name}</h3>
-                                    <span className="px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-700">
+                                    <span className="px-3 mt-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-700">
                                         {t(`booking_status.${booking.status}`)}
                                     </span>
                                 </div>

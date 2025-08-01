@@ -121,12 +121,13 @@ export default function HotelDetailClient({ hotel }: Props) {
                 return;
             }
             const res = await postReviewHotel(hotel.id, { rating, comment });
+            console.log('✌️res --->', res);
             const newReview: ReviewType = {
                 comment,
                 rating,
                 user: {
-                    avatar: user?.data?.User.avatar || '',
-                    fullName: user?.data?.User.fullName || '',
+                    avatar: user?.avatar || '',
+                    fullName: user?.fullName || '',
                 },
             };
             setReviews((prev: ReviewType[]) => [newReview, ...prev]);

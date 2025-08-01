@@ -324,9 +324,9 @@ const NavBarOnly = () => {
             <CheckDesktop>
                 <nav
                     className={`
-      sticky top-0 z-50 w-full px-8 py-2 flex items-center justify-between
-      transition-all duration-300
-      ${isScrolled
+                            sticky top-0 z-50 w-full px-8 py-2 flex items-center justify-between
+                            transition-all duration-300
+                            ${isScrolled
                             ? "bg-white dark:bg-black text-black dark:text-white shadow-md"
                             : "bg-black/30 dark:bg-black/30 text-white backdrop-blur-md"}
     `}
