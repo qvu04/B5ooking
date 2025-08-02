@@ -214,7 +214,11 @@ export default function HotelDetailClient({ hotel }: Props) {
 
                             <div className="w-full overflow-hidden">
                                 <Swiper
-                                    onSwiper={setThumbsSwiper}
+                                    onSwiper={(swiper) => {
+                                        if (!swiper.destroyed && swiper !== thumbsSwiper) {
+                                            setThumbsSwiper(swiper);
+                                        }
+                                    }}
                                     modules={[Thumbs]}
                                     watchSlidesProgress
                                     spaceBetween={10}
@@ -274,8 +278,13 @@ export default function HotelDetailClient({ hotel }: Props) {
 
                             <div className="w-full overflow-hidden">
                                 <Swiper
-                                    onSwiper={setThumbsSwiper}
                                     modules={[Thumbs]}
+                                    onSwiper={(swiper) => {
+                                        if (!swiper.destroyed && swiper !== thumbsSwiper) {
+                                            setThumbsSwiper(swiper);
+                                        }
+                                    }}
+
                                     watchSlidesProgress
                                     spaceBetween={10}
                                     breakpoints={{
@@ -364,7 +373,7 @@ export default function HotelDetailClient({ hotel }: Props) {
                 {/* Mô tả */}
                 <div>
                     <div className='mt-5'>
-                        <h2 className='font-bold lg:text-2xl text-xl '>{t("hotelId.text_4")} - {hotel.address}</h2>
+                        <h2 className='font-bold lg:text-2xl text-xs '>{t("hotelId.text_4")} - {hotel.address}</h2>
                         <p className='pt-3 dark:text-[#94a1b2]'>
                             {t("hotelId.text_5")} {t("hotelId.text_6")} {t("hotelId.text_7")} {t("hotelId.text_8")}
                         </p>
