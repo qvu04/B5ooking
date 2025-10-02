@@ -7,9 +7,9 @@ import { checkAdmin } from '../middleware/checkAdmin.js';
 
 const router = express.Router();
 
-router.post("/register",authController.register);
-router.post("/login",authController.login)
-router.get('/getUserById',authMiddleware,authController.getUserById);
+router.post("/register", authController.register);
+router.post("/login", authController.login)
+router.get('/getUserById', authMiddleware, authController.getUserById);
+router.post('/google-login', authController.googleLogin)
 
-
-export default router;
+export default router;  

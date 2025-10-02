@@ -10,6 +10,7 @@ import { useForm } from "react-hook-form";
 import { FiEye, FiEyeOff } from "react-icons/fi";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
+import { LoginWithGoogle } from "./google-login/LoginWithGoogle";
 
 type FormData = {
     email: string;
@@ -124,12 +125,12 @@ export default function LoginPage() {
                         {/* Submit */}
                         <button
                             type="submit"
-                            className="w-full bg-[#6246ea] cursor-pointer hover:bg-blue-700 text-white py-2 rounded-xl font-semibold transition-all duration-200"
+                            className="w-full bg-[#6246ea] cursor-pointer mb-5 hover:bg-blue-700 text-white py-2 rounded-xl font-semibold transition-all duration-200"
                         >
                             {t("login.form_button")}
                         </button>
                     </form>
-
+                    <LoginWithGoogle />
                     <p className="text-sm text-black mt-4 text-center">
                         {t("login.form_text_1")}{" "}
                         <Link href="/register" className="text-[#6246ea] hover:underline">

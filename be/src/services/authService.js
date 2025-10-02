@@ -1,6 +1,8 @@
 import { checkEmail } from "../utils/checkEmail.js"
 import { PrismaClient } from "@prisma/client"
 import bcrypt from "bcrypt"
+import jwt from 'jsonwebtoken';
+import { OAuth2Client } from "google-auth-library"
 import { generateToken } from "../utils/generateToken.js"
 import { BadrequestException, NotFoundException } from "../helpers/exception.helper.js"
 const prisma = new PrismaClient()
@@ -29,18 +31,18 @@ export const authService = {
                     gender: gender,
                 },
                 select: {
-                        id: true,
-                        firstName: true,
-                        lastName: true,
-                        fullName: true,
-                        email: true,
-                        gender: true,
-                        phone: true,
-                        address: true,
-                        avatar: true,
-                        dateOfBirth: true,
-                        role: true,
-                        create_At: true   
+                    id: true,
+                    firstName: true,
+                    lastName: true,
+                    fullName: true,
+                    email: true,
+                    gender: true,
+                    phone: true,
+                    address: true,
+                    avatar: true,
+                    dateOfBirth: true,
+                    role: true,
+                    create_At: true
                 }
             }
         );
@@ -56,7 +58,7 @@ export const authService = {
         }
         const isMatch = await bcrypt.compare(password, user.password)
         if (!isMatch) {
-          throw new BadrequestException("Mật khẩu không đúng")
+            throw new BadrequestException("Mật khẩu không đúng")
         }
 
         const token = generateToken(user.id, user.role, user)
@@ -65,30 +67,59 @@ export const authService = {
             user: token
         }
     },
+    // googleLogin: async function () {
+    //     const { code } = req.body;
+    //     const oAuth2Client = new OAuth2Client(
+    //         process.env.GOOGLE_CLIENT_ID,
+    //         process.env.GOOGLE_CLIENT_SECRET,
+    //         "postmessage"
+    //     );
+    //     const { tokens: tokensGoogle } = await oAuth2Client.getToken(code);
+    //     const decode = jwt.decode(tokensGoogle.id_token);
+    //    const {email, email_verified, name, picture} = decode;
+    //    if(!email_verified) {
+    //     throw new BadrequestException("Email chưa được xác thực!");
+    //    }
+    //    let userExist = await prisma.user.findUnique({
+    //     where: {
+    //         email: email,
+    //     }
+    //    })
+    //    if(!userExist) {
+    //     userExist = await prisma.user.create({
+    //         data: {
+    //             email: email,
+    //             fullName: name,
+    //             avatar: picture,
+    //             googleLogin: decode.sub,
+    //         }
+    //     })
+    //    }
 
-    getUserById : async function (userId) {
+    // },
+    getUserById: async function (userId) {
         const user = await prisma.user.findUnique({
             where: { id: userId },
             select: {
-              id: true,
-                        firstName: true,
-                        lastName: true,
-                        fullName: true,
-                        email: true,
-                        gender: true,
-                        phone: true,
-                        address: true,
-                        avatar: true,
-                        dateOfBirth: true,
-                        role: true,
-                        create_At: true   
+                id: true,
+                firstName: true,
+                lastName: true,
+                fullName: true,
+                email: true,
+                gender: true,
+                phone: true,
+                address: true,
+                avatar: true,
+                dateOfBirth: true,
+                role: true,
+                create_At: true
             }
-    });
+        });
         if (!user) {
             throw new NotFoundException("Không tìm thấy người dùng")
         }
         return {
             user: user
         }
-}
+    }
 }

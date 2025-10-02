@@ -2,7 +2,7 @@ import { responseSuccess } from "../helpers/response.helper.js"
 import { authService } from "../services/authService.js"
 
 export const authController = {
-  register: async function (req, res,next) {
+  register: async function (req, res, next) {
     try {
       const { newUser } = await authService.register(req.body)
       const reponse = responseSuccess(newUser, "Tạo người dùng thành công")
@@ -13,27 +13,37 @@ export const authController = {
     }
   },
 
-  login: async function (req, res,next) {
+  login: async function (req, res, next) {
     try {
-      const {  user } = await authService.login(req.body)
+      const { user } = await authService.login(req.body)
       const reponse = responseSuccess(user, "Đăng nhập thành công")
       res.status(reponse.status).json(reponse)
     } catch (err) {
       console.error("Đăng nhập người dùng không thành công", err)
-     next(err) 
+      next(err)
     }
   },
-  getUserById : async function (req, res, next) {
+  getUserById: async function (req, res, next) {
     try {
-          const userId = req.user.id;
-    const user = await authService.getUserById(userId);
-    const response = responseSuccess(user, "Lấy thông tin người dùng thành công");
+      const userId = req.user.id;
+      const user = await authService.getUserById(userId);
+      const response = responseSuccess(user, "Lấy thông tin người dùng thành công");
       res.status(response.status).json(response);
     } catch (err) {
       console.error("Lấy thông tin người dùng không thành công", err)
       next(err)
     }
-  }
+  },
+  googleLogin: async function (req, res, next) {
+    try {
+      const user = await authService.login(req.body)
+      const reponse = responseSuccess(user, "Đăng nhập thành công")
+      res.status(reponse.status).json(reponse)
+    } catch (err) {
+      console.error("Đăng nhập người dùng không thành công", err)
+      next(err)
+    }
+  },
 
 
 }
