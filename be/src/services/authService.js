@@ -84,9 +84,6 @@ export const authService = {
             process.env.GOOGLE_CLIENT_SECRET,
             redirect_uri
         );
-
-<<<<<<< HEAD
-=======
         console.log("=== Nhận code từ FE ===", code);
         console.log("=== redirect_uri từ FE ===", redirect_uri);
 
@@ -166,7 +163,7 @@ export const authService = {
         return { user: token };
     },
 
->>>>>>> backendd
+
     getUserById: async function (userId) {
         const user = await prisma.user.findUnique({
             where: { id: userId },
