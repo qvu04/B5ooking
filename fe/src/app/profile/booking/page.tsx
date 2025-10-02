@@ -17,6 +17,7 @@ import {
     AlertDialogAction,
 } from "@/components/ui/alert-dialog";
 import toast from "react-hot-toast";
+import { CheckDesktop, CheckMobilePhone, CheckTablet } from "@/app/components/HOC/ResponsiveCustom.";
 
 export default function Booking() {
     const [bookings, setBookings] = useState<BookingItem[]>([]);
@@ -193,42 +194,187 @@ export default function Booking() {
     );
 
     return (
-        <div className="max-w-5xl mx-auto mt-6 px-4">
-            <h1 className="text-3xl font-bold mb-6 text-[#222]">{t("booking.text_8")}</h1>
-            {renderFilterButtons()}
-            {renderBookingList()}
-            <AlertDialog open={isCancelDialogOpen} onOpenChange={setIsCancelDialogOpen}>
-                <AlertDialogContent>
-                    <AlertDialogHeader>
-                        <AlertDialogTitle>{t("booking.text_9")}</AlertDialogTitle>
-                        <AlertDialogDescription>
-                            {t("booking.text_10")}
-                        </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                        <AlertDialogCancel>{t("booking.text_14")}</AlertDialogCancel>
-                        <AlertDialogAction onClick={confirmCancelBooking}>
-                            {t("booking.text_11")}
-                        </AlertDialogAction>
-                    </AlertDialogFooter>
-                </AlertDialogContent>
-            </AlertDialog>
-            <AlertDialog open={isPaymentDialogOpen} onOpenChange={setIsPaymentDialogOpen}>
-                <AlertDialogContent>
-                    <AlertDialogHeader>
-                        <AlertDialogTitle>{t("booking.text_12")}</AlertDialogTitle>
-                        <AlertDialogDescription>
-                            {t("booking.text_13")}
-                        </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                        <AlertDialogCancel>{t("booking.text_14")}</AlertDialogCancel>
-                        <AlertDialogAction onClick={confirmPaymentBooking}>
-                            {t("booking.text_15")}
-                        </AlertDialogAction>
-                    </AlertDialogFooter>
-                </AlertDialogContent>
-            </AlertDialog>
-        </div>
+        <>
+            <CheckDesktop>
+                <div className="max-w-5xl mx-auto mt-6 px-4">
+                    <h1 className="text-3xl font-bold mb-6 text-[#222]">{t("booking.text_8")}</h1>
+                    {renderFilterButtons()}
+                    {renderBookingList()}
+                    <AlertDialog open={isCancelDialogOpen} onOpenChange={setIsCancelDialogOpen}>
+                        <AlertDialogContent>
+                            <AlertDialogHeader>
+                                <AlertDialogTitle>{t("booking.text_9")}</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                    {t("booking.text_10")}
+                                </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                                <AlertDialogCancel>{t("booking.text_14")}</AlertDialogCancel>
+                                <AlertDialogAction onClick={confirmCancelBooking}>
+                                    {t("booking.text_11")}
+                                </AlertDialogAction>
+                            </AlertDialogFooter>
+                        </AlertDialogContent>
+                    </AlertDialog>
+                    <AlertDialog open={isPaymentDialogOpen} onOpenChange={setIsPaymentDialogOpen}>
+                        <AlertDialogContent>
+                            <AlertDialogHeader>
+                                <AlertDialogTitle>{t("booking.text_12")}</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                    {t("booking.text_13")}
+                                </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                                <AlertDialogCancel>{t("booking.text_14")}</AlertDialogCancel>
+                                <AlertDialogAction onClick={confirmPaymentBooking}>
+                                    {t("booking.text_15")}
+                                </AlertDialogAction>
+                            </AlertDialogFooter>
+                        </AlertDialogContent>
+                    </AlertDialog>
+                </div>
+            </CheckDesktop>
+            <CheckTablet>
+                <div className="max-w-5xl mx-auto mt-6 px-4">
+                    <h1 className="text-3xl font-bold mb-6 text-[#222]">{t("booking.text_8")}</h1>
+                    {renderFilterButtons()}
+                    {renderBookingList()}
+                    <AlertDialog open={isCancelDialogOpen} onOpenChange={setIsCancelDialogOpen}>
+                        <AlertDialogContent>
+                            <AlertDialogHeader>
+                                <AlertDialogTitle>{t("booking.text_9")}</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                    {t("booking.text_10")}
+                                </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                                <AlertDialogCancel>{t("booking.text_14")}</AlertDialogCancel>
+                                <AlertDialogAction onClick={confirmCancelBooking}>
+                                    {t("booking.text_11")}
+                                </AlertDialogAction>
+                            </AlertDialogFooter>
+                        </AlertDialogContent>
+                    </AlertDialog>
+                    <AlertDialog open={isPaymentDialogOpen} onOpenChange={setIsPaymentDialogOpen}>
+                        <AlertDialogContent>
+                            <AlertDialogHeader>
+                                <AlertDialogTitle>{t("booking.text_12")}</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                    {t("booking.text_13")}
+                                </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                                <AlertDialogCancel>{t("booking.text_14")}</AlertDialogCancel>
+                                <AlertDialogAction onClick={confirmPaymentBooking}>
+                                    {t("booking.text_15")}
+                                </AlertDialogAction>
+                            </AlertDialogFooter>
+                        </AlertDialogContent>
+                    </AlertDialog>
+                </div>
+            </CheckTablet>
+            <CheckMobilePhone>
+                <div className="mt-4 px-4">
+                    <h1 className="text-2xl font-bold mb-4 text-[#222] text-center">
+                        {t("booking.text_8")}
+                    </h1>
+                    {renderFilterButtons()}
+                    {filteredBookings.length === 0 ? (
+                        <p className="text-gray-600 italic text-center">
+                            {t("booking.text_1")}
+                        </p>
+                    ) : (
+                        <ul className="space-y-4">
+                            {filteredBookings.map((item) => (
+                                <li
+                                    key={item.id}
+                                    className="p-4 border rounded-lg shadow-sm flex flex-col"
+                                >
+                                    <img
+                                        src={item.room.image}
+                                        alt={item.room.name}
+                                        className="w-full h-40 object-cover rounded-md mb-3"
+                                    />
+                                    <p className="text-lg font-bold text-[#333]">{item.room.hotel.name}</p>
+                                    <p className="text-base font-semibold text-[#6246ea]">{item.room.name}</p>
+                                    <div className="mt-1 text-sm text-gray-600">
+                                        <p>
+                                            {t("booking.text_2")} {new Date(item.checkIn).toLocaleDateString()} -{" "}
+                                            {new Date(item.checkOut).toLocaleDateString()}
+                                        </p>
+                                        <p>
+                                            {t("booking.text_3")} {item.guests} | {t("booking.text_4")} {item.nights}
+                                        </p>
+                                    </div>
+                                    <p className="mt-2 text-base font-medium text-[#111]">
+                                        {t("booking.text_16")}{" "}
+                                        <span className="text-[#f43f5e] font-bold">
+                                            {item.totalPrice.toLocaleString()}₫
+                                        </span>
+                                    </p>
+                                    <span className="inline-block mt-2 text-xs px-3 py-1 rounded-full bg-gray-100 border text-[#6246ea] font-semibold">
+                                        {t("booking.text_5")} {t(`booking_status.${item.status}`)}
+                                    </span>
+
+                                    {item.status === BookingStatusEnum.PENDING && (
+                                        <div className="mt-3 grid grid-cols-2 gap-3">
+                                            <button
+                                                onClick={() => handleOpenPaymentDialog(item.id)}
+                                                className="py-2 text-xs rounded-md bg-green-500 text-white font-medium hover:bg-green-600 transition"
+                                            >
+                                                {t("booking.text_6")}
+                                            </button>
+                                            <button
+                                                onClick={() => handleOpenCancelDialog(item.id)}
+                                                className="py-2 text-xs rounded-md bg-red-500 text-white font-medium hover:bg-red-600 transition"
+                                            >
+                                                {t("booking.text_7")}
+                                            </button>
+                                        </div>
+                                    )}
+                                </li>
+                            ))}
+                        </ul>
+                    )}
+
+                    {/* Cancel Dialog */}
+                    <AlertDialog open={isCancelDialogOpen} onOpenChange={setIsCancelDialogOpen}>
+                        <AlertDialogContent>
+                            <AlertDialogHeader>
+                                <AlertDialogTitle>{t("booking.text_9")}</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                    {t("booking.text_10")}
+                                </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                                <AlertDialogCancel>{t("booking.text_14")}</AlertDialogCancel>
+                                <AlertDialogAction onClick={confirmCancelBooking}>
+                                    {t("booking.text_11")}
+                                </AlertDialogAction>
+                            </AlertDialogFooter>
+                        </AlertDialogContent>
+                    </AlertDialog>
+
+                    {/* Payment Dialog */}
+                    <AlertDialog open={isPaymentDialogOpen} onOpenChange={setIsPaymentDialogOpen}>
+                        <AlertDialogContent>
+                            <AlertDialogHeader>
+                                <AlertDialogTitle>{t("booking.text_12")}</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                    {t("booking.text_13")}
+                                </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                                <AlertDialogCancel>{t("booking.text_14")}</AlertDialogCancel>
+                                <AlertDialogAction onClick={confirmPaymentBooking}>
+                                    {t("booking.text_15")}
+                                </AlertDialogAction>
+                            </AlertDialogFooter>
+                        </AlertDialogContent>
+                    </AlertDialog>
+                </div>
+            </CheckMobilePhone>
+
+        </>
     );
 }

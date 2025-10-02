@@ -1,6 +1,8 @@
 import { checkEmail } from "../utils/checkEmail.js"
 import { PrismaClient } from "@prisma/client"
 import bcrypt from "bcrypt"
+import jwt from 'jsonwebtoken';
+import { OAuth2Client } from "google-auth-library"
 import { generateToken } from "../utils/generateToken.js"
 import { BadrequestException, NotFoundException } from "../helpers/exception.helper.js"
 import { verifyGoogleToken } from "../utils/googleAuth.js"
@@ -73,6 +75,7 @@ export const authService = {
             user: token
         }
     },
+
     loginGoogle: async function (data) {
         const { code, redirect_uri } = data;
         if (!code) {
@@ -162,6 +165,8 @@ export const authService = {
 
         return { user: token };
     },
+
+
 
 
     getUserById: async function (userId) {
