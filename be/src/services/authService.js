@@ -67,36 +67,6 @@ export const authService = {
             user: token
         }
     },
-    // googleLogin: async function () {
-    //     const { code } = req.body;
-    //     const oAuth2Client = new OAuth2Client(
-    //         process.env.GOOGLE_CLIENT_ID,
-    //         process.env.GOOGLE_CLIENT_SECRET,
-    //         "postmessage"
-    //     );
-    //     const { tokens: tokensGoogle } = await oAuth2Client.getToken(code);
-    //     const decode = jwt.decode(tokensGoogle.id_token);
-    //    const {email, email_verified, name, picture} = decode;
-    //    if(!email_verified) {
-    //     throw new BadrequestException("Email chưa được xác thực!");
-    //    }
-    //    let userExist = await prisma.user.findUnique({
-    //     where: {
-    //         email: email,
-    //     }
-    //    })
-    //    if(!userExist) {
-    //     userExist = await prisma.user.create({
-    //         data: {
-    //             email: email,
-    //             fullName: name,
-    //             avatar: picture,
-    //             googleLogin: decode.sub,
-    //         }
-    //     })
-    //    }
-
-    // },
     getUserById: async function (userId) {
         const user = await prisma.user.findUnique({
             where: { id: userId },
