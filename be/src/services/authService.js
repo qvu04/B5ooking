@@ -29,18 +29,18 @@ export const authService = {
                     gender: gender,
                 },
                 select: {
-                        id: true,
-                        firstName: true,
-                        lastName: true,
-                        fullName: true,
-                        email: true,
-                        gender: true,
-                        phone: true,
-                        address: true,
-                        avatar: true,
-                        dateOfBirth: true,
-                        role: true,
-                        create_At: true   
+                    id: true,
+                    firstName: true,
+                    lastName: true,
+                    fullName: true,
+                    email: true,
+                    gender: true,
+                    phone: true,
+                    address: true,
+                    avatar: true,
+                    dateOfBirth: true,
+                    role: true,
+                    create_At: true
                 }
             }
         );
@@ -56,7 +56,7 @@ export const authService = {
         }
         const isMatch = await bcrypt.compare(password, user.password)
         if (!isMatch) {
-          throw new BadrequestException("Mật khẩu không đúng")
+            throw new BadrequestException("Mật khẩu không đúng")
         }
 
         const token = generateToken(user.id, user.role, user)
@@ -66,29 +66,29 @@ export const authService = {
         }
     },
 
-    getUserById : async function (userId) {
+    getUserById: async function (userId) {
         const user = await prisma.user.findUnique({
             where: { id: userId },
             select: {
-              id: true,
-                        firstName: true,
-                        lastName: true,
-                        fullName: true,
-                        email: true,
-                        gender: true,
-                        phone: true,
-                        address: true,
-                        avatar: true,
-                        dateOfBirth: true,
-                        role: true,
-                        create_At: true   
+                id: true,
+                firstName: true,
+                lastName: true,
+                fullName: true,
+                email: true,
+                gender: true,
+                phone: true,
+                address: true,
+                avatar: true,
+                dateOfBirth: true,
+                role: true,
+                create_At: true
             }
-    });
+        });
         if (!user) {
             throw new NotFoundException("Không tìm thấy người dùng")
         }
         return {
             user: user
         }
-}
+    }
 }

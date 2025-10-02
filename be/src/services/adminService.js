@@ -552,40 +552,6 @@ export const adminService = {
         });
     },
 
-    // lấy thông tin khách sạn theo id
-    // getHotelById: async function (hotelId) {
-    //     const hotel = await prisma.hotel.findUnique({
-    //         where: { id: hotelId },
-    //         include: {
-    //             location: true,
-    //             reviews: {
-    //                 take: 3,
-    //                 orderBy: { create_At: "desc" },
-    //                 include: {
-    //                     user: {
-    //                         select: {
-    //                             id: true,
-    //                             fullName: true,
-    //                             avatar: true
-    //                         }
-    //                     }
-    //                 }
-    //             },
-    //             images: true,
-    //             amenities: {
-    //                 include: {
-    //                     amenity: true
-    //                 },
-    //             }
-    //         }
-    //     });
-    //     if (!hotel) {
-    //         throw new NotFoundException("Khách sạn không tồn tại");
-    //     }
-    //     return {
-    //         hotel: hotel
-    //     }
-    // },
 
     // Lấy khách sạn liên quan tới địa điểm
     getHotelsByLocation: async function (locationId) {
@@ -824,27 +790,7 @@ export const adminService = {
             where: { id: imageId }
         });
     },
-    // Lấy thông tin phòng theo id
-    // getRoomById: async function (roomId) {
-    //     const parsedRoomId = parseInt(roomId);
-    //     const room = await prisma.room.findUnique({
-    //         where: { id: parsedRoomId },
-    //         include: {
-    //             images: true,
-    //             amenities: {
-    //                 include: {
-    //                     amenity: true
-    //                 }
-    //             }
-    //         }
-    //     });
-    //     if (!room) {
-    //         throw new NotFoundException("Phòng không tồn tại");
-    //     }
-    //     return {
-    //         room: room
-    //     }
-    // },
+    
 
     // Tạo ảnh phụ của phòng 
     addRoomImage: async function (roomId, imageFile) {

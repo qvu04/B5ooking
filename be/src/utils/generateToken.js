@@ -11,3 +11,4 @@ export const generateToken = (userId, role, user) => {
         User : safeuser
     };
 }
+
