@@ -7,6 +7,6 @@ export const loginService = (user: LoginUser) => {
 export const registerService = (user: RegisterUser) => {
     return https.post("/api/auth/register", user);
 }
-export const loginGoogleService = (code: string) => {
-    return https.post("/api/auth/google-login", { code });
-}
+export const loginGoogleService = (credential: string) => {
+    return https.post("/api/auth/loginGoogle", { credential });
+};

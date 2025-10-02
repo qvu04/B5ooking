@@ -10,7 +10,7 @@ import { useForm } from "react-hook-form";
 import { FiEye, FiEyeOff } from "react-icons/fi";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
-import { LoginWithGoogle } from "./google-login/LoginWithGoogle";
+import LoginWithGoogle from "./google-login/LoginWithGoogle";
 
 type FormData = {
     email: string;

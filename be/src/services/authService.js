@@ -1,12 +1,9 @@
 import { checkEmail } from "../utils/checkEmail.js"
 import { PrismaClient } from "@prisma/client"
 import bcrypt from "bcrypt"
-import jwt from 'jsonwebtoken';
-import { OAuth2Client } from "google-auth-library"
 import { generateToken } from "../utils/generateToken.js"
 import { BadrequestException, NotFoundException } from "../helpers/exception.helper.js"
 import { verifyGoogleToken } from "../utils/googleAuth.js"
-import { OAuth2Client } from "google-auth-library"
 const prisma = new PrismaClient()
 export const authService = {
     register: async function (data) {
@@ -77,42 +74,20 @@ export const authService = {
     },
 
     loginGoogle: async function (data) {
-        const { code, redirect_uri } = data;
-        if (!code) {
-            throw new BadrequestException("Authorization code không được để trống");
-        }
-        
-        const client = new OAuth2Client(
-            process.env.GOOGLE_CLIENT_ID,
-            process.env.GOOGLE_CLIENT_SECRET,
-            redirect_uri
-        );
-        console.log("=== Nhận code từ FE ===", code);
-        console.log("=== redirect_uri từ FE ===", redirect_uri);
-
-        const { tokens } = await client.getToken(code);
-
-        console.log("=== Google Tokens ===", tokens);
-
-
-        console.log("=== Google Tokens ===");
-        console.log(tokens);
-
-        if (!tokens.id_token) {
-            throw new BadrequestException("Không lấy được id_token từ Google");
+        const { credential } = data; // nhận trực tiếp từ FE
+        if (!credential) {
+            throw new BadrequestException("id_token không được để trống");
         }
 
-        const googleUser = await verifyGoogleToken(tokens.id_token);
+        const googleUser = await verifyGoogleToken(credential);
 
-        console.log("=== Google User Payload ===");
-        console.log(googleUser);
+        console.log("=== Google User Payload ===", googleUser);
 
         if (!googleUser?.email) {
             throw new BadrequestException("Không lấy được email từ Google");
         }
-
         if (!googleUser.email_verified) {
-            throw new BadrequestException("Email chưa được xác minh bởi Google");
+            throw new BadrequestException("Email chưa được xác minh");
         }
 
         let user = await prisma.user.findUnique({
@@ -121,54 +96,41 @@ export const authService = {
         });
 
         if (!user) {
-            console.log("⚡ User chưa tồn tại → tạo mới trong DB");
-
             user = await prisma.user.create({
                 data: {
                     firstName: googleUser.given_name || googleUser.name || "Unknown",
                     lastName: googleUser.family_name || "",
-                    fullName:
-                        googleUser.name ||
-                        `${googleUser.given_name || ""} ${googleUser.family_name || ""}`,
+                    fullName: googleUser.name || `${googleUser.given_name || ""} ${googleUser.family_name || ""}`,
                     email: googleUser.email,
                     avatar: googleUser.picture || null,
                     credentials: {
-                        create: {
-                            provider: "google",
-                            providerId: googleUser.sub,
-                        },
+                        create: { provider: "google", providerId: googleUser.sub },
                     },
                 },
                 include: { credentials: true },
             });
         } else {
-            console.log("⚡ User đã tồn tại trong DB");
-            const hasGoogle = user.credentials.find(
-                (cred) => cred.provider === "google"
-            );
+            const hasGoogle = user.credentials.find(c => c.provider === "google");
             if (!hasGoogle) {
-                console.log("⚡ Thêm credential Google cho user cũ");
                 await prisma.credential.create({
-                    data: {
-                        userId: user.id,
-                        provider: "google",
-                        providerId: googleUser.sub,
-                    },
+                    data: { userId: user.id, provider: "google", providerId: googleUser.sub },
                 });
             }
         }
 
         const token = generateToken(user.id, user.role, user);
 
-        console.log("=== Final User Return ===");
-        console.log(token);
-
-        return { user: token };
+        return {
+            user: {
+                id: user.id,
+                email: user.email,
+                fullName: user.fullName,
+                avatar: user.avatar,
+                role: user.role,
+                token: token
+            }
+        }
     },
-
-
-
-
     getUserById: async function (userId) {
         const user = await prisma.user.findUnique({
             where: { id: userId },
