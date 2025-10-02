@@ -15,12 +15,23 @@ export const authController = {
 
   login: async function (req, res,next) {
     try {
-      const {  user } = await authService.login(req.body)
+      const { user } = await authService.login(req.body)
       const reponse = responseSuccess(user, "Đăng nhập thành công")
       res.status(reponse.status).json(reponse)
     } catch (err) {
       console.error("Đăng nhập người dùng không thành công", err)
      next(err) 
+    }
+  },
+  loginGoogle: async function (req, res, next) {
+    try {
+      console.log("Request body:", req.body); // Debugging line to check the request body
+      const { user } = await authService.loginGoogle(req.body)
+      const response = responseSuccess(user, "Đăng nhập với Google thành công")
+      res.status(response.status).json(response)
+    } catch (err) {
+      console.error("Đăng nhập với Google không thành công", err)
+      next(err)
     }
   },
   getUserById : async function (req, res, next) {
