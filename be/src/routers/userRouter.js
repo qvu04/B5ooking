@@ -10,6 +10,12 @@ router.patch('/update-profile', upload.single('avatar'), authMiddleware, userCon
 // Booking Room
 router.post('/BookingRoom', authMiddleware, userController.bookingRoom)
 
+// Tạo phiên thanh toán Stripe
+router.post('/createStripeSession', authMiddleware, userController.createStripeSession)
+
+// Xác thực phiên thanh toán Stripe
+router.get('/verifyStripeSession/:id', authMiddleware, userController.verifyStripeSession)
+
 router.post('/ConfirmBooking/:id', authMiddleware, userController.confirmBooking)
 
 router.post('/CancelBooking/:id', authMiddleware, userController.cancelBooking)

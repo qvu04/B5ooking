@@ -27,6 +27,27 @@ export const userController = {
             next(err)
         }
     },
+    createStripeSession : async function (req,res,next) {
+        try {
+            const session = await userService.createStripeSession(req.body);
+            const response = responseSuccess(session, "Tạo phiên thanh toán thành công");
+            res.status(response.status).json(response);
+        } catch (error) {
+            console.error("Tạo phiên thanh toán không thành công", error);
+            next(error);
+        }
+    },
+    verifyStripeSession: async function (req, res, next) {
+        try {
+            const sessionId = req.params.id;
+            const verificationResult = await userService.verifyStripeSession(sessionId);
+            const response = responseSuccess(verificationResult, "Xác thực phiên thanh toán thành công");
+            res.status(response.status).json(response);
+        } catch (error) {
+            console.error("Xác thực phiên thanh toán không thành công", error);
+            next(error);
+        }
+    },
     confirmBooking : async function (req,res,next) {
         try {
             const userId = req.user.id;

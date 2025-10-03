@@ -1,7 +1,9 @@
 import { PrismaClient } from "@prisma/client"
 import bcrypt from "bcrypt"
+import Stripe from "stripe";
 import { BadrequestException, ConflictException, NotFoundException } from "../helpers/exception.helper.js";
 const prisma = new PrismaClient()
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY)
 import { BookingStatus } from "@prisma/client";
 export const userService = {
     updateProfile: async function (userId, data, avatarPath) {
@@ -39,7 +41,7 @@ export const userService = {
                 address: true,
                 update_At: true,
                 email: true,
-                role : true
+                role: true
             }
         })
 
@@ -49,7 +51,7 @@ export const userService = {
     },
 
     bookingRoom: async function (userId, data) {
-        const { roomId, checkIn, checkOut, guests } = data;
+        const { roomId, checkIn, checkOut, guests, currency } = data;
 
         const parsedCheckIn = new Date(checkIn);
         const parsedCheckOut = new Date(checkOut);
@@ -65,11 +67,9 @@ export const userService = {
                 roomId: roomId,
                 status: { in: ['PENDING', 'CONFIRMED'] },
                 checkOut: { gt: now },
-                OR: [
-                    {
-                        checkIn: { lte: parsedCheckOut },
-                        checkOut: { gte: parsedCheckIn }
-                    }
+                AND: [
+                    { checkIn: { lte: parsedCheckOut } },
+                    { checkOut: { gte: parsedCheckIn } }
                 ]
             }
         });
@@ -104,7 +104,9 @@ export const userService = {
                 checkOut: parsedCheckOut,
                 totalPrice: totalPrice,
                 guests: guests,
-                status: 'PENDING'
+                status: 'PENDING',
+                paymentStatus: 'UNPAID',
+                currency: currency || 'vnd'
             },
             include: {
                 user: true,
@@ -119,6 +121,97 @@ export const userService = {
         return {
             nights: nights,
             newBooking: newBooking
+        }
+    },
+    createStripeSession: async function (data) {
+        const { bookingId, lang } = data;
+
+        // 1. Lấy booking từ DB
+        const booking = await prisma.booking.findUnique({
+            where: { id: parseInt(bookingId) },
+            include: {
+                room: {
+                    include: {
+                        hotel: true
+                    }
+                }
+            }
+        });
+
+        if (!booking) {
+            throw new NotFoundException("Không tìm thấy đơn đặt");
+        }
+
+        // 2. Xác định tiền tệ & tính toán unitAmount
+        let currencyUsed, unitAmount, descriptionText;
+
+        if (lang === "en") {
+            // Nếu ngôn ngữ là tiếng Anh → ép hiển thị USD
+            currencyUsed = "usd";
+            unitAmount = Math.round((booking.totalPrice / 25000) * 100); // Quy đổi VND → cents (USD)
+            descriptionText = `Guests: ${booking.guests}, From ${booking.checkIn.toISOString().split("T")[0]} to ${booking.checkOut.toISOString().split("T")[0]}, Total: ${booking.totalPrice} VND => $${(unitAmount / 100).toFixed(2)} USD`;
+        } else {
+            // Mặc định tiếng Việt → dùng VND
+            currencyUsed = "vnd";
+            unitAmount = booking.totalPrice; // Stripe cho phép VNĐ (không cần *100)
+            descriptionText = `Khách: ${booking.guests}, Từ ${booking.checkIn.toISOString().split("T")[0]} đến ${booking.checkOut.toISOString().split("T")[0]}, Tổng: ${unitAmount} VND`;
+        }
+
+        // 3. Tạo session Stripe
+        const session = await stripe.checkout.sessions.create({
+            payment_method_types: ["card"],
+            line_items: [
+                {
+                    price_data: {
+                        currency: currencyUsed,
+                        unit_amount: unitAmount,
+                        product_data: {
+                            name: `${booking.room.name} - ${booking.room.hotel.name}`,
+                            description: descriptionText,
+                            images: [booking.room.image]
+                        }
+                    },
+                    quantity: 1
+                }
+            ],
+            mode: "payment",
+            success_url: `${process.env.FRONTEND_URL}/bookings/success?session_id={CHECKOUT_SESSION_ID}`,
+            cancel_url: `${process.env.FRONTEND_URL}/booking-cancel?sessionId={CHECKOUT_SESSION_ID}`,
+            metadata: { bookingId: booking.id.toString() }
+        });
+
+        // 4. Cập nhật DB với sessionId
+        await prisma.booking.update({
+            where: { id: booking.id },
+            data: { stripeSessionId: session.id }
+        });
+
+        // 5. Trả về sessionId cho FE
+        return {
+            sessionId: session.id,
+            url: session.url
+        };
+    },
+
+
+    verifyStripeSession: async function (sessionId) {
+        const session = await stripe.checkout.sessions.retrieve(sessionId);
+        const bookingId = parseInt(session.metadata.bookingId);
+        if (!session) {
+            throw new NotFoundException("Không tìm thấy phiên thanh toán")
+        }
+        if (session.payment_status === "paid") {
+            await prisma.booking.update({
+                where: { id: bookingId },
+                data: {
+                    status: "CONFIRMED", paymentStatus: "PAID",
+                    paidAmount: session.amount_total,  
+                    paidCurrency: session.currency
+                }
+            });
+            return { paid: true };
+        } else {
+            return { paid: false };
         }
     },
     confirmBooking: async function (userId, bookingId) {
