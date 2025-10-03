@@ -175,8 +175,8 @@ export const userService = {
                 }
             ],
             mode: "payment",
-            success_url: `${process.env.FRONTEND_URL}/bookings/success?session_id={CHECKOUT_SESSION_ID}`,
-            cancel_url: `${process.env.FRONTEND_URL}/booking-cancel?sessionId={CHECKOUT_SESSION_ID}`,
+            success_url: `${process.env.FRONTEND_URL}/profile/booking/payment?session_id={CHECKOUT_SESSION_ID}`,
+            cancel_url: `${process.env.FRONTEND_URL}/profile/booking/payment?session_id={CHECKOUT_SESSION_ID}`,
             metadata: { bookingId: booking.id.toString() }
         });
 
@@ -197,6 +197,12 @@ export const userService = {
     verifyStripeSession: async function (sessionId) {
         const session = await stripe.checkout.sessions.retrieve(sessionId);
         const bookingId = parseInt(session.metadata.bookingId);
+        const booking = await prisma.booking.findUnique({
+            where: { id: bookingId },
+            include: {
+                room: { include: { hotel: true } }
+            }
+        });
         if (!session) {
             throw new NotFoundException("Không tìm thấy phiên thanh toán")
         }
@@ -205,13 +211,13 @@ export const userService = {
                 where: { id: bookingId },
                 data: {
                     status: "CONFIRMED", paymentStatus: "PAID",
-                    paidAmount: session.amount_total,  
+                    paidAmount: session.amount_total,
                     paidCurrency: session.currency
                 }
             });
-            return { paid: true };
+            return { paid: true, booking };
         } else {
-            return { paid: false };
+            return { paid: false, booking };
         }
     },
     confirmBooking: async function (userId, bookingId) {

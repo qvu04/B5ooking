@@ -9,8 +9,6 @@ import { RoomType } from '@/app/types/roomType';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Thumbs } from 'swiper/modules';
 import { Swiper as SwiperType } from 'swiper/types';
-import 'swiper/css';
-import 'swiper/css/thumbs';
 import { postBookingRoom } from '@/app/api/bookingService';
 import toast from 'react-hot-toast';
 import ShowConfirm from '@/app/hotel/[hotelId]/FormConfirmBooking';
@@ -24,6 +22,7 @@ import {
     CarouselNext,
     CarouselPrevious,
 } from "@/components/ui/carousel"
+import { useRouter } from 'next/navigation';
 type Props = {
     open: boolean;
     onClose: () => void;
@@ -40,6 +39,7 @@ export default function RoomDetailModal({ open, onClose, room, checkIn, checkOut
     const [isBooking, setIsBooking] = useState(false);
     const [showConfirm, setShowConfirm] = useState(false);
     const { t, i18n } = useTranslation();
+    const router = useRouter();
     const handleBooking = async (nights: number, checkInDate: string, checkOutDate: string) => {
         if (!room) return
         setIsBooking(true);
@@ -56,6 +56,7 @@ export default function RoomDetailModal({ open, onClose, room, checkIn, checkOut
             }
             const res = await postBookingRoom(payload);
             setShowConfirm(false);
+            router.push("/profile/booking")
             onClose();
         } catch (error) {
             console.log('✌️error --->', error);

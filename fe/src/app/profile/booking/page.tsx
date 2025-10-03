@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { deleteBookingRoom, getBookingByStatus, paymentBookingService } from "@/app/api/bookingService";
+import { deleteBookingRoom, getBookingByStatus } from "@/app/api/bookingService";
 import { BookingItem, BookingStatusEnum } from "@/app/types/bookingType";
 import { useTranslation } from 'react-i18next';
 import { translateText } from '@/lib/translate';
@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import toast from "react-hot-toast";
 import { CheckDesktop, CheckMobilePhone, CheckTablet } from "@/app/components/HOC/ResponsiveCustom.";
+import { paymentOnlineService } from '@/app/api/payment-onlineService';
 
 export default function Booking() {
     const [bookings, setBookings] = useState<BookingItem[]>([]);
@@ -94,10 +95,10 @@ export default function Booking() {
         if (!selectedBookingId) return;
 
         try {
-            await paymentBookingService(selectedBookingId);
-            toast.success("Thanh toán thành công.");
-            setIsPaymentDialogOpen(false);
-            fetchBookings(); // cập nhật lại danh sách sau khi thanh toán
+            const res = await paymentOnlineService(selectedBookingId, i18n.language);
+            console.log("res:", res);
+            const { url } = res.data.data;
+            window.location.href = url;
         } catch (error) {
             console.log("✌️error --->", error);
             toast.error("Thanh toán thất bại.");
