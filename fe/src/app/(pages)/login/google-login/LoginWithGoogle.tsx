@@ -17,17 +17,25 @@ export default function LoginWithGoogle() {
 
         try {
             const res = await loginGoogleService(credential);
-            const userData = res.data.data;
+            const { User, token_access } = res.data.data;
+
+            const userData = {
+                ...User,
+                token_access,
+            };
+
+            // Lưu vào redux + localStorage
             dispatch(setUserLoginAction(userData));
             localStorage.setItem("user", JSON.stringify(userData));
+
             toast.success("Đăng nhập thành công");
-            // Chuyển hướng
-            router.push("/"); // hoặc trang dashboard của bạn
+            router.push("/");
         } catch (error) {
             toast.error("Đăng nhập thất bại");
             console.error("Google Login Failed!", error);
         }
     };
+
 
     return (
         <GoogleLogin

@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { FaSun, FaMoon, FaUserAlt, FaBars } from "react-icons/fa";
-import { MdTranslate } from "react-icons/md";   
+import { MdTranslate } from "react-icons/md";
 import { Drawer, Select } from "antd";
 import { useTheme } from "next-themes";
 import { useTranslation } from "react-i18next";
@@ -53,6 +53,7 @@ const NavBarOnly = () => {
         setTimeout(() => {
             dispatch(setUserLogoutAction());
             toast.success("Đăng xuất thành công");
+            router.push("/");
             dispatch(hideLoading());
         }, 1000);
     };

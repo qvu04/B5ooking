@@ -121,14 +121,7 @@ export const authService = {
         const token = generateToken(user.id, user.role, user);
 
         return {
-            user: {
-                id: user.id,
-                email: user.email,
-                fullName: user.fullName,
-                avatar: user.avatar,
-                role: user.role,
-                token: token
-            }
+            user: token
         }
     },
     getUserById: async function (userId) {
