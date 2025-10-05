@@ -66,8 +66,13 @@ export const userService = {
         }
 
         const userUsedCount = await prisma.booking.count({
-            where: { userId, voucherId: voucher.id }
+            where: {
+                userId,
+                voucherId: voucher.id,
+                status: { not: 'CANCELED' }  // bỏ qua đơn đã hủy
+            }
         });
+
         if (voucher.perUserLimit && userUsedCount >= voucher.perUserLimit) {
             throw new BadrequestException("Bạn đã sử dụng mã voucher này vượt quá giới hạn cho phép");
         }
@@ -326,14 +331,6 @@ export const userService = {
                 status: 'CANCELED'
             }
         })
-        if (booking.voucherId) {
-            await prisma.voucher.update({
-                where: { id: booking.voucherId },
-                data: {
-                    usedCount: { decrement: 1 }
-                }
-            })
-        }
         return {
             cancelBooking: cancelBooking
         }
