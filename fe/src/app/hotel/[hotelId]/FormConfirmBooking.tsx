@@ -1,20 +1,13 @@
 'use client';
-import { DatePicker, Modal } from 'antd';
+import { DatePicker, Modal, Input, Button, message } from 'antd';
 import { useEffect, useState } from 'react';
 import dayjs, { Dayjs } from 'dayjs';
 import { CalendarDays, Users, BedDouble, Wallet } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-
-type ConfirmModalProps = {
-    visible: boolean;
-    onCancel: () => void;
-    onConfirm: (nights: number, checkIn: string, checkOut: string) => void;
-    guests: number;
-    pricePerNight: number;
-    checkIn?: string;
-    discount?: number;
-    checkOut?: string;
-};
+import { useSelector } from 'react-redux';
+import { checkVoucherService } from "@/app/api/checkVoucherService";
+import { RootState } from '@/lib/store';
+import toast from 'react-hot-toast';
 
 export default function ShowConfirm({
     visible,
@@ -25,12 +18,16 @@ export default function ShowConfirm({
     checkIn,
     checkOut,
     discount,
-}: ConfirmModalProps) {
+    roomId,
+}: any) {
     const [selectedDates, setSelectedDates] = useState<[Dayjs, Dayjs] | null>(
         checkIn && checkOut ? [dayjs(checkIn), dayjs(checkOut)] : null
     );
-    const { t } = useTranslation()
+    const [voucherCode, setVoucherCode] = useState("");
+    const [voucherInfo, setVoucherInfo] = useState<any>(null);
+    const { t } = useTranslation();
     const [mounted, setMounted] = useState(false);
+    const user = useSelector((state: RootState) => state.userSlice.user);
 
     const nights =
         selectedDates && selectedDates[0] && selectedDates[1]
@@ -48,14 +45,37 @@ export default function ShowConfirm({
             onConfirm(
                 nights,
                 selectedDates[0].format('YYYY-MM-DD'),
-                selectedDates[1].format('YYYY-MM-DD')
+                selectedDates[1].format('YYYY-MM-DD'),
+                voucherCode || "", // ✅ truyền thêm voucherCode
+                voucherInfo?.finalPrice || total
             );
         }
     };
-    useEffect(() => {
-        setMounted(true);
-    }, [])
+
+    const handleApplyVoucher = async () => {
+        if (!voucherCode.trim()) return toast.error("Vui lòng nhập mã voucher");
+        if (!selectedDates || !selectedDates[0] || !selectedDates[1])
+            return toast.error("Vui lòng chọn ngày nhận và trả phòng!");
+        try {
+            const userId = user?.id
+            const res = await checkVoucherService(
+                userId!,
+                Number(roomId),
+                selectedDates[0].format("YYYY-MM-DD"),
+                selectedDates[1].format("YYYY-MM-DD"),
+                voucherCode
+            );
+            setVoucherInfo(res.data.data);
+            toast.success("Áp dụng mã giảm giá thành công!");
+        } catch (error: any) {
+            toast.error("Mã voucher không hợp lệ!");
+            setVoucherInfo(null);
+        }
+    };
+
+    useEffect(() => setMounted(true), []);
     if (!mounted) return null;
+
     return (
         <Modal
             open={visible}
@@ -63,12 +83,13 @@ export default function ShowConfirm({
             onOk={handleConfirm}
             okText={t("hotelId.text_77")}
             cancelText={t("hotelId.text_78")}
-            width={600} // tăng chiều rộng modal
+            width={600}
             className="rounded-xl"
         >
             <div className="space-y-6">
                 <h3 className="text-xl font-bold text-gray-800 text-center">{t("hotelId.text_70")}</h3>
 
+                {/* Ngày đặt */}
                 <div>
                     <label className="block mb-1 text-gray-700 font-semibold">{t("hotelId.text_71")}</label>
                     <DatePicker.RangePicker
@@ -80,6 +101,22 @@ export default function ShowConfirm({
                     />
                 </div>
 
+                {/* Nhập mã voucher */}
+                <div>
+                    <label className="block mb-1 text-gray-700 font-semibold">Mã giảm giá</label>
+                    <div className="flex gap-2">
+                        <Input
+                            placeholder="Nhập mã voucher..."
+                            value={voucherCode}
+                            onChange={(e) => setVoucherCode(e.target.value)}
+                        />
+                        <Button type="primary" onClick={handleApplyVoucher}>
+                            Áp dụng
+                        </Button>
+                    </div>
+                </div>
+
+                {/* Thông tin */}
                 <div className="grid grid-cols-2 gap-4 text-gray-700 text-sm">
                     <div className="flex items-center gap-2">
                         <Users className="text-blue-500" size={20} />
@@ -99,7 +136,15 @@ export default function ShowConfirm({
                     </div>
                     <div className="flex items-center gap-2">
                         <Wallet className="text-red-500" size={20} />
-                        <span className="font-bold text-lg"><strong>{t("hotelId.text_76")}</strong> {total.toLocaleString()} VND</span>
+                        {voucherInfo ? (
+                            <span className="font-bold">
+                                <strong>Tổng sau giảm khi áp dụng voucher:</strong> {voucherInfo.finalPrice.toLocaleString()} VND
+                            </span>
+                        ) : (
+                            <span className="font-bold text-lg">
+                                <strong>{t("hotelId.text_76")}</strong> {total.toLocaleString()} VND
+                            </span>
+                        )}
                     </div>
                 </div>
             </div>

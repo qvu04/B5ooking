@@ -24,6 +24,7 @@ export const postBookingRoom = (data: {
     checkIn: string;
     checkOut: string;
     guests: number;
+    voucherCode: string;
 }) => {
     return https.post("/api/user/BookingRoom", data);
 }

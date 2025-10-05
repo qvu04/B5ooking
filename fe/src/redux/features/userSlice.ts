@@ -1,10 +1,11 @@
+import { UserState } from '@/app/types/userType';
 import { createSlice } from '@reduxjs/toolkit'
 
 let userJson = null
 if (typeof window !== 'undefined') {
     userJson = localStorage.getItem("user")
 }
-const initialState = {
+const initialState: UserState = {
     user: userJson ? JSON.parse(userJson) : null,
 }
 

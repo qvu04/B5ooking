@@ -40,7 +40,7 @@ export default function RoomDetailModal({ open, onClose, room, checkIn, checkOut
     const [showConfirm, setShowConfirm] = useState(false);
     const { t, i18n } = useTranslation();
     const router = useRouter();
-    const handleBooking = async (nights: number, checkInDate: string, checkOutDate: string) => {
+    const handleBooking = async (nights: number, checkInDate: string, checkOutDate: string, voucherCode: string, finalPrice: number) => {
         if (!room) return
         setIsBooking(true);
         try {
@@ -53,8 +53,11 @@ export default function RoomDetailModal({ open, onClose, room, checkIn, checkOut
                 checkIn: checkInDate,
                 checkOut: checkOutDate,
                 guests: 2,
+                voucherCode: voucherCode,
+                finalPrice: finalPrice
             }
             const res = await postBookingRoom(payload);
+            toast.success("Đặt phòng thành công");
             setShowConfirm(false);
             router.push("/profile/booking")
             onClose();
@@ -326,19 +329,17 @@ export default function RoomDetailModal({ open, onClose, room, checkIn, checkOut
                     <ShowConfirm
                         visible={showConfirm}
                         onCancel={() => setShowConfirm(false)}
-                        onConfirm={(nights, checkInDate, checkOutDate) => {
-                            handleBooking(nights, checkInDate, checkOutDate);
-                            // Gửi API ở đây nếu cần
-                            // Bạn có thể gọi lại handleBooking(checkIn, checkOut)
-                            toast.success(`Đặt phòng thành công!`);
-                            setShowConfirm(false);
+                        onConfirm={(nights, checkInDate, checkOutDate, voucherCode, finalPrice) => {
+                            handleBooking(nights, checkInDate, checkOutDate, voucherCode, finalPrice);
                         }}
                         checkIn={checkIn}
                         checkOut={checkOut}
                         guests={room.maxGuests}
                         pricePerNight={room.price}
                         discount={room.discount}
+                        roomId={room.id}
                     />
+
                 </div>
             </div>
         </Modal>

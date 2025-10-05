@@ -1,20 +1,56 @@
-import RevenueChart from "@/app/components/RevenueChart/page";
-import RevenuePieChart from "@/app/components/RevenuePieChart/page";
+"use client"
+import { useState } from "react";
+import { reportService } from "@/app/api/reportService";
 import TotalBill from "@/app/components/TotalBill/page";
+import RevenueBarChart from "@/app/components/RevenueChart/page";
+import RevenuePieChart from "@/app/components/RevenuePieChart/page";
 
 export default function DashboardAdmin() {
-    return (
-        <>
-            <div className="p-6 space-y-6">
-                {/* Tổng doanh thu */}
-                <TotalBill />
+    const [fromDate, setFromDate] = useState("2025-01-01");
+    const [toDate, setToDate] = useState("2025-12-31");
 
-                {/* Biểu đồ chính */}
-                <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 items-stretch">
-                    <RevenueChart />
-                    <RevenuePieChart />
+    const handleExportPDF = () => {
+        reportService(fromDate, toDate);
+    };
+
+    return (
+        <div className="p-6 space-y-6">
+            {/* Header + chọn ngày + nút xuất PDF */}
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+                <h1 className="text-2xl font-semibold text-gray-800">
+                    Báo cáo doanh thu
+                </h1>
+
+                <div className="flex items-center gap-3">
+                    <input
+                        type="date"
+                        value={fromDate}
+                        onChange={(e) => setFromDate(e.target.value)}
+                        className="border px-3 py-2 rounded-lg"
+                    />
+                    <input
+                        type="date"
+                        value={toDate}
+                        onChange={(e) => setToDate(e.target.value)}
+                        className="border px-3 py-2 rounded-lg"
+                    />
+                    <button
+                        onClick={handleExportPDF}
+                        className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg shadow-md"
+                    >
+                        Xuất PDF
+                    </button>
                 </div>
             </div>
-        </>
-    )
+
+            {/* Tổng doanh thu */}
+            <TotalBill />
+
+            {/* Biểu đồ */}
+            <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 items-stretch">
+                <RevenueBarChart />
+                <RevenuePieChart />
+            </div>
+        </div>
+    );
 }
