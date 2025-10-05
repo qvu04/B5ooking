@@ -102,11 +102,9 @@ export default function UsersManager() {
                             <td className="border p-2">{user.email}</td>
                             <td className="border p-2">{user.phone}</td>
                             <td className="px-4 py-2">
-                                {user.gender === 'MALE' ? 'Nam' :
-                                    user.gender === 'FEMALE' ? 'Nữ' :
-                                        user.gender === 'Nam' || user.gender === 'Nữ' ? user.gender :
-                                            'Không xác định'}
+                                {user.gender === 'male' ? 'Nam' : user.gender === 'female' ? 'Nữ' : 'Không xác định'}
                             </td>
+
                             <td className="border p-2">{user.role}</td>
                             <td className="border p-2 flex items-center justify-center">
                                 <div className="flex gap-5">
