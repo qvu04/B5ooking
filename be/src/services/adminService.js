@@ -790,7 +790,7 @@ export const adminService = {
             where: { id: imageId }
         });
     },
-    
+
 
     // Tạo ảnh phụ của phòng 
     addRoomImage: async function (roomId, imageFile) {
@@ -1181,6 +1181,32 @@ export const adminService = {
                 totalPages: Math.ceil(total / limit)
             }
         }
-    }
+    },
+    createVoucher: async function (data) {
+        const { code, discount, expiresAt, usageLimit, perUserLimit } = data;
+        console.log(code, discount, expiresAt, usageLimit, perUserLimit)
+        if (!code || !discount || !expiresAt || !usageLimit || !perUserLimit) {
+            throw new ConflictException("Thiếu trường nào đó");
+        }
+        const existingVoucher = await prisma.voucher.findUnique({
+            where: { code: code }
+        });
+        if (existingVoucher) {
+            throw new ConflictException("Mã giảm giá đã tồn tại với code này");
+        }
+        const newVoucher = await prisma.voucher.create({
+            data: {
+                code: code,
+                discount: parseInt(discount),
+                expiresAt: new Date(expiresAt),
+                usageLimit: parseInt(usageLimit),
+                perUserLimit: parseInt(perUserLimit),
+            }
+        });
+        return {
+            voucher: newVoucher
+        }
 
+    },
+    
 };

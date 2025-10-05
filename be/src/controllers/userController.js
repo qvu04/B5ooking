@@ -15,6 +15,17 @@ export const userController = {
             next(err)
         }
     },
+    checkVoucher: async function (req, res, next) {
+        try {
+            const userId = req.user.id;
+            const data = await userService.checkVoucher(userId,req.body);
+            const response = responseSuccess(data, "Kiểm tra voucher thành công");
+            res.status(response.status).json(response)
+        } catch (err) {
+            console.error("Kiểm tra voucher không thành công", err);
+            next(err);
+        }
+    },
 
     bookingRoom: async function (req, res, next) {
         try {

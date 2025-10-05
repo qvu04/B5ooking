@@ -500,6 +500,16 @@ export const adminController = {
             console.error("Lấy danh sách bookings không thành công", err);
             next(err);
         }
-    }
+    },
+    createVoucher: async function (req, res, next) {
+        try {
+            const newVoucher = await adminService.createVoucher(req.body);
+            const response = responseSuccess(newVoucher, "Tạo voucher thành công");
+            res.status(response.status).json(response);
+        } catch (err) {
+            console.error("Tạo voucher không thành công", err);
+            next(err);
+        }
 
-}
+    }
+};

@@ -79,4 +79,6 @@ router.get('/getAllUsers',authMiddleware,checkAdmin,adminController.getAllUsers)
 router.get('/getRoomsByHotel/:hotelId',authMiddleware,checkAdmin,adminController.getRoomsByHotelId);
 
 router.get('/getAllBooking',authMiddleware,checkAdmin,adminController.getAllBooking)
+
+router.post('/createVoucher',authMiddleware,checkAdmin,adminController.createVoucher)
 export default router

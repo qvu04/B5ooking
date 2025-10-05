@@ -191,8 +191,25 @@ model Booking {
   user User @relation(fields: [userId], references: [id])
   room Room @relation(fields: [roomId], references: [id])
 
+  voucherId Int?
+  Voucher Voucher? @relation(fields: [voucherId], references: [id])
+
   create_At DateTime @default(now())
   update_At DateTime @updatedAt
+}
+
+model Voucher {
+  id Int @id @default(autoincrement())
+  code String @unique
+  discount Int
+  expiresAt DateTime
+  isActive Boolean @default(true)
+  create_At DateTime @default(now())
+
+  usageLimit    Int? 
+  usedCount Int @default(0)
+  perUserLimit Int? 
+  bookings Booking[]
 }
 
 model Review {

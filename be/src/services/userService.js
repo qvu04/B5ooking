@@ -49,9 +49,61 @@ export const userService = {
             updateUser: updateUser
         };
     },
+    checkVoucher: async (userId, data) => {
+        const { roomId, checkIn, checkOut, voucherCode } = data;
+        const now = new Date();
+        const parsedCheckIn = new Date(checkIn);
+        const parsedCheckOut = new Date(checkOut);
+
+        const voucher = await prisma.voucher.findUnique({
+            where: { code: voucherCode }
+        });
+        if (!voucher) throw new NotFoundException("Mã voucher không hợp lệ");
+        if (!voucher.isActive) throw new BadrequestException("Mã voucher không còn hiệu lực");
+        if (voucher.expiresAt < now) throw new BadrequestException("Mã voucher đã hết hạn");
+        if (voucher.usageLimit && voucher.usedCount >= voucher.usageLimit) {
+            throw new BadrequestException("Mã voucher đã đạt giới hạn sử dụng");
+        }
+
+        const userUsedCount = await prisma.booking.count({
+            where: { userId, voucherId: voucher.id }
+        });
+        if (voucher.perUserLimit && userUsedCount >= voucher.perUserLimit) {
+            throw new BadrequestException("Bạn đã sử dụng mã voucher này vượt quá giới hạn cho phép");
+        }
+
+        // Tính thử tổng tiền
+        const oneDay = 1000 * 60 * 60 * 24;
+        const nights = Math.ceil((parsedCheckOut - parsedCheckIn) / oneDay);
+        if (nights <= 0) {
+            throw new BadrequestException("Ngày trả phòng phải sau ngày nhận phòng");
+        }
+
+        const room = await prisma.room.findUnique({ where: { id: parseInt(roomId) } });
+        if (!room) throw new NotFoundException("Không tìm thấy phòng");
+
+        const pricePerNight = room.discount
+            ? Math.round(room.price * (1 - room.discount / 100))
+            : room.price;
+
+        const originalPrice = nights * pricePerNight;
+        const finalPrice = Math.round(originalPrice * (1 - voucher.discount / 100));
+
+        return {
+            voucher,
+            roomPrice: room.price, // Giá gốc của phòng
+            voucherCode: voucher.code, // Mã voucher
+            discountRoom: room.discount || 0, // Phần trăm giảm giá của phòng
+            nights: nights, // Số đêm ở
+            pricePerNight: pricePerNight,// Giá đã áp dụng giảm giá phòng
+            originalPrice: originalPrice,  // Giá đã áp dụng giảm giá phòng (tính đêm và giảm giá phòng) chưa áp dụng voucher
+            finalPrice: finalPrice, // Giá cuối cùng sau khi áp dụng voucher
+            discountVoucher: voucher.discount // Phần trăm giảm giá của voucher
+        };
+    },
 
     bookingRoom: async function (userId, data) {
-        const { roomId, checkIn, checkOut, guests, currency } = data;
+        const { roomId, checkIn, checkOut, guests, currency, voucherCode } = data;
 
         const parsedCheckIn = new Date(checkIn);
         const parsedCheckOut = new Date(checkOut);
@@ -64,7 +116,7 @@ export const userService = {
 
         const existingBooking = await prisma.booking.findFirst({
             where: {
-                roomId: roomId,
+                roomId: parseInt(roomId),
                 status: { in: ['PENDING', 'CONFIRMED'] },
                 checkOut: { gt: now },
                 AND: [
@@ -80,7 +132,7 @@ export const userService = {
 
         const room = await prisma.room.findUnique({
             where: {
-                id: roomId
+                id: parseInt(roomId)
             }
         });
 
@@ -92,21 +144,33 @@ export const userService = {
             ? Math.round(room.price * (1 - room.discount / 100))
             : room.price;
 
-        const totalPrice = nights * pricePerNight
+        let totalPrice = nights * pricePerNight
+        let appliedVoucher = null;
+        if (voucherCode) {
+            const { voucher, finalPrice } = await this.checkVoucher(userId, {
+                roomId,
+                checkIn: parsedCheckIn,
+                checkOut: parsedCheckOut,
+                voucherCode
+            });
+            appliedVoucher = voucher;
+            totalPrice = finalPrice;
+        }
         if (guests > room.maxGuests) {
             throw new BadrequestException(`Phòng chỉ cho phép tối đa ${room.maxGuests} người.`);
         }
         const newBooking = await prisma.booking.create({
             data: {
                 userId: userId,
-                roomId: roomId,
+                roomId: parseInt(roomId),
                 checkIn: parsedCheckIn,
                 checkOut: parsedCheckOut,
                 totalPrice: totalPrice,
                 guests: guests,
                 status: 'PENDING',
                 paymentStatus: 'UNPAID',
-                currency: currency || 'vnd'
+                currency: currency || 'vnd',
+                voucherId: appliedVoucher ? appliedVoucher.id : null,
             },
             include: {
                 user: true,
@@ -117,10 +181,10 @@ export const userService = {
                 }
             }
         });
-
         return {
             nights: nights,
-            newBooking: newBooking
+            newBooking: newBooking,
+            appliedVoucher: appliedVoucher
         }
     },
     createStripeSession: async function (data) {
@@ -210,11 +274,20 @@ export const userService = {
             await prisma.booking.update({
                 where: { id: bookingId },
                 data: {
-                    status: "CONFIRMED", paymentStatus: "PAID",
+                    status: "CONFIRMED",
+                    paymentStatus: "PAID",
                     paidAmount: session.amount_total,
                     paidCurrency: session.currency
                 }
             });
+
+            if (booking.voucherId) {
+                await prisma.voucher.update({
+                    where: { id: booking.voucherId },
+                    data: { usedCount: { increment: 1 } }
+                });
+            }
+
             return { paid: true, booking };
         } else {
             return { paid: false, booking };
@@ -253,6 +326,14 @@ export const userService = {
                 status: 'CANCELED'
             }
         })
+        if (booking.voucherId) {
+            await prisma.voucher.update({
+                where: { id: booking.voucherId },
+                data: {
+                    usedCount: { decrement: 1 }
+                }
+            })
+        }
         return {
             cancelBooking: cancelBooking
         }
