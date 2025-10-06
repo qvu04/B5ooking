@@ -1208,5 +1208,65 @@ export const adminService = {
         }
 
     },
+    updateVoucher : async function (voucherId,data) { 
+        const { expiresAt, isActive, usageLimit, perUserLimit} = data;
+        const updateData = {};
+        if (expiresAt) updateData.expiresAt = new Date(expiresAt);
+        if (isActive) updateData.isActive = isActive === 'true' ? true : false;
+        if (usageLimit) updateData.usageLimit = parseInt(usageLimit);
+        if (perUserLimit) updateData.perUserLimit = parseInt(perUserLimit);
+        const voucher = await prisma.voucher.findUnique({
+            where: { id: parseInt(voucherId) }
+        });
+        if (!voucher) {
+            throw new NotFoundException("Không tìm thấy voucher");
+        }
+        const updatedVoucher = await prisma.voucher.update({
+            where: { id: parseInt(voucherId) },
+            data: updateData
+        });
+        return {
+            voucher: updatedVoucher
+        };
+    },
+    getVoucherById : async function (voucherId) {
+        const voucher = await prisma.voucher.findUnique({
+            where : { id : parseInt(voucherId)}
+        })
+
+        if (!voucher) {
+            throw new NotFoundException("Không tìm thấy voucher");
+        }
+        return {
+            voucher : voucher
+        }
+    },
+    getAllVoucher : async function (codeName, page) {
+        const limit = 5;
+        const skip = (page - 1) * limit;
+        const whereCondition = {
+            ...(codeName ? { code: { contains: codeName.toLowerCase() } } : {})
+        }
+        const vouchers = await prisma.voucher.findMany({
+            take : limit,
+            skip : skip,
+            where: whereCondition,
+            orderBy : {
+                create_At : 'desc'
+            }
+        })
+        const totalVoucher = await prisma.voucher.count({
+            where: whereCondition
+        });
+        return {
+            vouchers : vouchers,
+            pagination : {
+                page : page,
+                limit : limit,
+                total : totalVoucher,
+                totalPages : Math.ceil(totalVoucher / limit)
+            }
+        }
+    }
     
 };

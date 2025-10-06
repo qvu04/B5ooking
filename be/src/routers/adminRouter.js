@@ -81,4 +81,10 @@ router.get('/getRoomsByHotel/:hotelId',authMiddleware,checkAdmin,adminController
 router.get('/getAllBooking',authMiddleware,checkAdmin,adminController.getAllBooking)
 
 router.post('/createVoucher',authMiddleware,checkAdmin,adminController.createVoucher)
+
+router.patch('/updateVoucher/:id',authMiddleware,checkAdmin,adminController.updateVoucher)
+
+router.get('/getVoucherById/:id',authMiddleware,checkAdmin,adminController.getVoucherById)
+
+router.get('/getAllVouchers',authMiddleware,checkAdmin,adminController.getAllVouchers)
 export default router

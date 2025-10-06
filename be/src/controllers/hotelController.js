@@ -85,4 +85,15 @@ export const hotelController = {
             next(err)
         }
     },
+    getAllImageHotels : async function (req, res, next) {
+        try {
+            const page = parseInt(req.query.page) || 1;
+            const images = await hotelService.getAllImageHotels(page);
+            const response = responseSuccess(images, "Lấy danh sách hình ảnh khách sạn thành công");
+            res.status(response.status).json(response);
+        } catch (err) {
+            console.error("Lấy danh sách hình ảnh khách sạn không thành công", err);
+            next(err);
+        }
+    }
 }

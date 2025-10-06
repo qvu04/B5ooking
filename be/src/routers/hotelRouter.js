@@ -23,4 +23,6 @@ router.get('/getSearchAvailableHotels',hotelController.getSearchAvailableHotels)
 // Lấy tất cả đánh giá của khách sạn 
 router.get("/getAllReviewByHotelId/:id",hotelController.getAllReviewByHotelId)
 
+router.get('/getAllImageHotels',hotelController.getAllImageHotels)
+
 export default router

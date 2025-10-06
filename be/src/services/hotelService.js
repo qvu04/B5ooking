@@ -239,5 +239,26 @@ export const hotelService = {
         }
     },
 
-
+    getAllImageHotels : async function(page) {
+        const limit = 20;
+        const skip = (page - 1) * limit;
+        const images = await prisma.hotel.findMany({
+            take : limit,
+            skip : skip,
+            select : {
+                id : true,
+                image   : true,
+            }
+        })
+        const total = await prisma.hotel.count()
+        return {
+             imagesHotel : images,
+            pagination : {
+                page : page,
+                limit : limit,
+                totalPages : Math.ceil(total/limit)
+            },
+            
+        }
+    }
 }

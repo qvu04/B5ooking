@@ -510,6 +510,43 @@ export const adminController = {
             console.error("Tạo voucher không thành công", err);
             next(err);
         }
+    },
+    updateVoucher : async function (req, res, next) {
+        try {
+            const voucherId = parseInt(req.params.id);
+            console.log("voucherId", voucherId)
 
+            const updatedVoucher = await adminService.updateVoucher(voucherId, req.body);
+            const response = responseSuccess(updatedVoucher, "Cập nhật voucher thành công");
+            res.status(response.status).json(response);
+        } catch (err) {
+            console.error("Cập nhật voucher không thành công", err);
+            next(err);
+        }
+    },
+    getVoucherById : async function (req, res, next) {
+        try {
+            const voucherId = parseInt(req.params.id);
+            const voucher = await adminService.getVoucherById(voucherId);
+            const response = responseSuccess(voucher, "Lấy thông tin voucher thành công");
+            res.status(response.status).json(response);
+        } catch (err) {
+            console.error("Lấy thông tin voucher không thành công", err);
+            next(err);
+        }
+    },
+    getAllVouchers: async function (req, res, next) {
+        try {
+            const codeName = req.query.codeName || "";
+            const page = parseInt(req.query.page) || 1
+           
+            console.log("codeName", req.query.codeName)
+            const vouchers = await adminService.getAllVoucher(codeName, page);
+            const response = responseSuccess(vouchers, "Lấy danh sách voucher thành công");
+            res.status(response.status).json(response);
+        } catch (err) {
+            console.error("Lấy danh sách voucher không thành công", err);
+            next(err);
+        }
     }
 };
