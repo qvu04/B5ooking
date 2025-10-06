@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { FaUser, FaSuitcase, FaImage } from 'react-icons/fa';
 import { MdBedroomParent, MdMeetingRoom, MdArticle } from 'react-icons/md';
+import { RiDiscountPercentFill } from "react-icons/ri";
 
 const menuItems = [
     { label: 'Quản lý người dùng', icon: <FaUser />, href: '/admin/users' },
@@ -11,7 +12,8 @@ const menuItems = [
     { label: 'Quản lý chỗ ở', icon: <MdMeetingRoom />, href: '/admin/rooms' },
     { label: 'Quản lý bài viết', icon: <MdArticle />, href: '/admin/blogs' },
     { label: 'Quản lý ảnh', icon: <FaImage />, href: '/admin/images' },
-    { label: 'Quản lý đặt phòng', icon: <MdBedroomParent />, href: '/admin/bookings' }
+    { label: 'Quản lý đặt phòng', icon: <MdBedroomParent />, href: '/admin/bookings' },
+    { label: 'Quản lý voucher', icon: <RiDiscountPercentFill />, href: '/admin/voucher' }
 ];
 
 export default function SidebarMenuAdmin() {

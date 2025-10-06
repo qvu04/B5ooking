@@ -170,3 +170,29 @@ export const putUpdateImagesRoom = (roomId: number, data: FormData) => {
 export const deleteImagesRoom = (roomId: number) => {
     return https.delete(`/api/admin/deleteRoomImage/${roomId}`)
 }
+// quản lý voucher 
+export const getAllVoucher = (page: number, codeName: string) => {
+    return https.get(`/api/admin/getAllVouchers?page=${page}&codeName=${codeName}`)
+}
+export const postVoucher = (data: {
+    code: string;
+    discount: number;
+    expiresAt: string;
+    usageLimit: number;
+    perUserLimit: number;
+}) => {
+    return https.post("/api/admin/createVoucher", data)
+}
+export const updateVoucher = (id: number, data: {
+    expiresAt: string;
+    usageLimit: number;
+    perUserLimit: number;
+    isActive: boolean;
+}) => {
+    const payload = {
+        ...data,
+        isActive: String(data.isActive), // 🔥 ép boolean thành string
+    };
+
+    return https.patch(`/api/admin/updateVoucher/${id}`, payload);
+};
