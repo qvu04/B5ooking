@@ -164,7 +164,7 @@ export const aiService = {
                         ? `Bạn có ${bookings.length} đơn đặt phòng đã thanh toán, tổng cộng ${totalAmount.toLocaleString()} VND.`
                         : "Bạn chưa có đơn đặt phòng nào đã thanh toán.";
                 } else {
-                     responseData.text = `Bạn có ${bookings.length} đơn đặt phòng, tổng cộng ${totalAmount.toLocaleString()} VND.`;
+                    responseData.text = `Bạn có ${bookings.length} đơn đặt phòng, tổng cộng ${totalAmount.toLocaleString()} VND.`;
                 }
 
             }

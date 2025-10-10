@@ -9,6 +9,7 @@ import ClientLayout from "./components/Template/ClientLayout";
 import { ReduxProvider } from '@/redux/provider'
 import { Toaster } from "react-hot-toast";
 import Loading from "./components/Loading/Loading";
+import { ChatBox } from "./components/ChatBox";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -41,6 +42,7 @@ export default function RootLayout({
               <Loading />
               <Toaster position="top-center" />
               <ClientLayout>{children}</ClientLayout>
+              <ChatBox />
             </Providers>
           </ReduxProvider>
         </GoogleOAuthProvider>
