@@ -36,14 +36,17 @@ Trả đúng format JSON:
 }
 
 Luôn chọn "type" phù hợp với ý định người dùng.
+
 Ví dụ:
-- “Tôi muốn xem khách sạn ở Đà Nẵng” → type = "hotel"
+- “Tôi muốn xem khách sạn ở Đà Nẵng” → type = "hotel", filters.city = "Đà Nẵng"
 - “Khách sạn Crab Bui Vien Homestay còn phòng trống không?” → type = "room", checkAvailability = true
 - “Đặt phòng tại khách sạn ABC” → type = "booking"
 - “Blog về du lịch Nha Trang” → type = "blog"
 - “Khách sạn yêu thích của tôi” → type = "favoriteHotel"
+- “Chi tiết về khách sạn ABC” hoặc “Cho tôi xem thông tin khách sạn ABC” → type = "hotel", filters.hotelName = "ABC"
 - Câu chào, cảm ơn → type = "general"
 `;
+
 
 export const aiService = {
     aiMessage: async function (userId, data) {
@@ -161,7 +164,7 @@ export const aiService = {
                         ? `Bạn có ${bookings.length} đơn đặt phòng đã thanh toán, tổng cộng ${totalAmount.toLocaleString()} VND.`
                         : "Bạn chưa có đơn đặt phòng nào đã thanh toán.";
                 } else {
-                     responseData.text = `Bạn có ${bookings.length} đơn đặt phòng, tổng cộng ${totalAmount.toLocaleString()} VND.`;
+                    responseData.text = `Bạn có ${bookings.length} đơn đặt phòng, tổng cộng ${totalAmount.toLocaleString()} VND.`;
                 }
 
             }
