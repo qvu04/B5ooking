@@ -1002,7 +1002,12 @@ export const adminService = {
                 lastName: lastName,
                 fullName: `${firstName} ${lastName}`,
                 email: email,
-                password: hashedPassword,
+                credentials : {
+                    create : {
+                        password : hashedPassword,
+                        provider : "local"
+                    }
+                },
                 role: role,
                 gender: gender,
                 avatar: avatarPath || ""
