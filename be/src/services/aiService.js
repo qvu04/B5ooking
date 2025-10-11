@@ -112,6 +112,8 @@ export const aiService = {
 
         if (type === "hotel") {
             const { city, hotelName, amenity, descriptionKeyword, ratingStars } = filters;
+            console.log("Hotel filter:", city);
+
             const where = {};
 
             if (city) where.location = { city: { contains: city } };
@@ -127,6 +129,7 @@ export const aiService = {
                 where,
                 include: { location: { select: { city: true } } },
             });
+            console.log("Found hotels:", dataResult.length);
         }
 
         else if (type === "room") {

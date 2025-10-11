@@ -19,4 +19,5 @@ export interface BlogsByPage {
 export interface Pagination {
     page: number;
     totalPages: number;
+    limit: number;
 }

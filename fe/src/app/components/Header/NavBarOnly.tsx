@@ -311,7 +311,7 @@ const NavBarOnly = () => {
                                         setTimeout(() => {
                                             router.push("/login");
                                             dispatch(hideLoading());
-                                        }, 2000);
+                                        }, 5000);
                                     }}
                                     className="ml-2 px-4 py-1.5 cursor-pointer rounded-xl bg-[#6246ea] hover:bg-[#5135c8] text-white font-medium transition"
                                 >

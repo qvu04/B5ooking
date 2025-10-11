@@ -196,3 +196,6 @@ export const updateVoucher = (id: number, data: {
 
     return https.patch(`/api/admin/updateVoucher/${id}`, payload);
 };
+export const getAllUserUseVoucher = (page: number) => {
+    return https.get(`/api/admin/getAllUserUseVoucher?${page}`);
+}

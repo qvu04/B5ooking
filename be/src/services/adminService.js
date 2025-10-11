@@ -1292,7 +1292,7 @@ export const adminService = {
         const limit = 5;
         const skip = (page - 1) * limit;
 
-      
+
         const whereCondition = {
             NOT: { id: currentUser.id },
             bookings: {
@@ -1309,7 +1309,7 @@ export const adminService = {
             },
         };
 
-   
+
         const userVoucher = await prisma.user.findMany({
             where: whereCondition,
             take: limit,
@@ -1356,8 +1356,8 @@ export const adminService = {
         return {
             userVoucher,
             pagination: {
-                page,
-                limit,
+                page: page,
+                limit: limit,
                 total: totalvoucher,
                 totalPage: Math.ceil(totalvoucher / limit),
             },
