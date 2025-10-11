@@ -130,7 +130,7 @@ export const adminController = {
             const hotelName = req.query.hotelName || "";
             const locationId = parseInt(req.query.locationId) || "";
             const page = parseInt(req.query.page) || 1
-            const hotels = await adminService.getAllHotels(locationId,hotelName, page);
+            const hotels = await adminService.getAllHotels(locationId, hotelName, page);
             const response = responseSuccess(hotels, "Lấy danh sách khách sạn thành công");
             res.status(response.status).json(response);
         } catch (err) {
@@ -176,7 +176,7 @@ export const adminController = {
             next(err);
         }
     },
-     getRoomImages: async function (req, res, next) {
+    getRoomImages: async function (req, res, next) {
         const roomId = parseInt(req.query.roomId);
         const page = parseInt(req.query.page) || 1
         try {
@@ -199,7 +199,7 @@ export const adminController = {
             next(err);
         }
     },
-       getAllRoomName: async function (req, res, next) {
+    getAllRoomName: async function (req, res, next) {
         try {
             const roomName = await adminService.getAllRoomName();
             const response = responseSuccess(roomName, "Lấy danh sách tên phòng thành công thành công");
@@ -356,7 +356,7 @@ export const adminController = {
             const hotelId = parseInt(req.query.hotelId) || "";
             const roomName = req.query.roomName || "";
             const page = parseInt(req.query.page) || 1;
-            const rooms = await adminService.getAllRooms(hotelId,roomName, page);
+            const rooms = await adminService.getAllRooms(hotelId, roomName, page);
             const response = responseSuccess(rooms, "Lấy danh sách phòng thành công");
             res.status(response.status).json(response);
         } catch (err) {
@@ -470,7 +470,7 @@ export const adminController = {
             const locationId = parseInt(req.query.locationId) || "";
             const blogTitle = req.query.blogTitle || ""
             const page = parseInt(req.query.page) || 1;
-            const blogs = await adminService.getAllBlogs(locationId,blogTitle, page);
+            const blogs = await adminService.getAllBlogs(locationId, blogTitle, page);
             const response = responseSuccess(blogs, "Lấy danh sách blog thành công");
             res.status(response.status).json(response);
         } catch (err) {
@@ -511,7 +511,7 @@ export const adminController = {
             next(err);
         }
     },
-    updateVoucher : async function (req, res, next) {
+    updateVoucher: async function (req, res, next) {
         try {
             const voucherId = parseInt(req.params.id);
             console.log("voucherId", voucherId)
@@ -524,7 +524,7 @@ export const adminController = {
             next(err);
         }
     },
-    getVoucherById : async function (req, res, next) {
+    getVoucherById: async function (req, res, next) {
         try {
             const voucherId = parseInt(req.params.id);
             const voucher = await adminService.getVoucherById(voucherId);
@@ -539,13 +539,24 @@ export const adminController = {
         try {
             const codeName = req.query.codeName || "";
             const page = parseInt(req.query.page) || 1
-           
-            console.log("codeName", req.query.codeName)
             const vouchers = await adminService.getAllVoucher(codeName, page);
             const response = responseSuccess(vouchers, "Lấy danh sách voucher thành công");
             res.status(response.status).json(response);
         } catch (err) {
             console.error("Lấy danh sách voucher không thành công", err);
+            next(err);
+        }
+    },
+    getAllUserUseVoucher: async function (req, res, next) {
+        try {
+            const userId = req.user
+            const codeName = req.query.codeName || ""
+            const page = parseInt(req.query.page) || 1
+            const userUserVoucher = await adminService.getAllUserUseVoucher(userId, codeName, page)
+            const response = responseSuccess(userUserVoucher, "Lấy danh sách người dùng voucher thành công");
+            res.status(response.status).json(response);
+        } catch (err) {
+            console.error("Lấy danh sách người dùng voucher không thành công", err);
             next(err);
         }
     }

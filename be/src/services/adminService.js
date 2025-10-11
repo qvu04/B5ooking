@@ -1002,10 +1002,10 @@ export const adminService = {
                 lastName: lastName,
                 fullName: `${firstName} ${lastName}`,
                 email: email,
-                credentials : {
-                    create : {
-                        password : hashedPassword,
-                        provider : "local"
+                credentials: {
+                    create: {
+                        password: hashedPassword,
+                        provider: "local"
                     }
                 },
                 role: role,
@@ -1189,7 +1189,7 @@ export const adminService = {
     },
     createVoucher: async function (data) {
         const { code, discount, expiresAt, usageLimit, perUserLimit } = data;
-       
+
         if (!code || !discount || !expiresAt || !usageLimit || !perUserLimit) {
             throw new ConflictException("Thiếu trường nào đó");
         }
@@ -1213,8 +1213,8 @@ export const adminService = {
         }
 
     },
-    updateVoucher : async function (voucherId,data) { 
-        const { expiresAt, isActive, usageLimit, perUserLimit} = data;
+    updateVoucher: async function (voucherId, data) {
+        const { expiresAt, isActive, usageLimit, perUserLimit } = data;
         const updateData = {};
         if (expiresAt) updateData.expiresAt = new Date(expiresAt);
         if (isActive) updateData.isActive = isActive === 'true' ? true : false;
@@ -1234,59 +1234,135 @@ export const adminService = {
             voucher: updatedVoucher
         };
     },
-    getVoucherById : async function (voucherId) {
+    getVoucherById: async function (voucherId) {
         const voucher = await prisma.voucher.findUnique({
-            where : { id : parseInt(voucherId)}
+            where: { id: parseInt(voucherId) }
         })
 
         if (!voucher) {
             throw new NotFoundException("Không tìm thấy voucher");
         }
         return {
-            voucher : voucher
+            voucher: voucher
         }
     },
-    getAllVoucher : async function (codeName, page) {
+    getAllVoucher: async function (codeName, page) {
         const limit = 5;
         const skip = (page - 1) * limit;
         const whereCondition = {
             ...(codeName ? { code: { contains: codeName.toLowerCase() } } : {})
         }
         const vouchers = await prisma.voucher.findMany({
-            take : limit,
-            skip : skip,
+            take: limit,
+            skip: skip,
             where: whereCondition,
-            orderBy : {
-                create_At : 'desc'
+            orderBy: {
+                create_At: 'desc'
             }
         })
         const totalVoucher = await prisma.voucher.count({
             where: whereCondition
         });
         return {
-            vouchers : vouchers,
-            pagination : {
-                page : page,
-                limit : limit,
-                total : totalVoucher,
-                totalPages : Math.ceil(totalVoucher / limit)
+            vouchers: vouchers,
+            pagination: {
+                page: page,
+                limit: limit,
+                total: totalVoucher,
+                totalPages: Math.ceil(totalVoucher / limit)
             }
         }
     },
-        updateActiveVoucher : async function () {
+    updateActiveVoucher: async function () {
         const now = new Date()
         console.log("Đang chạy cron update - Giờ hiện tại ", now.toISOString())
 
         const result = await prisma.voucher.updateMany({
-            where : {
-                isActive : true,
-                expiresAt : {lt : now}
+            where: {
+                isActive: true,
+                expiresAt: { lt: now }
             },
-            data : {
-                isActive : false,
+            data: {
+                isActive: false,
             }
         })
         console.log("Đã cập nhật", result.count, "Đã hết hạn voucher")
+    },
+    getAllUserUseVoucher: async function (currentUser, codeName, page) {
+        const limit = 5;
+        const skip = (page - 1) * limit;
+
+      
+        const whereCondition = {
+            NOT: { id: currentUser.id },
+            bookings: {
+                some: {
+                    voucherId: { not: null },
+                    ...(codeName
+                        ? {
+                            Voucher: {
+                                code: { contains: codeName.toLowerCase() },
+                            },
+                        }
+                        : {}),
+                },
+            },
+        };
+
+   
+        const userVoucher = await prisma.user.findMany({
+            where: whereCondition,
+            take: limit,
+            skip: skip,
+            orderBy: {
+                create_At: "desc",
+            },
+            select: {
+                id: true,
+                fullName: true,
+                avatar: true,
+                email: true,
+                role: true,
+                bookings: {
+                    where: {
+                        voucherId: { not: null },
+                        ...(codeName
+                            ? {
+                                Voucher: {
+                                    code: { contains: codeName.toLowerCase() },
+                                },
+                            }
+                            : {}),
+                    },
+                    select: {
+                        Voucher: {
+                            select: {
+                                id: true,
+                                code: true,
+                                discount: true,
+                                expiresAt: true,
+                            },
+                        },
+                    },
+                },
+            },
+        });
+
+        // Tổng số user có sử dụng voucher
+        const totalvoucher = await prisma.user.count({
+            where: whereCondition,
+        });
+
+        return {
+            userVoucher,
+            pagination: {
+                page,
+                limit,
+                total: totalvoucher,
+                totalPage: Math.ceil(totalvoucher / limit),
+            },
+        };
     }
-    
+
+
 };

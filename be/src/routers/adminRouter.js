@@ -87,4 +87,6 @@ router.patch('/updateVoucher/:id',authMiddleware,checkAdmin,adminController.upda
 router.get('/getVoucherById/:id',authMiddleware,checkAdmin,adminController.getVoucherById)
 
 router.get('/getAllVouchers',authMiddleware,checkAdmin,adminController.getAllVouchers)
+
+router.get('/getAllUserUseVoucher',authMiddleware,checkAdmin,adminController.getAllUserUseVoucher)
 export default router

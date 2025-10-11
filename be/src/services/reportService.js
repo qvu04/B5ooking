@@ -20,16 +20,23 @@ const printer = new PdfPrinter(fonts);
 // Format số tiền chuẩn, dấu phẩy
 const formatNumber = (num) => num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 
-// Helper tạo table đồng bộ
-function createTable(headers, rows) {
+// Helper tạo table đồng bộ (có thể bật/tắt header lặp lại)
+function createTable(headers, rows, repeatHeader = true) {
     return {
         table: {
-            headerRows: 1,
+            headerRows: repeatHeader ? 1 : 0,
             widths: Array(headers.length).fill("*"),
             body: [
-                headers.map((h) => ({ text: h, style: "tableHeader", alignment: "center" })),
+                headers.map((h) => ({
+                    text: h,
+                    style: "tableHeader",
+                    alignment: "center",
+                })),
                 ...rows.map((row) =>
-                    row.map((cell) => ({ text: cell?.toString() || "-", alignment: "center" }))
+                    row.map((cell) => ({
+                        text: cell?.toString() || "-",
+                        alignment: "center",
+                    }))
                 ),
             ],
         },
@@ -46,6 +53,7 @@ export const reportService = {
         const total = await dashboardService.getTotal();
         const monthly = await dashboardService.getGroupedRevenue("month", fromDate, toDate);
         const hotelStats = await dashboardService.getHotelRevenuePercentage(fromDate, toDate);
+
         const bookings = await prisma.booking.findMany({
             where: {
                 status: { in: ["CONFIRMED", "FINISHED"] },
@@ -58,17 +66,27 @@ export const reportService = {
         const docDefinition = {
             defaultStyle: { font: "Roboto" },
             pageMargins: [40, 60, 40, 60],
-            header: {
-                text: "BÁO CÁO DOANH THU HỆ THỐNG",
-                style: "header",
-                alignment: "center",
+
+            // ✅ Tiêu đề chỉ hiển thị ở trang đầu tiên
+            header: (currentPage) => {
+                if (currentPage === 1) {
+                    return {
+                        text: "BÁO CÁO DOANH THU HỆ THỐNG",
+                        style: "header",
+                        alignment: "center",
+                    };
+                }
+                return null;
             },
+
+            // ✅ Footer hiển thị ở mọi trang
             footer: (currentPage, pageCount) => ({
                 text: `Trang ${currentPage} / ${pageCount} - Báo cáo tự động bởi Hotel Booking`,
                 style: "footer",
                 alignment: "center",
                 margin: [0, 0, 0, 10],
             }),
+
             styles: {
                 header: { fontSize: 20, bold: true, color: "#2E86C1", margin: [0, 10, 0, 10] },
                 subheader: { fontSize: 16, bold: true, color: "#117A65", margin: [0, 10, 0, 5] },
@@ -78,6 +96,7 @@ export const reportService = {
                 tableLabel: { fontSize: 12, color: "#34495E" },
                 tableValue: { fontSize: 12, bold: true, color: "#2E86C1" },
             },
+
             content: [
                 // Thời gian báo cáo
                 {
@@ -89,7 +108,7 @@ export const reportService = {
                 },
 
                 // 1. Tổng quan
-                { text: "1. Tổng quan", style: "subheader", margin: [0, 0, 0, 5] },
+                { text: "1. Tổng quan", style: "subheader" },
                 {
                     table: {
                         widths: ["*", "*"],
@@ -132,8 +151,6 @@ export const reportService = {
                     ["Tháng", "Doanh thu (VND)"],
                     monthly.map((m) => [m.label, formatNumber(m.revenue)])
                 ),
-                { text: "\n", margin: [0, 0, 0, 5] },
-
 
                 // 3. Tỷ lệ doanh thu theo khách sạn
                 { text: "3. Tỷ lệ doanh thu theo khách sạn", style: "subheader" },
@@ -159,7 +176,8 @@ export const reportService = {
                         b.checkOut.toISOString().split("T")[0],
                         b.voucher?.code || "-",
                         formatNumber(b.totalPrice || 0),
-                    ])
+                    ]),
+                    true // vẫn giữ headerRows để bảng đọc dễ hơn
                 ),
             ],
         };
