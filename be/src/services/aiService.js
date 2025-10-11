@@ -27,25 +27,27 @@ Trả đúng format JSON:
     "filters": {
       "city": string?,
       "hotelName": string?,
+      "roomName": string?,
       "amenity": string | string[]?,
       "descriptionKeyword": string?,
       "checkAvailability": boolean?,
-      "ratingStars": number?
+      "ratingStars": number?,
+      "detail": boolean? // true nếu người dùng muốn xem chi tiết
     }
   }
 }
 
-Luôn chọn "type" phù hợp với ý định người dùng.
-
-Ví dụ:
+Hướng dẫn nhận diện:
 - “Tôi muốn xem khách sạn ở Đà Nẵng” → type = "hotel", filters.city = "Đà Nẵng"
-- “Khách sạn Crab Bui Vien Homestay còn phòng trống không?” → type = "room", checkAvailability = true
+- “Khách sạn Crab Bui Vien Homestay còn phòng trống không?” → type = "room", filters.hotelName = "Crab Bui Vien Homestay", filters.checkAvailability = true
+- “Có những loại phòng nào ở Crab Bui Vien Homestay?” → type = "room", filters.hotelName = "Crab Bui Vien Homestay"
+- “Chi tiết về Phòng Sang Trọng Giường Đôi Có Bồn Tắm ở Crab Bui Vien Homestay” → type = "room", filters.hotelName = "Crab Bui Vien Homestay", filters.roomName = "Phòng Sang Trọng Giường Đôi Có Bồn Tắm", filters.detail = true
 - “Đặt phòng tại khách sạn ABC” → type = "booking"
 - “Blog về du lịch Nha Trang” → type = "blog"
 - “Khách sạn yêu thích của tôi” → type = "favoriteHotel"
-- “Chi tiết về khách sạn ABC” hoặc “Cho tôi xem thông tin khách sạn ABC” → type = "hotel", filters.hotelName = "ABC"
-- Câu chào, cảm ơn → type = "general"
+- “Xin chào”, “Cảm ơn” → type = "general"
 `;
+
 
 
 export const aiService = {
@@ -109,23 +111,60 @@ export const aiService = {
         }
 
         else if (type === "room") {
-            const { hotelName, checkAvailability } = filters;
+            const { hotelName, roomName, checkAvailability, city } = filters;
             const where = {};
-            if (hotelName) where.hotel = { name: { contains: hotelName.replace(/^khách sạn\s*/i, "") } };
+
+            // Nếu user muốn chi tiết một phòng cụ thể (roomName)
+            if (roomName) {
+                // Tìm theo tên phòng hoặc theo loại phòng (type)
+                where.OR = [
+                    { name: { contains: roomName.trim() } },
+                    { type: { contains: roomName.trim() } }
+                ];
+            }
+
+            // Lọc theo khách sạn (nếu có)
+            if (hotelName) {
+                where.hotel = {
+                    name: { contains: hotelName.replace(/^khách sạn\s*/i, "") },
+                };
+            }
+
+            // Lọc theo thành phố (nếu có)
+            if (city) {
+                where.hotel = {
+                    ...where.hotel,
+                    location: { city: { contains: city } },
+                };
+            }
 
             const rooms = await prisma.room.findMany({
                 where,
-                include: { bookings: true, hotel: true },
+                include: {
+                    bookings: true,
+                    hotel: {
+                        include: { location: true },
+                    },
+                },
             });
 
-            dataResult = checkAvailability
-                ? rooms.filter(r => !r.bookings || r.bookings.length === 0)
-                : rooms;
+            // Nếu cần kiểm tra phòng trống theo thời điểm hiện tại
+            let availableRooms = rooms;
+            if (checkAvailability) {
+                const now = new Date();
+                availableRooms = rooms.filter(r =>
+                    !r.bookings.some(b => new Date(b.startDate) <= now && new Date(b.endDate) >= now)
+                );
+            }
 
-            if (!isLoggedIn) {
+            dataResult = availableRooms;
+
+            if (!isLoggedIn && checkAvailability) {
                 responseData.text += " (Bạn cần đăng nhập để đặt phòng)";
             }
         }
+
+
 
         else if (type === "booking") {
             if (!isLoggedIn) {
