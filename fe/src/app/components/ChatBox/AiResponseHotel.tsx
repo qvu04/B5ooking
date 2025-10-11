@@ -1,11 +1,10 @@
 "use client";
+import { AiResponse } from "@/app/types/aiType";
 import React from "react";
 
-type AiResponseHotelProps = {
-    data: any[];
-};
 
-const AiResponseHotel: React.FC<AiResponseHotelProps> = ({ data }) => {
+
+const AiResponseHotel: React.FC<AiResponse> = ({ data }) => {
     if (!data || data.length === 0) return null;
 
     const hotel = data[0];
