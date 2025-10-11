@@ -5,7 +5,8 @@ import React from "react";
 
 
 const AiResponseHotel: React.FC<AiResponse> = ({ data }) => {
-    if (!data || data.length === 0) return null;
+    if (!data || data.length === 0) return <div className="text-red-500 mt-2">Hiện chưa có thông tin</div>;
+
 
     const hotel = data[0];
     const isList = data.length > 1;

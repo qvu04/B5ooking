@@ -6,8 +6,10 @@ import { Send, X } from "lucide-react";
 import { useSelector } from "react-redux";
 import { RootState } from "@/lib/store";
 import AiResponseHotel from "./AiResponseHotel";
-import AiResponseRoom from "./AiResponeRoom";
-import AiResponeFavorite from "./AiResponseFavorite";
+import AiResponseRoom from "./AiResponseRoom";
+import AiResponseFavorite from "./AiResponseFavorite";
+import AiResponseBooking from "./AiResponseBooking";
+import AiResponseBlog from "./AiResponseBlog";
 
 export default function ChatBoxModal({
     isOpen,
@@ -103,7 +105,10 @@ export default function ChatBoxModal({
                                 {/* Nếu AI trả về danh sách khách sạn */}
                                 {m.type === "hotel" && <AiResponseHotel data={m.data} />}
                                 {m.type === "room" && <AiResponseRoom data={m.data} />}
-                                {m.type === "favoriteHotel" && <AiResponeFavorite data={m.data} />}
+                                {m.type === "favoriteHotel" && <AiResponseFavorite data={m.data} />}
+                                {m.type === "booking" && <AiResponseBooking data={m.data} />}
+                                {m.type === "blog" && <AiResponseBlog data={m.data} />}
+
 
                             </motion.div>
                         ))}

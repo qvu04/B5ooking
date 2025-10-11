@@ -87,28 +87,19 @@ export const aiService = {
             };
         }
         const lowAsk = ask.toLowerCase();
+        const bookingKeywords = ["xem đơn đặt phòng", "xem các phòng đã đặt", "xem lịch sử đặt phòng", "lịch sử đặt phòng"];
+        const blogKeywords = ["blog", "bài viết", "du lịch"];
+        const hotelKeywords = ["khách sạn", "phòng"];
+
         if (responseData.object.type === "general") {
-            responseData.object.type = "booking";
+            if (bookingKeywords.some(k => lowAsk.includes(k))) {
+                responseData.object.type = "booking";
+            } else if (blogKeywords.some(k => lowAsk.includes(k))) {
+                responseData.object.type = "blog";
+            } else if (hotelKeywords.some(k => lowAsk.includes(k))) {
+                responseData.object.type = "hotel";
+            }
             responseData.object.filters = responseData.object.filters || {};
-
-            // map status
-            if (lowAsk.includes("chờ xác nhận") || lowAsk.includes("đang chờ") || lowAsk.includes("chờ")) {
-                responseData.object.filters.status = "chờ";
-            }
-            if (lowAsk.includes("hoàn thành") || lowAsk.includes("đã hoàn thành")) {
-                responseData.object.filters.status = "hoàn thành";
-            }
-            if (lowAsk.includes("hủy") || lowAsk.includes("đã hủy")) {
-                responseData.object.filters.status = "hủy";
-            }
-
-            // map paymentStatus
-            if (lowAsk.includes("chưa thanh toán")) {
-                responseData.object.filters.paymentStatus = "chưa thanh toán";
-            }
-            if (lowAsk.includes("đã thanh toán")) {
-                responseData.object.filters.paymentStatus = "đã thanh toán";
-            }
         }
 
 
@@ -300,11 +291,31 @@ export const aiService = {
         }
 
         else if (type === "blog") {
-            const { descriptionKeyword } = filters;
-            const where = descriptionKeyword
-                ? { title: { contains: descriptionKeyword } }
-                : {};
-            dataResult = await prisma.blogPost.findMany({ where });
+            let { city } = filters;
+
+            // Nếu city chưa có trong filters, thử parse từ ask
+            if (!city && ask) {
+                const cityMatch = ask.match(/blog (ở|tại|o) ([\w\s]+)/i);
+                if (cityMatch) city = cityMatch[2].trim();
+            }
+
+            const where = {};
+
+            if (city) {
+                where.location = {
+                    is: {
+                        city: {
+                            contains: city,
+
+                        }
+                    }
+                };
+            }
+
+            dataResult = await prisma.blogPost.findMany({
+                where,
+                include: { location: true }
+            });
         }
 
         else {

@@ -2,8 +2,9 @@
 import React from "react"
 import { AiResponse } from "@/app/types/aiType"
 
-const AiResponeFavorite: React.FC<AiResponse> = ({ data }) => {
-    if (!data || data.length === 0) return null
+const AiResponseFavorite: React.FC<AiResponse> = ({ data }) => {
+    if (!data || data.length === 0) return <div className="text-red-500 mt-2">Hiện chưa có phòng được bạn yêu thích</div>;
+
 
 
     return (
@@ -41,4 +42,4 @@ const AiResponeFavorite: React.FC<AiResponse> = ({ data }) => {
     )
 }
 
-export default AiResponeFavorite
+export default AiResponseFavorite

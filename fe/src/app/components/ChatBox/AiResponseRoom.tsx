@@ -3,7 +3,8 @@ import React from "react";
 import { AiResponse } from "@/app/types/aiType";
 
 const AiResponseRoom: React.FC<AiResponse> = ({ data }) => {
-    if (!data || data.length === 0) return null;
+    if (!data || data.length === 0) return <div className="text-red-500 mt-2">Hiện chưa có thông tin</div>;
+
 
     const isList = data.length > 1; // nếu có nhiều phòng => chỉ hiển thị danh sách ngắn gọn
     const room = data[0]; // nếu chỉ 1 phòng => hiển thị chi tiết
