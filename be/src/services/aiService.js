@@ -110,93 +110,99 @@ export const aiService = {
 
 
 
-        if (type === "hotel") {
-            const { city, hotelName, amenity, descriptionKeyword, ratingStars } = filters;
-            console.log("Hotel filter:", city);
 
-            const where = {};
+        switch (type) {
+            // 🏨 KHÁCH SẠN
+            case "hotel": {
+                const { city, hotelName, amenity, descriptionKeyword, ratingStars } = filters;
+                console.log("Hotel filter:", city);
 
-            if (city) where.location = { city: { contains: city } };
-            if (hotelName) where.name = { contains: hotelName.replace(/^khách sạn\s*/i, "") };
-            if (descriptionKeyword) where.description = { contains: descriptionKeyword };
-            if (amenity)
-                where.amenities = {
-                    some: { amenity: { name: { in: Array.isArray(amenity) ? amenity : [amenity] } } },
-                };
-            if (ratingStars) where.averageRating = { gte: ratingStars };
+                const where = {};
 
-            dataResult = await prisma.hotel.findMany({
-                where,
-                include: { location: { select: { city: true } } },
-            });
-            console.log("Found hotels:", dataResult.length);
-        }
+                if (city) where.location = { city: { contains: city } };
+                if (hotelName) where.name = { contains: hotelName.replace(/^khách sạn\s*/i, "") };
+                if (descriptionKeyword) where.description = { contains: descriptionKeyword };
+                if (amenity)
+                    where.amenities = {
+                        some: { amenity: { name: { in: Array.isArray(amenity) ? amenity : [amenity] } } },
+                    };
+                if (ratingStars) where.averageRating = { gte: ratingStars };
 
-        else if (type === "room") {
-            const { hotelName, roomName, checkAvailability, city } = filters;
-            const where = {};
-
-            // Nếu user muốn chi tiết một phòng cụ thể (roomName)
-            if (roomName) {
-                // Tìm theo tên phòng hoặc theo loại phòng (type)
-                where.OR = [
-                    { name: { contains: roomName.trim() } },
-                    { type: { contains: roomName.trim() } }
-                ];
+                dataResult = await prisma.hotel.findMany({
+                    where,
+                    include: { location: { select: { city: true } } },
+                });
+                console.log("Found hotels:", dataResult.length);
+                break;
             }
 
-            // Lọc theo khách sạn (nếu có)
-            if (hotelName) {
-                where.hotel = {
-                    name: { contains: hotelName.replace(/^khách sạn\s*/i, "") },
-                };
-            }
+            // 🛏️ PHÒNG
+            case "room": {
+                const { hotelName, roomName, checkAvailability, city } = filters;
+                const where = {};
 
-            // Lọc theo thành phố (nếu có)
-            if (city) {
-                where.hotel = {
-                    ...where.hotel,
-                    location: { city: { contains: city } },
-                };
-            }
+                if (roomName) {
+                    where.OR = [
+                        { name: { contains: roomName.trim() } },
+                        { type: { contains: roomName.trim() } },
+                    ];
+                }
 
-            const rooms = await prisma.room.findMany({
-                where,
-                include: {
-                    bookings: true,
-                    hotel: {
-                        include: { location: true },
+                if (hotelName) {
+                    where.hotel = {
+                        name: { contains: hotelName.replace(/^khách sạn\s*/i, "") },
+                    };
+                }
+
+                if (city) {
+                    where.hotel = {
+                        ...where.hotel,
+                        location: { city: { contains: city } },
+                    };
+                }
+
+                const rooms = await prisma.room.findMany({
+                    where,
+                    include: {
+                        bookings: true,
+                        hotel: {
+                            include: { location: true },
+                        },
                     },
-                },
-            });
+                });
 
-            // Nếu cần kiểm tra phòng trống theo thời điểm hiện tại
-            let availableRooms = rooms;
-            if (checkAvailability) {
-                const now = new Date();
-                availableRooms = rooms.filter(r =>
-                    !r.bookings.some(b => new Date(b.startDate) <= now && new Date(b.endDate) >= now)
-                );
+                let availableRooms = rooms;
+                if (checkAvailability) {
+                    const now = new Date();
+                    availableRooms = rooms.filter(
+                        (r) =>
+                            !r.bookings.some(
+                                (b) =>
+                                    new Date(b.startDate) <= now &&
+                                    new Date(b.endDate) >= now
+                            )
+                    );
+                }
+
+                dataResult = availableRooms;
+
+                if (!isLoggedIn && checkAvailability) {
+                    responseData.text += " (Bạn cần đăng nhập để đặt phòng)";
+                }
+                break;
             }
 
-            dataResult = availableRooms;
+            // 📅 BOOKING
+            case "booking": {
+                if (!isLoggedIn) {
+                    responseData.text = "Bạn cần đăng nhập để xem hoặc đặt phòng.";
+                    dataResult = [];
+                    break;
+                }
 
-            if (!isLoggedIn && checkAvailability) {
-                responseData.text += " (Bạn cần đăng nhập để đặt phòng)";
-            }
-        }
-
-
-
-        if (type === "booking") {
-            if (!isLoggedIn) {
-                responseData.text = "Bạn cần đăng nhập để xem hoặc đặt phòng.";
-                dataResult = [];
-            } else {
                 const { status } = filters;
                 const where = { userId: userId.id };
 
-                // Map filter status từ user
                 switch (status?.toLowerCase()) {
                     case "hủy":
                         where.status = "CANCELED";
@@ -216,44 +222,57 @@ export const aiService = {
                         where.status = "CONFIRMED";
                         where.paymentStatus = "PAID";
                         break;
-                    case "tất cả":
-                    case "xem tất cả":
                     default:
-                        where.status = { in: ["PENDING", "CONFIRMED", "FINISHED", "CANCELED"] };
+                        where.status = {
+                            in: ["PENDING", "CONFIRMED", "FINISHED", "CANCELED"],
+                        };
                 }
 
-                // Lấy danh sách bookings
                 const bookings = await prisma.booking.findMany({
                     where,
                     include: {
                         room: { include: { hotel: true } },
                         Voucher: true,
-                        user: true
-                    }
+                        user: true,
+                    },
                 });
 
-                const totalAmount = bookings.reduce((sum, b) => sum + (b.totalPrice || 0), 0);
+                const totalAmount = bookings.reduce(
+                    (sum, b) => sum + (b.totalPrice || 0),
+                    0
+                );
                 dataResult = { bookings, totalAmount };
 
                 if (bookings.length > 0) {
                     let statusText = "";
 
-                    if (!status || ["tất cả", "xem tất cả"].includes(status.toLowerCase())) {
-                        const countPending = bookings.filter(b => b.status === "PENDING").length;
-                        const countConfirmed = bookings.filter(b => b.status === "CONFIRMED").length;
-                        const countFinished = bookings.filter(b => b.status === "FINISHED").length;
-                        const countCanceled = bookings.filter(b => b.status === "CANCELED").length;
+                    if (!status || ["tất cả", "xem tất cả"].includes(status?.toLowerCase())) {
+                        const countPending = bookings.filter(
+                            (b) => b.status === "PENDING"
+                        ).length;
+                        const countConfirmed = bookings.filter(
+                            (b) => b.status === "CONFIRMED"
+                        ).length;
+                        const countFinished = bookings.filter(
+                            (b) => b.status === "FINISHED"
+                        ).length;
+                        const countCanceled = bookings.filter(
+                            (b) => b.status === "CANCELED"
+                        ).length;
 
                         const parts = [];
                         if (countPending) parts.push(`chờ thanh toán: ${countPending}`);
-                        if (countConfirmed) parts.push(`Thanh toán và xác nhận: ${countConfirmed}`);
-                        if (countFinished) parts.push(`hoàn thành: ${countFinished}`);
-                        if (countCanceled) parts.push(`hủy: ${countCanceled}`);
+                        if (countConfirmed)
+                            parts.push(`Thanh toán và xác nhận: ${countConfirmed}`);
+                        if (countFinished)
+                            parts.push(`hoàn thành: ${countFinished}`);
+                        if (countCanceled)
+                            parts.push(`hủy: ${countCanceled}`);
 
                         statusText = parts.join(", ");
                         responseData.text = `Bạn có ${bookings.length} đơn đặt phòng (${statusText}), tổng cộng ${totalAmount.toLocaleString()} VND.`;
                     } else {
-                        // Text cho filter riêng
+                        let statusText = "";
                         switch (status?.toLowerCase()) {
                             case "hủy":
                                 statusText = "đơn đặt phòng đã hủy";
@@ -276,56 +295,55 @@ export const aiService = {
                 } else {
                     responseData.text = "Bạn chưa có đơn đặt phòng nào.";
                 }
+                break;
             }
-        }
 
+            // ❤️ YÊU THÍCH
+            case "favoriteHotel": {
+                if (!isLoggedIn) {
+                    responseData.text = "Vui lòng đăng nhập để xem danh hoặc đặt phòng.";
+                    dataResult = [];
+                } else {
+                    dataResult = await prisma.favoriteHotel.findMany({
+                        where: { userId: userId.id },
+                        include: { hotel: true },
+                    });
+                }
+                break;
+            }
 
+            // 📰 BLOG
+            case "blog": {
+                let { city } = filters;
+                if (!city && ask) {
+                    const cityMatch = ask.match(/blog (ở|tại|o) ([\w\s]+)/i);
+                    if (cityMatch) city = cityMatch[2].trim();
+                }
 
-        else if (type === "favoriteHotel") {
-            if (!isLoggedIn) {
-                responseData.text = "Vui lòng đăng nhập để xem danh hoặc đặt phòng.";
-                dataResult = [];
-            } else {
-                dataResult = await prisma.favoriteHotel.findMany({
-                    where: { userId: userId.id },
-                    include: { hotel: true },
+                const where = {};
+                if (city) {
+                    where.location = {
+                        is: {
+                            city: { contains: city },
+                        },
+                    };
+                }
+
+                dataResult = await prisma.blogPost.findMany({
+                    where,
+                    include: { location: true },
                 });
-            }
-        }
-
-        else if (type === "blog") {
-            let { city } = filters;
-
-            // Nếu city chưa có trong filters, thử parse từ ask
-            if (!city && ask) {
-                const cityMatch = ask.match(/blog (ở|tại|o) ([\w\s]+)/i);
-                if (cityMatch) city = cityMatch[2].trim();
+                break;
             }
 
-            const where = {};
-
-            if (city) {
-                where.location = {
-                    is: {
-                        city: {
-                            contains: city,
-
-                        }
-                    }
-                };
+            // 🧠 MẶC ĐỊNH
+            default: {
+                responseData.text =
+                    responseData.text || "Xin chào! Tôi có thể giúp gì cho bạn?";
+                dataResult = [];
+                break;
             }
-
-            dataResult = await prisma.blogPost.findMany({
-                where,
-                include: { location: true }
-            });
         }
-
-        else {
-            responseData.text = responseData.text || "Xin chào! Tôi có thể giúp gì cho bạn?";
-            dataResult = [];
-        }
-
 
         return {
             data: {
@@ -333,8 +351,8 @@ export const aiService = {
                 object: responseData.object,
                 data: dataResult,
             },
-
         };
+
     },
 };
 
