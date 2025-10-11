@@ -32,6 +32,8 @@ Trả đúng format JSON:
       "descriptionKeyword": string?,
       "checkAvailability": boolean?,
       "ratingStars": number?,
+      "status": string?,
+        "paymentStatus": string?,
       "detail": boolean? // true nếu người dùng muốn xem chi tiết
     }
   }
@@ -42,6 +44,7 @@ Hướng dẫn nhận diện:
 - “Khách sạn Crab Bui Vien Homestay còn phòng trống không?” → type = "room", filters.hotelName = "Crab Bui Vien Homestay", filters.checkAvailability = true
 - “Có những loại phòng nào ở Crab Bui Vien Homestay?” → type = "room", filters.hotelName = "Crab Bui Vien Homestay"
 - “Chi tiết về Phòng Sang Trọng Giường Đôi Có Bồn Tắm ở Crab Bui Vien Homestay” → type = "room", filters.hotelName = "Crab Bui Vien Homestay", filters.roomName = "Phòng Sang Trọng Giường Đôi Có Bồn Tắm", filters.detail = true
+Nếu người dùng nói “xem đơn đặt phòng”, “xem các phòng đã đặt”, “xem lịch sử đặt phòng” → hiểu là muốn xem danh sách booking.
 - “Đặt phòng tại khách sạn ABC” → type = "booking"
 - “Blog về du lịch Nha Trang” → type = "blog"
 - “Khách sạn yêu thích của tôi” → type = "favoriteHotel"
@@ -83,6 +86,31 @@ export const aiService = {
                 object: { type: "general", filters: {} },
             };
         }
+        const lowAsk = ask.toLowerCase();
+        if (responseData.object.type === "general") {
+            responseData.object.type = "booking";
+            responseData.object.filters = responseData.object.filters || {};
+
+            // map status
+            if (lowAsk.includes("chờ xác nhận") || lowAsk.includes("đang chờ") || lowAsk.includes("chờ")) {
+                responseData.object.filters.status = "chờ";
+            }
+            if (lowAsk.includes("hoàn thành") || lowAsk.includes("đã hoàn thành")) {
+                responseData.object.filters.status = "hoàn thành";
+            }
+            if (lowAsk.includes("hủy") || lowAsk.includes("đã hủy")) {
+                responseData.object.filters.status = "hủy";
+            }
+
+            // map paymentStatus
+            if (lowAsk.includes("chưa thanh toán")) {
+                responseData.object.filters.paymentStatus = "chưa thanh toán";
+            }
+            if (lowAsk.includes("đã thanh toán")) {
+                responseData.object.filters.paymentStatus = "đã thanh toán";
+            }
+        }
+
 
         const { object } = responseData;
         const filters = object?.filters || {};
@@ -166,49 +194,98 @@ export const aiService = {
 
 
 
-        else if (type === "booking") {
+        if (type === "booking") {
             if (!isLoggedIn) {
                 responseData.text = "Bạn cần đăng nhập để xem hoặc đặt phòng.";
                 dataResult = [];
             } else {
-                const { satusFilter, paymentStatus } = object.filters || {}
-                const where = { userId: userId.id }
-                if (satusFilter) where.satusFilter = satusFilter
-                if (paymentStatus) where.paymentStatus = paymentStatus
+                const { status } = filters;
+                const where = { userId: userId.id };
 
+                // Map filter status từ user
+                switch (status?.toLowerCase()) {
+                    case "hủy":
+                        where.status = "CANCELED";
+                        where.paymentStatus = "UNPAID";
+                        break;
+                    case "chờ thanh toán":
+                    case "đang chờ":
+                        where.status = "PENDING";
+                        break;
+                    case "hoàn thành":
+                    case "đã hoàn thành":
+                        where.status = "FINISHED";
+                        where.paymentStatus = "PAID";
+                        break;
+                    case "đã thanh toán confirm":
+                    case "paid confirmed":
+                        where.status = "CONFIRMED";
+                        where.paymentStatus = "PAID";
+                        break;
+                    case "tất cả":
+                    case "xem tất cả":
+                    default:
+                        where.status = { in: ["PENDING", "CONFIRMED", "FINISHED", "CANCELED"] };
+                }
+
+                // Lấy danh sách bookings
                 const bookings = await prisma.booking.findMany({
                     where,
                     include: {
-                        room: {
-                            include: {
-                                hotel: true
-                            }
+                        room: { include: { hotel: true } },
+                        Voucher: true,
+                        user: true
+                    }
+                });
+
+                const totalAmount = bookings.reduce((sum, b) => sum + (b.totalPrice || 0), 0);
+                dataResult = { bookings, totalAmount };
+
+                if (bookings.length > 0) {
+                    let statusText = "";
+
+                    if (!status || ["tất cả", "xem tất cả"].includes(status.toLowerCase())) {
+                        const countPending = bookings.filter(b => b.status === "PENDING").length;
+                        const countConfirmed = bookings.filter(b => b.status === "CONFIRMED").length;
+                        const countFinished = bookings.filter(b => b.status === "FINISHED").length;
+                        const countCanceled = bookings.filter(b => b.status === "CANCELED").length;
+
+                        const parts = [];
+                        if (countPending) parts.push(`chờ thanh toán: ${countPending}`);
+                        if (countConfirmed) parts.push(`Thanh toán và xác nhận: ${countConfirmed}`);
+                        if (countFinished) parts.push(`hoàn thành: ${countFinished}`);
+                        if (countCanceled) parts.push(`hủy: ${countCanceled}`);
+
+                        statusText = parts.join(", ");
+                        responseData.text = `Bạn có ${bookings.length} đơn đặt phòng (${statusText}), tổng cộng ${totalAmount.toLocaleString()} VND.`;
+                    } else {
+                        // Text cho filter riêng
+                        switch (status?.toLowerCase()) {
+                            case "hủy":
+                                statusText = "đơn đặt phòng đã hủy";
+                                break;
+                            case "chờ thanh toán":
+                            case "đang chờ":
+                                statusText = "đơn đặt phòng đang chờ thanh toán";
+                                break;
+                            case "hoàn thành":
+                            case "đã hoàn thành":
+                                statusText = "đơn đặt phòng hoàn thành";
+                                break;
+                            case "đã thanh toán và xác nhận":
+                            case "paid confirmed":
+                                statusText = "đơn đã thanh toán và confirmed";
+                                break;
                         }
-                    },
-                    Voucher: true,
-                    user: true
-                })
-                const totalAmount = bookings.reduce((sum, b) => (sum + b.totalPrice), 0)
-                dataResult = {
-                    bookings: bookings,
-                    totalAmount: totalAmount
-                }
-
-                if (satusFilter === "FINISHED") {
-                    responseData.text = bookings.length
-                        ? `Bạn đã hoàn thành ${bookings.length} đơn đặt phòng, tổng cộng ${totalAmount.toLocaleString()} VND.`
-                        : "Bạn chưa có đơn đặt phòng nào hoàn thành"
-                } else if (paymentStatus === "PAID") {
-                    responseData.text = bookings.length
-                        ? `Bạn có ${bookings.length} đơn đặt phòng đã thanh toán, tổng cộng ${totalAmount.toLocaleString()} VND.`
-                        : "Bạn chưa có đơn đặt phòng nào đã thanh toán.";
+                        responseData.text = `Bạn có ${bookings.length} ${statusText}, tổng cộng ${totalAmount.toLocaleString()} VND.`;
+                    }
                 } else {
-                    responseData.text = `Bạn có ${bookings.length} đơn đặt phòng, tổng cộng ${totalAmount.toLocaleString()} VND.`;
+                    responseData.text = "Bạn chưa có đơn đặt phòng nào.";
                 }
-
             }
-
         }
+
+
 
         else if (type === "favoriteHotel") {
             if (!isLoggedIn) {

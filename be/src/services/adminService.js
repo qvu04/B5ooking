@@ -1189,7 +1189,7 @@ export const adminService = {
     },
     createVoucher: async function (data) {
         const { code, discount, expiresAt, usageLimit, perUserLimit } = data;
-        console.log(code, discount, expiresAt, usageLimit, perUserLimit)
+       
         if (!code || !discount || !expiresAt || !usageLimit || !perUserLimit) {
             throw new ConflictException("Thiếu trường nào đó");
         }
@@ -1272,6 +1272,21 @@ export const adminService = {
                 totalPages : Math.ceil(totalVoucher / limit)
             }
         }
+    },
+        updateActiveVoucher : async function () {
+        const now = new Date()
+        console.log("Đang chạy cron update - Giờ hiện tại ", now.toISOString())
+
+        const result = await prisma.voucher.updateMany({
+            where : {
+                isActive : true,
+                expiresAt : {lt : now}
+            },
+            data : {
+                isActive : false,
+            }
+        })
+        console.log("Đã cập nhật", result.count, "Đã hết hạn voucher")
     }
     
 };
