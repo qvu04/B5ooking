@@ -8,6 +8,7 @@ import { Drawer, Select } from "antd";
 import { useTheme } from "next-themes";
 import { useTranslation } from "react-i18next";
 import { usePathname, useRouter } from "next/navigation";
+import { useTransition } from "react";
 import { useAppDispatch } from "@/redux/hook";
 import { useSelector } from "react-redux";
 import { setUserLogoutAction } from "@/redux/features/userSlice";
@@ -38,7 +39,7 @@ const NavBarOnly = () => {
     const dispatch = useAppDispatch();
     const { user } = useSelector((state: RootState) => state.userSlice);
     const router = useRouter();
-
+    const [isPending, startTransition] = useTransition();
     useEffect(() => {
         setMounted(true);
         const handleScroll = () => setIsScrolled(window.scrollY > 20);
@@ -57,6 +58,14 @@ const NavBarOnly = () => {
             dispatch(hideLoading());
         }, 1000);
     };
+    const handleLogin = () => {
+        dispatch(showLoading());
+        startTransition(() => {
+            router.push("/login");
+            dispatch(hideLoading());
+        });
+    };
+
 
     return (
         <>
@@ -158,16 +167,11 @@ const NavBarOnly = () => {
                                 </>
                             ) : (
                                 <button
-                                    onClick={() => {
-                                        dispatch(showLoading());
-                                        setTimeout(() => {
-                                            router.push("/login");
-                                            dispatch(hideLoading());
-                                        }, 2000);
-                                    }}
+                                    onClick={handleLogin}
+                                    disabled={isPending}
                                     className="ml-2 px-4 py-1.5 cursor-pointer rounded-xl bg-[#6246ea] hover:bg-[#5135c8] text-white font-medium transition"
                                 >
-                                    {t("home.button_header_signin")}
+                                    {isPending ? "Đang chuyển..." : "Đăng nhập"}
                                 </button>
                             )}
                             <Link href="/" onClick={() => setOpen(false)}>{t("home.button_header_home")}</Link>

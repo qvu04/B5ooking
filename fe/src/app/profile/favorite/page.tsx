@@ -75,12 +75,12 @@ export default function Favorite() {
     if (!mounted) return null;
     return (
         <div className="max-w-7xl mx-auto px-4 py-6">
-            <h1 className="text-2xl font-bold mb-6 text-center dark:text-black">
+            <h1 className="text-2xl font-bold mb-6 text-center dark:text-[#fffffe]">
                 {t("favorite.text_1")}
             </h1>
 
             {favorites.length === 0 ? (
-                <p className="text-center text-gray-500">
+                <p className="text-center text-gray-500 dark:text-[#fffffe]">
                     {t("favorite.text_2")}
                 </p>
             ) : (
@@ -90,7 +90,7 @@ export default function Favorite() {
                         return (
                             <div
                                 key={item.id}
-                                className="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300"
+                                className="bg-white rounded-2xl overflow-hidden dark:bg-[#242629] shadow-lg hover:shadow-xl transition-shadow duration-300"
                             >
                                 <div className="relative w-full h-48">
                                     <img
@@ -126,10 +126,10 @@ export default function Favorite() {
                                     </AlertDialog>
                                 </div>
                                 <div className="p-4 space-y-1">
-                                    <h2 className="text-lg font-semibold truncate dark:text-black">
+                                    <h2 className="text-lg font-semibold truncate dark:text-[#94a1b2]">
                                         {hotel.name}
                                     </h2>
-                                    <p className="text-gray-600 text-sm">{hotel.address}</p>
+                                    <p className="text-gray-600 dark:text-[#94a1b2] text-sm">{hotel.address}</p>
                                     <div className="flex items-center gap-1 text-yellow-500">
                                         <FaStar /> {hotel.averageRating ?? 5}/5
                                     </div>

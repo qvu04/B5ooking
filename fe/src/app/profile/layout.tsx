@@ -10,12 +10,12 @@ export default function ProfileLayout({ children }: { children: React.ReactNode 
             </aside>
 
             {/* Nội dung chính */}
-            <main className="flex-1 p-4 sm:p-8 bg-gray-50 max-w-screen-xl mx-auto w-full">
+            <main className="flex-1 p-4 sm:p-8 bg-gray-50 dark:bg-[#16161a] max-w-screen-xl mx-auto w-full">
                 {children}
             </main>
 
             {/* Bottom Navbar cho mobile */}
-            <div className="block sm:hidden fixed bottom-0 left-0 right-0 z-50">
+            <div className="block sm:hidden fixed bottom-0 dark:bg-[#16161a] left-0 right-0 z-50">
                 <SidebarMenu />
             </div>
         </div>

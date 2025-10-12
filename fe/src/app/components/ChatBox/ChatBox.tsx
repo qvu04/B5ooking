@@ -5,7 +5,6 @@ import ChatModal from "./ChatBoxModal";
 
 export default function ChatBubble() {
     const [open, setOpen] = useState(false);
-
     return (
         <>
             {/* Nút bong bóng nổi */}

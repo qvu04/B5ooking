@@ -12,7 +12,7 @@ const AiResponseBlog: React.FC<AiResponse> = ({ data }) => {
                     return (
                         <li
                             key={index}
-                            className="bg-white shadow-md rounded-lg overflow-hidden hover:shadow-lg transition"
+                            className="bg-white m-3 shadow-md rounded-lg overflow-hidden hover:shadow-lg transition"
                         >
                             <img
                                 src={blog.image}

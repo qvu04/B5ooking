@@ -21,41 +21,88 @@ export default function ChatBoxModal({
     const [ask, setAsk] = useState("");
     const [messages, setMessages] = useState<any[]>([]);
     const [loading, setLoading] = useState(false);
+    const [aiTyping, setAiTyping] = useState(false);
     const chatEndRef = useRef<HTMLDivElement>(null);
     const { user } = useSelector((state: RootState) => state.userSlice);
+
     const handleSend = async () => {
         if (!ask.trim()) return;
 
         const userMsg = { sender: "user", text: ask };
         setMessages((prev) => [...prev, userMsg]);
         setAsk("");
+        setAiTyping(true);
         setLoading(true);
 
         try {
             const currentUser = user ? { id: user.id, fullname: user.fullName } : undefined;
             const res = await chatBoxService({ ask }, currentUser);
-            console.log(res);
             const aiData = res.data.data.data;
+
             const aiMsg = {
                 sender: "ai",
                 text: aiData.text,
                 type: aiData.object.type,
                 data: aiData.data,
             };
-            setMessages((prev) => [...prev, aiMsg]);
+            console.log("data:", aiMsg.data);
+            // Giả lập typing effect
+            const fullText = aiMsg.text;
+            let currentText = "";
+            let i = 0;
+            const interval = setInterval(() => {
+                if (i < fullText.length) {
+                    currentText += fullText[i];
+                    i++;
+                    setMessages((prev) => [
+                        ...prev.slice(0, -1),
+                        { sender: "ai", text: currentText, type: aiMsg.type, data: aiMsg.data },
+                    ]);
+                } else {
+                    clearInterval(interval);
+                    setAiTyping(false);
+                }
+            }, 20);
+
+            setMessages((prev) => [...prev, { sender: "ai", text: "" }]);
         } catch (err) {
             console.error("AI Error:", err);
-            const errMsg = { sender: "ai", text: "Có lỗi xảy ra, vui lòng thử lại." };
-            setMessages((prev) => [...prev, errMsg]);
+            setMessages((prev) => [
+                ...prev,
+                { sender: "ai", text: "Có lỗi xảy ra, vui lòng thử lại." },
+            ]);
+            setAiTyping(false);
         } finally {
             setLoading(false);
         }
     };
 
-    // Scroll xuống cuối chat khi có tin nhắn mới
+    // Gửi tin nhắn chào khi mở chat lần đầu
+    useEffect(() => {
+        if (isOpen && messages.length === 0) {
+            const welcome = "Xin chào! 👋 Tôi là trợ lý ảo của B5ooking, tôi có thể giúp gì cho bạn?";
+            let currentText = "";
+            const typingSpeed = 35;
+            const delayBeforeStart = 500;
+
+            const startTyping = setTimeout(() => {
+                const interval = setInterval(() => {
+                    if (currentText.length < welcome.length) {
+                        currentText += welcome[currentText.length];
+                        setMessages([{ sender: "ai", text: currentText }]);
+                    } else {
+                        clearInterval(interval);
+                    }
+                }, typingSpeed);
+            }, delayBeforeStart);
+
+            return () => clearTimeout(startTyping);
+        }
+    }, [isOpen]);
+
     useEffect(() => {
         chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
-    }, [messages, loading]);
+    }, [messages, loading, aiTyping]);
 
     if (!isOpen) return null;
 
@@ -77,12 +124,22 @@ export default function ChatBoxModal({
                     className="w-[400px] h-[600px] bg-white dark:bg-gray-900 rounded-l-2xl shadow-2xl flex flex-col border border-gray-200 dark:border-gray-700"
                 >
                     {/* Header */}
-                    <div className="p-4 bg-gradient-to-r from-blue-600 to-blue-500 text-white rounded-tl-2xl flex justify-between items-center shadow-md">
-                        <h3 className="font-semibold text-lg">Trợ lý ảo khách sạn 🏨</h3>
-                        <button
-                            onClick={onClose}
-                            className="text-white hover:text-gray-200 transition"
-                        >
+                    <div className="relative p-4 bg-gradient-to-r from-blue-600 via-blue-500 to-indigo-500 text-white rounded-tl-2xl flex justify-between items-center shadow-lg">
+                        <div className="flex items-center gap-3">
+                            <div className="relative">
+                                <img
+                                    src="/images/logo-b5ooking.png"
+                                    alt="logo"
+                                    className="w-[40px] h-[40px] object-contain rounded-full border border-white/40 shadow-md"
+                                />
+                                <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-400 border-2 border-white rounded-full animate-pulse"></span>
+                            </div>
+                            <div>
+                                <h3 className="font-semibold text-lg tracking-wide">Trợ lý ảo B5ooking</h3>
+                                <p className="text-xs text-blue-100 italic">Luôn sẵn sàng hỗ trợ bạn 🌟</p>
+                            </div>
+                        </div>
+                        <button onClick={onClose} className="hover:bg-white/20 p-2 rounded-full transition">
                             <X size={20} />
                         </button>
                     </div>
@@ -94,26 +151,28 @@ export default function ChatBoxModal({
                                 key={i}
                                 initial={{ opacity: 0, y: 10 }}
                                 animate={{ opacity: 1, y: 0 }}
-                                transition={{ duration: 0.2 }}
-                                className={`max-w-[85%] p-3 rounded-2xl text-sm whitespace-pre-line break-words ${m.sender === "user"
-                                    ? "bg-blue-600 text-white self-end ml-auto"
-                                    : "bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                                transition={{ duration: 0.3, ease: "easeOut" }}
+                                className={`max-w-[85%] w-fit p-3 rounded-2xl text-sm shadow-sm ${m.sender === "user"
+                                    ? "bg-blue-600 text-white self-end ml-auto rounded-br-none"
+                                    : "bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-bl-none"
                                     }`}
                             >
-                                <p>{m.text}</p>
+                                <p className="whitespace-pre-line break-words mb-2">{m.text}</p>
 
-                                {/* Nếu AI trả về danh sách khách sạn */}
                                 {m.type === "hotel" && <AiResponseHotel data={m.data} />}
                                 {m.type === "room" && <AiResponseRoom data={m.data} />}
                                 {m.type === "favoriteHotel" && <AiResponseFavorite data={m.data} />}
                                 {m.type === "booking" && <AiResponseBooking data={m.data} />}
                                 {m.type === "blog" && <AiResponseBlog data={m.data} />}
-
-
                             </motion.div>
                         ))}
-                        {loading && (
-                            <div className="italic text-gray-500 text-sm">AI đang trả lời...</div>
+
+                        {aiTyping && (
+                            <div className="flex items-center gap-2 text-gray-500 text-sm">
+                                <span className="bg-gray-200 dark:bg-gray-700 px-3 py-2 rounded-2xl animate-pulse">
+                                    <span className="dot-typing"></span>
+                                </span>
+                            </div>
                         )}
                         <div ref={chatEndRef} />
                     </div>

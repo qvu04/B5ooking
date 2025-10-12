@@ -119,25 +119,25 @@ export default function Booking() {
     const renderBookingList = () => (
         <section className="mt-6">
             {filteredBookings.length === 0 ? (
-                <p className="text-gray-600 italic">{t("booking.text_1")}</p>
+                <p className="text-gray-600 dark:text-[#fffffe] italic">{t("booking.text_1")}</p>
             ) : (
                 <ul className="space-y-6">
                     {filteredBookings.map((item) => (
-                        <li key={item.id} className="p-5 border rounded-xl shadow-md flex gap-4">
+                        <li key={item.id} className="p-5 border dark:bg-[#242629] rounded-xl shadow-md flex gap-4">
                             <img
                                 src={item.room.image}
                                 alt={item.room.name}
                                 className="w-36 h-28 object-cover rounded-lg"
                             />
                             <div className="flex-1">
-                                <p className="text-xl font-bold text-[#333]">{item.room.hotel.name}</p>
+                                <p className="text-xl font-bold text-[#333] dark:text-[#94a1b2]">{item.room.hotel.name}</p>
                                 <p className="text-lg font-semibold text-[#6246ea]">{item.room.name}</p>
-                                <div className="mt-1 text-sm text-gray-600">
+                                <div className="mt-1 text-sm text-gray-600 dark:text-[#94a1b2]">
                                     <p>{t("booking.text_2")} {new Date(item.checkIn).toLocaleDateString()} - {new Date(item.checkOut).toLocaleDateString()}</p>
                                     <p>{t("booking.text_3")} {item.guests} | {t("booking.text_4")} {item.nights}</p>
                                 </div>
-                                <p className="mt-2 text-base font-medium text-[#111]">
-                                    {t("booking.text_16")}{" "}
+                                <p className="mt-2 text-base font-medium text-[#111] dark:text-[#94a1b2]">
+                                    {t("booking.text_16")}: {" "}
                                     <span className="text-[#f43f5e] font-bold">
                                         {item.totalPrice.toLocaleString()}₫
                                     </span>
@@ -198,7 +198,7 @@ export default function Booking() {
         <>
             <CheckDesktop>
                 <div className="max-w-5xl mx-auto mt-6 px-4">
-                    <h1 className="text-3xl font-bold mb-6 text-[#222]">{t("booking.text_8")}</h1>
+                    <h1 className="text-3xl font-bold mb-6 text-[#222] dark:text-[#fffffe]">{t("booking.text_8")}</h1>
                     {renderFilterButtons()}
                     {renderBookingList()}
                     <AlertDialog open={isCancelDialogOpen} onOpenChange={setIsCancelDialogOpen}>
@@ -237,7 +237,7 @@ export default function Booking() {
             </CheckDesktop>
             <CheckTablet>
                 <div className="max-w-5xl mx-auto mt-6 px-4">
-                    <h1 className="text-3xl font-bold mb-6 text-[#222]">{t("booking.text_8")}</h1>
+                    <h1 className="text-3xl font-bold mb-6 text-[#222] dark:text-[#fffffe]">{t("booking.text_8")}</h1>
                     {renderFilterButtons()}
                     {renderBookingList()}
                     <AlertDialog open={isCancelDialogOpen} onOpenChange={setIsCancelDialogOpen}>
@@ -276,7 +276,7 @@ export default function Booking() {
             </CheckTablet>
             <CheckMobilePhone>
                 <div className="mt-4 px-4">
-                    <h1 className="text-2xl font-bold mb-4 text-[#222] text-center">
+                    <h1 className="text-2xl font-bold mb-4 text-[#222] dark:text-[#fffffe] text-center">
                         {t("booking.text_8")}
                     </h1>
                     {renderFilterButtons()}
@@ -289,16 +289,16 @@ export default function Booking() {
                             {filteredBookings.map((item) => (
                                 <li
                                     key={item.id}
-                                    className="p-4 border rounded-lg shadow-sm flex flex-col"
+                                    className="p-4 border dark:bg-[#242629] rounded-lg shadow-sm flex flex-col"
                                 >
                                     <img
                                         src={item.room.image}
                                         alt={item.room.name}
                                         className="w-full h-40 object-cover rounded-md mb-3"
                                     />
-                                    <p className="text-lg font-bold text-[#333]">{item.room.hotel.name}</p>
+                                    <p className="text-lg font-bold text-[#333] dark:text-[#94a1b2]">{item.room.hotel.name}</p>
                                     <p className="text-base font-semibold text-[#6246ea]">{item.room.name}</p>
-                                    <div className="mt-1 text-sm text-gray-600">
+                                    <div className="mt-1 text-sm text-gray-600 dark:text-[#94a1b2]">
                                         <p>
                                             {t("booking.text_2")} {new Date(item.checkIn).toLocaleDateString()} -{" "}
                                             {new Date(item.checkOut).toLocaleDateString()}
@@ -307,8 +307,8 @@ export default function Booking() {
                                             {t("booking.text_3")} {item.guests} | {t("booking.text_4")} {item.nights}
                                         </p>
                                     </div>
-                                    <p className="mt-2 text-base font-medium text-[#111]">
-                                        {t("booking.text_16")}{" "}
+                                    <p className="mt-2 text-base font-medium text-[#111] dark:text-[#94a1b2]">
+                                        {t("booking.text_16")}: {" "}
                                         <span className="text-[#f43f5e] font-bold">
                                             {item.totalPrice.toLocaleString()}₫
                                         </span>

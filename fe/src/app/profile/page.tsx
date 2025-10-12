@@ -34,7 +34,7 @@ export default function Profile() {
     return (
         <>
             <CheckDesktop>
-                <div className="max-w-4xl mx-auto mt-6 px-4 space-y-8">
+                <div className="max-w-4xl mx-auto  mt-6 px-4 space-y-8">
                     {/* Header */}
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                         <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 dark:text-white">
@@ -42,7 +42,7 @@ export default function Profile() {
                         </h1>
                         <button
                             onClick={() => setIsEditing(true)}
-                            className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold px-4 py-2 rounded-lg transition duration-200"
+                            className="bg-gray-200 cursor-pointer hover:bg-gray-300 text-gray-800 font-semibold px-4 py-2 rounded-lg transition duration-200"
                         >
                             {t("profile.text_3")}
                         </button>
@@ -65,7 +65,7 @@ export default function Profile() {
                     )}
 
                     {/* Thông tin người dùng */}
-                    <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6 bg-white dark:bg-gray-800 p-6 rounded-xl shadow-md">
+                    <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6 bg-white dark:bg-[#242629] p-6 rounded-xl shadow-md">
                         {user?.avatar ? (
                             <img
                                 src={user.avatar}
@@ -73,14 +73,14 @@ export default function Profile() {
                                 className="w-20 h-20 rounded-full object-cover border"
                             />
                         ) : (
-                            <div className="w-20 h-20 rounded-full bg-gray-300 flex items-center justify-center text-white">
+                            <div className="w-20 h-20 rounded-full bg-gray-300 dark:bg-[#242629] flex items-center justify-center text-white">
                                 <FaUserAlt className="text-2xl" />
                             </div>
                         )}
 
                         <div className="text-center sm:text-left">
-                            <h2 className="text-lg sm:text-xl font-semibold text-gray-800 dark:text-white">{user?.fullName}</h2>
-                            <p className="text-gray-600 dark:text-gray-300 text-sm mb-1">{t("profile.text_4")}</p>
+                            <h2 className="text-lg sm:text-xl font-semibold text-gray-800 dark:text-[#94a1b2]">{user?.fullName}</h2>
+                            <p className="text-gray-600 dark:text-[#94a1b2] text-sm mb-1">{t("profile.text_4")}</p>
                             <span className="inline-block mt-1 bg-purple-100 text-purple-700 text-xs font-semibold px-3 py-1 rounded-full">
                                 {user?.role}
                             </span>
@@ -88,9 +88,9 @@ export default function Profile() {
                     </div>
 
                     {/* Phần hoàn tất hồ sơ */}
-                    <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md">
-                        <h3 className="text-lg sm:text-xl font-bold text-gray-800 dark:text-white mb-2">{t("profile.text_5")}</h3>
-                        <p className="text-gray-600 dark:text-gray-300 mb-4">{t("profile.text_6")}</p>
+                    <div className="bg-white dark:bg-[#242629] rounded-xl p-6 shadow-md">
+                        <h3 className="text-lg sm:text-xl font-bold text-gray-800 dark:text-[#94a1b2] mb-2">{t("profile.text_5")}</h3>
+                        <p className="text-gray-600 dark:text-[#94a1b2] mb-4">{t("profile.text_6")}</p>
                         <button className="bg-[#6246ea] hover:bg-[#5135c8] text-white font-semibold px-6 py-2 rounded-lg transition duration-200">
                             {t("profile.text_7")}
                         </button>
@@ -129,7 +129,7 @@ export default function Profile() {
                     )}
 
                     {/* Thông tin người dùng */}
-                    <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6 bg-white dark:bg-gray-800 p-6 rounded-xl shadow-md">
+                    <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6 bg-white dark:bg-[#242629] p-6 rounded-xl shadow-md">
                         {user?.avatar ? (
                             <img
                                 src={user.avatar}
@@ -143,8 +143,8 @@ export default function Profile() {
                         )}
 
                         <div className="text-center sm:text-left">
-                            <h2 className="text-lg sm:text-xl font-semibold text-gray-800 dark:text-white">{user?.fullName}</h2>
-                            <p className="text-gray-600 dark:text-gray-300 text-sm mb-1">{t("profile.text_4")}</p>
+                            <h2 className="text-lg sm:text-xl font-semibold text-gray-800 dark:text-[#94a1b2]">{user?.fullName}</h2>
+                            <p className="text-gray-600 dark:text-[#94a1b2] text-sm mb-1">{t("profile.text_4")}</p>
                             <span className="inline-block mt-1 bg-purple-100 text-purple-700 text-xs font-semibold px-3 py-1 rounded-full">
                                 {user?.role}
                             </span>
@@ -152,9 +152,9 @@ export default function Profile() {
                     </div>
 
                     {/* Phần hoàn tất hồ sơ */}
-                    <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md">
-                        <h3 className="text-lg sm:text-xl font-bold text-gray-800 dark:text-white mb-2">{t("profile.text_5")}</h3>
-                        <p className="text-gray-600 dark:text-gray-300 mb-4">{t("profile.text_6")}</p>
+                    <div className="bg-white dark:bg-[#242629] rounded-xl p-6 shadow-md">
+                        <h3 className="text-lg sm:text-xl font-bold text-gray-800 dark:text-[#94a1b2] mb-2">{t("profile.text_5")}</h3>
+                        <p className="text-gray-600 dark:text-[#94a1b2] mb-4">{t("profile.text_6")}</p>
                         <button className="bg-[#6246ea] hover:bg-[#5135c8] text-white font-semibold px-6 py-2 rounded-lg transition duration-200">
                             {t("profile.text_7")}
                         </button>
@@ -164,7 +164,7 @@ export default function Profile() {
             <CheckMobilePhone>
                 <div className="p-4 space-y-6">
                     {/* Avatar + Tên */}
-                    <div className="flex flex-col items-center text-center space-y-3">
+                    <div className="flex flex-col items-center dark:bg-[#242629] text-center space-y-3">
                         {user?.avatar ? (
                             <img
                                 src={user.avatar}
@@ -178,8 +178,8 @@ export default function Profile() {
                         )}
 
                         <div>
-                            <h2 className="text-xl font-semibold text-gray-800 dark:text-white">{user?.fullName}</h2>
-                            <p className="text-gray-500 dark:text-gray-300 text-sm">{t("profile.text_4")}</p>
+                            <h2 className="text-xl font-semibold text-gray-800 dark:text-[#94a1b2]">{user?.fullName}</h2>
+                            <p className="text-gray-500 dark:text-[#94a1b2] text-sm">{t("profile.text_4")}</p>
                             <span className="inline-block mt-1 bg-purple-100 text-purple-700 text-xs font-semibold px-3 py-1 rounded-full">
                                 {user?.role}
                             </span>

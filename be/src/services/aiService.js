@@ -64,7 +64,7 @@ export const aiService = {
 
         // 🔮 Gọi OpenRouter AI để phân tích câu hỏi
         const completion = await openai.chat.completions.create({
-            model: "meta-llama/llama-3.1-8b-instruct",
+            model: "gpt-3.5-turbo",
             temperature: 0.3,
             messages: [
                 { role: "system", content: SYSTEM_PROMPT },
