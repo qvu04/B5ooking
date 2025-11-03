@@ -8,7 +8,7 @@ export const authMiddleware = async (req, res, next) => {
         throw new UnauthorizedException("Token không hợp lệ hoặc không đúng định dạng token")
     }
     try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const decoded = jwt.decode(token, process.env.JWT_SECRET);
         req.user = decoded;
         next()
     } catch (error) {
