@@ -737,6 +737,9 @@ export const adminService = {
         await prisma.roomAmenity.deleteMany({
             where: { roomId: parsedRoomId }
         });
+        await prisma.booking.deleteMany({
+            where: { roomId: parsedRoomId }
+        });
         await prisma.room.delete({
             where: { id: parsedRoomId }
         });
@@ -1064,6 +1067,7 @@ export const adminService = {
         await prisma.booking.deleteMany({ where: { userId } });
         await prisma.review.deleteMany({ where: { userId } });
         await prisma.favoriteHotel.deleteMany({ where: { userId } });
+        await prisma.credential.deleteMany({ where: { userId } });
 
         // Xoá người dùng
         await prisma.user.delete({
