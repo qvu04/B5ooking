@@ -23,6 +23,8 @@ import {
     CarouselPrevious,
 } from "@/components/ui/carousel"
 import { useRouter } from 'next/navigation';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/lib/store';
 type Props = {
     open: boolean;
     onClose: () => void;
@@ -39,6 +41,7 @@ export default function RoomDetailModal({ open, onClose, room, checkIn, checkOut
     const [isBooking, setIsBooking] = useState(false);
     const [showConfirm, setShowConfirm] = useState(false);
     const { t, i18n } = useTranslation();
+    const { user } = useSelector((state: RootState) => state.userSlice);
     const router = useRouter();
     const handleBooking = async (nights: number, checkInDate: string, checkOutDate: string, voucherCode: string, finalPrice: number) => {
         if (!room) return
@@ -101,6 +104,10 @@ export default function RoomDetailModal({ open, onClose, room, checkIn, checkOut
         ? room.price * (1 - room.discount / 100)
         : room.price;
     const handleConfirmBooking = () => {
+        if (user === null) {
+            toast.error("Vui lòng đăng nhập để đặt phòng");
+            return;
+        }
         setShowConfirm(true);
     };
     if (!fullRoom || !fullRoom.images || fullRoom.images.length === 0) {

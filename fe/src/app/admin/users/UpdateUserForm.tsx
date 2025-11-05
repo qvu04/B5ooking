@@ -1,7 +1,7 @@
 "use client"
 
 import { putUpdateUSerService } from "@/app/api/adminService";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { UserManger } from '@/app/types/adminType';
 
@@ -39,7 +39,15 @@ export default function UpdateUserForm({ user, onSuccess }: Props) {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
     };
-
+    useEffect(() => {
+        setFormData({
+            firstName: user.firstName,
+            lastName: user.lastName,
+            email: user.email,
+            role: user.role,
+            gender: user.gender,
+        });
+    }, [user]);
     return (
         <form onSubmit={handleSubmit} className="space-y-4 bg-white max-w-md p-4 border rounded-xl shadow-md">
             <div>
@@ -101,12 +109,12 @@ export default function UpdateUserForm({ user, onSuccess }: Props) {
                 </select>
             </div>
 
-            <div className="text-center">
+            <div className="flex justify-end pt-4">
                 <button
                     type="submit"
-                    className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition duration-200"
+                    className="bg-[#7f5af0] hover:bg-[#684de0] text-white font-semibold px-6 py-2 rounded-lg  transition duration-200"
                 >
-                    Cập nhật
+                    Lưu
                 </button>
             </div>
         </form>

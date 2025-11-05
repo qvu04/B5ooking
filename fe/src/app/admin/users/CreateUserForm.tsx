@@ -13,7 +13,7 @@ export default function CreateUserForm({ onSuccess }: Props) {
         email: "",
         password: "",
         role: "USER",
-        gender: "MALE",
+        gender: "Nam",
     })
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -27,7 +27,7 @@ export default function CreateUserForm({ onSuccess }: Props) {
                 email: "",
                 password: "",
                 role: "USER",
-                gender: "MALE",
+                gender: "Nam",
             })
         } catch (error) {
             console.log('✌️error --->', error);
@@ -80,16 +80,18 @@ export default function CreateUserForm({ onSuccess }: Props) {
                 <option value="ADMIN">Quản trị viên</option>
             </select>
             <select name="gender" value={formData.gender} onChange={handleChange} className="w-full border px-3 py-2 rounded">
-                <option value="MALE">Nam</option>
-                <option value="FEMALE">Nữ</option>
-                <option value="OTHER">Khác</option>
+                <option value="Nam">Nam</option>
+                <option value="Nữ">Nữ</option>
+                <option value="Khác">Khác</option>
             </select>
-            <button
-                type="submit"
-                className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-            >
-                Tạo người dùng
-            </button>
+            <div className="flex justify-end pt-4">
+                <button
+                    type="submit"
+                    className="bg-[#7f5af0] hover:bg-[#684de0] text-white font-semibold px-6 py-2 rounded-lg  transition duration-200"
+                >
+                    Tạo mới
+                </button>
+            </div>
         </form>
     );
 }

@@ -373,7 +373,7 @@ export default function HotelDetailClient({ hotel }: Props) {
                 {/* Mô tả */}
                 <div>
                     <div className='mt-5'>
-                        <h2 className='font-bold lg:text-2xl text-xl '>{t("hotelId.text_4")} - {hotel.address}</h2>
+                        <h2 className='font-bold lg:text-xl text-xl '>{t("hotelId.text_4")} - {hotel.address}</h2>
                         <p className='pt-3 dark:text-[#94a1b2]'>
                             {t("hotelId.text_5")} {t("hotelId.text_6")} {t("hotelId.text_7")} {t("hotelId.text_8")}
                         </p>
@@ -823,7 +823,7 @@ export default function HotelDetailClient({ hotel }: Props) {
                             <div className="space-y-3 mb-8">
                                 {([5, 4, 3, 2, 1] as const).map((i) => (
                                     <div key={i} className="flex items-center gap-4">
-                                        <span className="w-10 text-sm font-medium">{i} {t("hotelId.star")}</span>
+                                        <span className="w-10 text-sm font-medium">{i}<span className='ml-1'>{t("hotelId.star")}</span></span>
                                         <div className="w-full bg-gray-200 rounded h-2 overflow-hidden">
                                             <div
                                                 className="bg-yellow-400 h-full"
@@ -898,19 +898,20 @@ export default function HotelDetailClient({ hotel }: Props) {
                                 <div className="flex flex-col gap-4">
                                     <div className="flex items-center gap-3">
                                         {user?.avatar ? (
-                                            <img
-                                                src={user.avatar}
-                                                alt="Avatar"
-                                                className="w-12 h-12 rounded-full object-cover shadow-md"
-                                            />
-                                        ) : (
-                                            <div className="w-12 h-12 rounded-full bg-gray-300 flex items-center justify-center text-white shadow-md">
-                                                <FaUserAlt className="text-base" />
+                                            <div className='flex gap-3 font-bold items-center justify-center'>
+                                                <img
+                                                    src={user.avatar}
+                                                    alt="Avatar"
+                                                    className="w-12 h-12 rounded-full object-cover shadow-md"
+                                                />
+                                                <p>{user.fullName}</p>
                                             </div>
+                                        ) : (
+                                            <p className="font-semibold text-lg text-gray-800 dark:text-[#fffffe]">
+                                                Bạn cần đăng nhập để đánh giá
+                                            </p>
                                         )}
-                                        <p className="font-semibold text-lg text-gray-800 dark:text-[#fffffe]">
-                                            {user?.fullName}
-                                        </p>
+
                                     </div>
 
                                     <div className="flex gap-1">
