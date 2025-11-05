@@ -9,6 +9,7 @@ import { Modal } from "antd";
 import { FaPlus, FaEdit, FaTrash } from "react-icons/fa";
 import UpdateUserForm from "./UpdateUserForm";
 import toast from "react-hot-toast";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 
 export default function UsersManager() {
     const [pagination, setPagination] = useState<Pagination>()
@@ -146,13 +147,30 @@ export default function UsersManager() {
                                             <FaEdit className="text-sm" />
                                             <span>Sửa</span>
                                         </button>
-                                        <button
-                                            onClick={() => handleDeleteUser(user.id)}
-                                            className="flex items-center gap-2 px-3 py-1.5 bg-red-500 hover:bg-red-600 text-white text-sm font-medium rounded-lg shadow-sm transition-all duration-200 transform hover:scale-[1.05] active:scale-95"
-                                        >
-                                            <FaTrash className="text-sm" />
-                                            <span>Xóa</span>
-                                        </button>
+                                        <AlertDialog>
+                                            <AlertDialogTrigger asChild>
+                                                <button
+                                                    className="flex items-center gap-2 bg-red-500 text-white px-3 py-2 rounded-lg hover:bg-red-600 transition"
+                                                >
+                                                    <FaTrash className="text-sm" />
+                                                    <span>Xóa</span>
+                                                </button>
+                                            </AlertDialogTrigger>
+                                            <AlertDialogContent>
+                                                <AlertDialogHeader>
+                                                    <AlertDialogTitle>Bạn có chắc khi xoá người dùng này không?</AlertDialogTitle>
+                                                    <AlertDialogDescription>
+                                                        Hành động này sẽ không thể hoàn tác, xoá người dùng này vĩnh viễn.
+                                                    </AlertDialogDescription>
+                                                </AlertDialogHeader>
+                                                <AlertDialogFooter>
+                                                    <AlertDialogCancel>Huỷ</AlertDialogCancel>
+                                                    <AlertDialogAction
+                                                        onClick={() => handleDeleteUser(user.id)}
+                                                    >Đồng ý</AlertDialogAction>
+                                                </AlertDialogFooter>
+                                            </AlertDialogContent>
+                                        </AlertDialog>
                                     </div>
                                 </td>
                             </tr>
