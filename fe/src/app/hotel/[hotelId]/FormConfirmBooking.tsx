@@ -8,7 +8,24 @@ import { useSelector } from 'react-redux';
 import { checkVoucherService } from "@/app/api/checkVoucherService";
 import { RootState } from '@/lib/store';
 import toast from 'react-hot-toast';
-
+type OnConfirmType = (
+    nights: number,
+    checkInDate: string,
+    checkOutDate: string,
+    voucherCode: string,
+    finalPrice: number
+) => void;
+interface ShowConfirmProps {
+    visible: boolean;
+    onCancel: () => void;
+    onConfirm: OnConfirmType;
+    guests: number;
+    pricePerNight: number;
+    checkIn: string;
+    checkOut: string;
+    discount?: number;
+    roomId: number | string;
+}
 export default function ShowConfirm({
     visible,
     onCancel,
@@ -19,7 +36,7 @@ export default function ShowConfirm({
     checkOut,
     discount,
     roomId,
-}: any) {
+}: ShowConfirmProps) {
     const [selectedDates, setSelectedDates] = useState<[Dayjs, Dayjs] | null>(
         checkIn && checkOut ? [dayjs(checkIn), dayjs(checkOut)] : null
     );
@@ -83,7 +100,7 @@ export default function ShowConfirm({
             onOk={handleConfirm}
             okText={t("hotelId.text_77")}
             cancelText={t("hotelId.text_78")}
-            width={600}
+            width={800}
             className="rounded-xl"
         >
             <div className="space-y-6">
@@ -103,15 +120,15 @@ export default function ShowConfirm({
 
                 {/* Nhập mã voucher */}
                 <div>
-                    <label className="block mb-1 text-gray-700 font-semibold">Mã giảm giá</label>
+                    <label className="block mb-1 text-gray-700 font-semibold">{t("voucher.discount")}</label>
                     <div className="flex gap-2">
                         <Input
-                            placeholder="Nhập mã voucher..."
+                            placeholder={t("voucher.voucherCode")}
                             value={voucherCode}
                             onChange={(e) => setVoucherCode(e.target.value)}
                         />
                         <Button type="primary" onClick={handleApplyVoucher}>
-                            Áp dụng
+                            {t("voucher.voucherButton")}
                         </Button>
                     </div>
                 </div>
@@ -138,7 +155,7 @@ export default function ShowConfirm({
                         <Wallet className="text-red-500" size={20} />
                         {voucherInfo ? (
                             <span className="font-bold">
-                                <strong>Tổng sau giảm khi áp dụng voucher:</strong> {voucherInfo.finalPrice.toLocaleString()} VND
+                                <strong>{t("voucher.totalPrice")}</strong> {voucherInfo.finalPrice.toLocaleString()} VND
                             </span>
                         ) : (
                             <span className="font-bold text-lg">

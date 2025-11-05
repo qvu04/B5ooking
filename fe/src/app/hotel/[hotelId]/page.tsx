@@ -61,7 +61,9 @@ export default function HotelDetailPage() {
         setMounted(true);
     }, []);
 
-    if (!mounted || !hotel) return null;
-
+    if (!mounted) return null;
+    if (!hotel) {
+        return <div className="p-6 text-xl text-red-500">Looking for hotel! Please wait a few minutes...</div>;
+    }
     return <HotelDetailClient hotel={hotel} />;
 }

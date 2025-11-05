@@ -280,5 +280,11 @@
         "CANCELED": "Đã huỷ",
         "FINISHED": "Đã hoàn thành",
         "PAID": "Đã thanh toán"
+    },
+    "voucher": {
+        "discount": "Mã giảm giá",
+        "voucherCode": "Nhập mã voucher",
+        "voucherButton": "Áp dụng",
+        "totalPrice": "Tổng sau giảm khi áp dụng voucher:"
     }
 }

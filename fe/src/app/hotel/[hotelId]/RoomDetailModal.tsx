@@ -1,5 +1,4 @@
 'use client';
-
 import { Modal } from 'antd';
 import { RoomAvailable } from '@/app/types/hotelTypes';
 import { AiOutlineCheck } from 'react-icons/ai';
@@ -32,6 +31,7 @@ type Props = {
     checkIn: string;
     checkOut: string;
 };
+
 
 export default function RoomDetailModal({ open, onClose, room, checkIn, checkOut }: Props) {
     console.log('✌️checkOut --->', checkOut);
@@ -347,10 +347,9 @@ export default function RoomDetailModal({ open, onClose, room, checkIn, checkOut
                         roomId={room.id}
                     />
 
+
                 </div>
             </div>
         </Modal>
     );
-
-
 }

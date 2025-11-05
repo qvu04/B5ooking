@@ -1,16 +1,15 @@
 'use client';
 import { Hotels, RoomAvailable } from '@/app/types/hotelTypes';
+import 'swiper/css';
+import 'swiper/css/thumbs';
 import { useEffect, useState } from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay, Thumbs } from 'swiper/modules';
-import 'swiper/css';
-import 'swiper/css/thumbs';
 import { Swiper as SwiperType } from 'swiper/types';
 import { geocodeAddress } from '@/lib/geocode';
 import { FiShare } from "react-icons/fi";
 import { AiOutlineHeart, AiFillStar, AiOutlineCheckCircle, AiOutlineUser, AiOutlineCheck } from "react-icons/ai";
 import type { RangePickerProps } from "antd/es/date-picker";
-import Link from 'next/link';
 import MapView from '@/app/components/Map/MapViewWrapper';
 import { FaUserAlt } from 'react-icons/fa';
 import { useSelector } from 'react-redux';
@@ -489,20 +488,20 @@ export default function HotelDetailClient({ hotel }: Props) {
                         </div>
                         <CheckDesktop>
                             {availableRooms.length > 0 ? (
-                                <table className="w-full border-t border-gray-300 table-fixed mt-5">
+                                <table className="w-full border border-gray-300 table-fixed mt-5">
                                     <thead>
-                                        <tr className="bg-[#d1d1e9] border-r dark:bg-[#242629] text-left">
-                                            <th className="w-[30%] border-r border-gray-300 p-4 font-semibold text-lg dark:text-">{t("hotelId.text_23")}</th>
-                                            <th className="w-[10%] border-r border-gray-300 p-4 font-semibold text-lg text-center">{t("hotelId.text_24")}</th>
-                                            <th className="w-[15%] border-r border-gray-300 p-4 font-semibold text-lg text-center">{t("hotelId.text_25")}</th>
-                                            <th className="w-[45%] p-4 font-semibold text-lg text-center">{t("hotelId.text_26")}</th>
+                                        <tr className="bg-gray-50 border dark:bg-[#242629] text-left">
+                                            <th className="w-[30%] border border-gray-300 p-4 font-semibold text-lg dark:text-">{t("hotelId.text_23")}</th>
+                                            <th className="w-[10%] border border-gray-300 p-4 font-semibold text-lg text-center">{t("hotelId.text_24")}</th>
+                                            <th className="w-[15%] border border-gray-300 p-4 font-semibold text-lg text-center">{t("hotelId.text_25")}</th>
+                                            <th className="w-[45%] border border-gray-300 p-4 font-semibold text-lg text-center">{t("hotelId.text_26")}</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         {availableRooms.map((room, index) => (
-                                            <tr key={index} className="border-t border-gray-300">
+                                            <tr key={index} className="border border-gray-300">
                                                 {/* Cột loại phòng */}
-                                                <td className="align-top border-r border-gray-300 p-4">
+                                                <td className="align-top border border-gray-300 p-4">
                                                     <button
                                                         className="font-bold hover:text-[#6246ea] cursor-pointer text-lg"
                                                         onClick={() => handleOpenRoomDetail(room)}
@@ -520,7 +519,7 @@ export default function HotelDetailClient({ hotel }: Props) {
                                                 </td>
 
                                                 {/* Cột lượng khách */}
-                                                <td className="align-top border-r border-gray-300 p-4 text-center">
+                                                <td className="align-top border border-gray-300 p-4 text-center">
                                                     <div className="flex justify-center gap-1 mt-2">
                                                         {Array.from({ length: room.maxGuests }).map((_, i) => (
                                                             <AiOutlineUser key={i} size={18} />
@@ -529,7 +528,7 @@ export default function HotelDetailClient({ hotel }: Props) {
                                                 </td>
 
                                                 {/* Cột giá */}
-                                                <td className="align-top border-r border-gray-300 p-4 text-center">
+                                                <td className="align-top border border-gray-300 p-4 text-center">
                                                     {room.discount > 0 ? (
                                                         <div className="mt-2 space-y-1">
                                                             <p className="text-gray-400 line-through text-sm">
@@ -550,7 +549,7 @@ export default function HotelDetailClient({ hotel }: Props) {
                                                 </td>
 
                                                 {/* Cột ưu đãi */}
-                                                <td className="align-top p-4 space-y-2">
+                                                <td className="align-top border border-gray-300 p-4 space-y-2">
                                                     <ul className="text-sm text-gray-700 dark:text-[#94a1b2] space-y-1">
                                                         <li className="flex items-start gap-2">
                                                             <AiOutlineCheck className="text-green-500 mt-1" size={16} />
@@ -592,16 +591,16 @@ export default function HotelDetailClient({ hotel }: Props) {
                                     <table className="w-full border border-gray-300 rounded-lg overflow-hidden">
                                         <thead>
                                             <tr className="bg-[#e0e0f2] dark:bg-[#242629] text-left">
-                                                <th className="w-[40%] border-r border-gray-300 p-3 text-base font-semibold dark:text-white">
+                                                <th className="w-[40%] border border-gray-300 p-3 text-base font-semibold dark:text-white">
                                                     {t("hotelId.text_23")}
                                                 </th>
-                                                <th className="w-[15%] border-r border-gray-300 p-3 text-base font-semibold text-center dark:text-white">
+                                                <th className="w-[15%] border border-gray-300 p-3 text-base font-semibold text-center dark:text-white">
                                                     {t("hotelId.text_24")}
                                                 </th>
-                                                <th className="w-[20%] border-r border-gray-300 p-3 text-base font-semibold text-center dark:text-white">
+                                                <th className="w-[20%] border border-gray-300 p-3 text-base font-semibold text-center dark:text-white">
                                                     {t("hotelId.text_25")}
                                                 </th>
-                                                <th className="w-[25%] p-3 text-base font-semibold text-center dark:text-white">
+                                                <th className="w-[25%] border border-gray-300 p-3 text-base font-semibold text-center dark:text-white">
                                                     {t("hotelId.text_26")}
                                                 </th>
                                             </tr>
@@ -610,7 +609,7 @@ export default function HotelDetailClient({ hotel }: Props) {
                                             {availableRooms.map((room, index) => (
                                                 <tr key={index} className="border-t border-gray-300">
                                                     {/* Cột loại phòng */}
-                                                    <td className="p-3 border-r border-gray-300 align-top">
+                                                    <td className="p-3 border border-gray-300 align-top">
                                                         <button
                                                             className="text-base font-semibold text-[#6246ea] hover:underline"
                                                             onClick={() => handleOpenRoomDetail(room)}
@@ -634,7 +633,7 @@ export default function HotelDetailClient({ hotel }: Props) {
                                                     </td>
 
                                                     {/* Cột lượng khách */}
-                                                    <td className="p-3 border-r border-gray-300 text-center align-top">
+                                                    <td className="p-3 border border-gray-300 text-center align-top">
                                                         <div className="flex justify-center gap-1 mt-2">
                                                             {Array.from({ length: room.maxGuests }).map((_, i) => (
                                                                 <AiOutlineUser key={i} size={16} />
@@ -643,7 +642,7 @@ export default function HotelDetailClient({ hotel }: Props) {
                                                     </td>
 
                                                     {/* Cột giá */}
-                                                    <td className="p-3 border-r border-gray-300 text-center align-top">
+                                                    <td className="p-3 border border-gray-300 text-center align-top">
                                                         {room.discount > 0 ? (
                                                             <div className="space-y-1 mt-1">
                                                                 <p className="text-sm line-through text-gray-400">
@@ -664,7 +663,7 @@ export default function HotelDetailClient({ hotel }: Props) {
                                                     </td>
 
                                                     {/* Cột ưu đãi */}
-                                                    <td className="p-3 space-y-2 align-top">
+                                                    <td className="p-3 border space-y-2 align-top">
                                                         <ul className="text-sm text-gray-700 dark:text-[#94a1b2] space-y-1">
                                                             <li className="flex items-start gap-2">
                                                                 <AiOutlineCheck className="text-green-500 mt-1" size={16} />
@@ -789,7 +788,6 @@ export default function HotelDetailClient({ hotel }: Props) {
                         </div>
                     </CheckMobilePhone>
 
-                    {/* Comment */}
                     {/* Đánh giá của khách hàng */}
                     <div className="mt-12">
                         <h2 className="text-2xl font-bold mb-6">{t("hotelId.text_37")}</h2>

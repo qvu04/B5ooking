@@ -174,8 +174,8 @@ export default function EditProfileUser({
                                         className="w-full p-3 border rounded-lg dark:bg-zinc-800 dark:border-zinc-600 dark:text-white"
                                     >
                                         <option value="" disabled>{t("profile.text_14")}</option>
-                                        <option value="male">{t("profile.text_15")}</option>
-                                        <option value="female">{t("profile.text_16")}</option>
+                                        <option value="Nam">{t("profile.text_15")}</option>
+                                        <option value="Nữ">{t("profile.text_16")}</option>
                                     </select>
                                 </div>
 

@@ -10,7 +10,7 @@ import {
 import { RiDiscountPercentFill } from "react-icons/ri";
 
 const menuItems = [
-    { label: 'Tổng quan B5ooking', icon: <FaChartBar />, href: '/admin/dashboard' },
+    { label: 'Tổng quan hệ thống', icon: <FaChartBar />, href: '/admin/dashboard' },
     { label: 'Quản lý người dùng', icon: <FaUser />, href: '/admin/users' },
     { label: 'Quản lý khách sạn', icon: <FaSuitcase />, href: '/admin/hotels' },
     { label: 'Quản lý chỗ ở', icon: <MdMeetingRoom />, href: '/admin/rooms' },
