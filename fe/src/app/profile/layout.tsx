@@ -3,9 +3,9 @@ import SidebarMenu from '../components/SidebarMenu/SidebarMenu';
 
 export default function ProfileLayout({ children }: { children: React.ReactNode }) {
     return (
-        <div className="flex flex-col sm:flex-row min-h-screen bg-gray-100">
+        <div className="flex flex-col sm:flex-row min-h-screen bg-gray-100 dark:bg-[#16161a] ">
             {/* Sidebar trái - chỉ hiển thị ở desktop */}
-            <aside className="hidden sm:block w-[280px] p-6 border-r bg-white dark:bg-zinc-900 min-h-screen">
+            <aside className="hidden sm:block w-[280px] p-6 border-r bg-white dark:bg-[#16161a] min-h-screen">
                 <SidebarMenu />
             </aside>
 

@@ -114,8 +114,15 @@ export default function RoomDetailModal({ open, onClose, room, checkIn, checkOut
         return <div>Loading images...</div>;
     }
     return (
-        <Modal open={open} onCancel={onClose} footer={null} width={1000}>
-            <div className="grid md:grid-cols-2 gap-6">
+        <Modal open={open}
+            onCancel={onClose}
+            footer={null}
+            width="80vw"
+            centered
+            style={{
+                top: 20,
+            }}>
+            <div className="grid md:grid-cols-2 gap-6 sm:gap-4 px-2 sm:px-4 md:px-6">
                 {/* BÊN TRÁI: Hình ảnh */}
                 <CheckDesktop>
                     <div className="space-y-4">
@@ -131,7 +138,7 @@ export default function RoomDetailModal({ open, onClose, room, checkIn, checkOut
                                 <img
                                     src={fullRoom.image}
                                     alt="main-room"
-                                    className="w-full h-full object-cover"
+                                    className="mt-5 w-full h-[400px] object-cover"
                                 />
                             </SwiperSlide>
                             {Array.isArray(fullRoom.images) &&
@@ -150,7 +157,6 @@ export default function RoomDetailModal({ open, onClose, room, checkIn, checkOut
                         <Swiper
                             modules={[Thumbs]}
                             onSwiper={setThumbsSwiper}
-                            thumbs={{ swiper: thumbsSwiper && !thumbsSwiper.destroyed ? thumbsSwiper : null }}
                             slidesPerView={5}
                             spaceBetween={10}
                             watchSlidesProgress
@@ -267,7 +273,7 @@ export default function RoomDetailModal({ open, onClose, room, checkIn, checkOut
 
                     <div>
                         <h3 className="text-lg font-semibold">{t("hotelId.text_47")}</h3>
-                        <ul className="grid grid-cols-2 gap-2 text-gray-700 text-sm">
+                        <ul className="grid grid-cols-1 md:grid-cols-2 gap-2 text-gray-700 text-sm">
                             {room.amenities.map((item, i) => (
                                 <li key={i} className="flex items-center gap-1">
                                     <AiOutlineCheck className="text-green-500" />
@@ -279,7 +285,7 @@ export default function RoomDetailModal({ open, onClose, room, checkIn, checkOut
 
                     <div>
                         <h3 className="text-lg font-semibold">{t("hotelId.text_48")}</h3>
-                        <ul className="list-disc grid grid-cols-2 list-inside text-sm text-gray-700 leading-relaxed space-y-1">
+                        <ul className="list-disc grid grid-cols-1 md:grid-cols-2 list-inside text-sm text-gray-700 leading-relaxed space-y-1">
                             <li>{t("hotelId.text_49")}</li>
                             <li>{t("hotelId.text_50")}</li>
                             <li>{t("hotelId.text_51")}</li>

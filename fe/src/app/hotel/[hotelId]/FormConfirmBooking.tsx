@@ -134,7 +134,7 @@ export default function ShowConfirm({
                 </div>
 
                 {/* Thông tin */}
-                <div className="grid grid-cols-2 gap-4 text-gray-700 text-sm">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-gray-700 text-sm">
                     <div className="flex items-center gap-2">
                         <Users className="text-blue-500" size={20} />
                         <span><strong>{t("hotelId.text_72")}</strong> {guests}</span>

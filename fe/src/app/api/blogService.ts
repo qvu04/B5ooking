@@ -4,11 +4,11 @@ export const getSomeBlogs = () => {
     return https.get("/api/blog/getSomeBlogs");
 }
 export const getBlogsbyPage = (page: number) => {
-    return https.get(`/api/blog/getAllBlogs?page=${page}`);
+    return https.get(`/api/blog/getAllBlogs?page=${page}`, { noLoading: true });
 }
 export const getBlogsBySlug = (slug: string) => {
     return https.get(`/api/blog/getBlogBySlug/${slug}`);
 }
 export const getBlogsByLocationId = (locationId: string | number, page: number) => {
-    return https.get(`/api/blog/getAllBlogsByLocationId/${locationId}`);
+    return https.get(`/api/blog/getAllBlogsByLocationId/${locationId}`, { noLoading: true });
 }

@@ -78,7 +78,7 @@ const NavBarOnly = () => {
                 >
                     {/* Left: Logo + tên */}
                     <div className="flex items-center gap-2 basis-1/3">
-                        <Link href="/" className="flex items-center gap-1">
+                        <Link href="/" className="flex items-center justify-center gap-1">
                             <img src="/images/logo-b5ooking.png" alt="logo" className="w-20 h-8 object-contain" />
                             <span className="text-lg font-bold text-[#6246ea]">B5ooking</span>
                         </Link>
@@ -337,13 +337,13 @@ const NavBarOnly = () => {
     `}
                 >
                     {/* Logo */}
-                    <Link href="/" className="flex items-center gap-2">
+                    <Link href="/" className="flex items-center justify-center gap-1">
                         <img
                             src="/images/logo-b5ooking.png"
                             alt="logo"
-                            className="w-[100px] h-[60px] object-contain"
+                            className="w-[80px] h-[60px] object-contain"
                         />
-                        <span className="text-xl font-bold text-[#6246ea]">B5ooking</span>
+                        <span className="text-2xl font-bold text-[#6246ea]">B5ooking</span>
                     </Link>
 
                     {/* Navigation */}

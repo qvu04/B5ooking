@@ -50,11 +50,11 @@ export const getRevenuePieChart = (type: "day" | "week" | "month") => {
 };
 export const getTotalService = () => {
     return https.get("/api/dashboard/getTotal");
-}
+};
 // quản lý người dùng
 export const getAllUserService = (page: number, fullName: string = '') => {
-    return https.get(`/api/admin/getAllUsers?page=${page}&fullName=${fullName}`)
-}
+    return https.get(`/api/admin/getAllUsers?page=${page}&fullName=${fullName}`, { noLoading: true });
+};
 export const postCreateUserService = (data: {
     firstName: string;
     lastName: string;
@@ -79,23 +79,23 @@ export const deleteUserService = (id: number) => {
 }
 // quản lý khách sạn
 export const getAllHotelService = (page: number, locationId: number, hotelName: string) => {
-    return https.get(`/api/admin/getAllHotels?locationId=${locationId}&page=${page}&hotelName=${hotelName}`);
+    return https.get(`/api/admin/getAllHotels?locationId=${locationId}&page=${page}&hotelName=${hotelName}`, { noLoading: true });
 }
 export const postCreateHotelService = (data: FormData) => {
     return https.post("/api/admin/createHotel", data)
 }
 export const putUpdateHotelService = (hotelId: number, data: FormData) => {
-    return https.put(`/api/admin/updateHotel/${hotelId}`, data)
+    return https.put(`/api/admin/updateHotel/${hotelId}`, data);
 }
 export const deleteHotelService = (hotelId: number) => {
     return https.delete(`/api/admin/deleteHotel/${hotelId}`);
 }
 export const getAllAmenitiesService = () => {
-    return https.get("/api/admin/getAllAmenities");
+    return https.get("/api/admin/getAllAmenities", { noLoading: true });
 }
 //quản lý chỗ ở
 export const getAllRoomService = (page: number, hotelId: number, roomName: string) => {
-    return https.get(`/api/admin/getAllRooms?hotelId=${hotelId}&page=${page}&roomName=${roomName}`);
+    return https.get(`/api/admin/getAllRooms?hotelId=${hotelId}&page=${page}&roomName=${roomName}`, { noLoading: true });
 }
 export const postCreateRoomService = (data: FormData) => {
     return https.post("/api/admin/createRoom", data);
@@ -109,11 +109,11 @@ export const deleteRoomService = (roomId: number) => {
 // quản lý booking
 export const getAllBookingService = (page: number, status?: BookingStatusEnum | "ALL") => {
     const statusParam = status && status !== "ALL" ? `&status=${status}` : "";
-    return https.get(`/api/admin/getAllBooking?page=${page}${statusParam}`);
+    return https.get(`/api/admin/getAllBooking?page=${page}${statusParam}`, { noLoading: true });
 }
 // quản lý blog
 export const getAllBlogService = (page: number, locationId: number, blogTitle: string) => {
-    return https.get(`/api/admin/getAllBlogs?locationId=${locationId}&page=${page}&blogTitle=${blogTitle}`);
+    return https.get(`/api/admin/getAllBlogs?locationId=${locationId}&page=${page}&blogTitle=${blogTitle}`, { noLoading: true });
 }
 export const postCreateBlogService = (data: FormData) => {
     return https.post(`/api/admin/createBlog`, data)
@@ -124,11 +124,10 @@ export const putUpdateBlogService = (blogId: number, data: FormData) => {
 export const deleteBlogService = (blogId: number) => {
     return https.delete(`/api/admin/deleteBlog/${blogId}`);
 }
-// quản lý ảnh phụ
 
 // quản lý ảnh khách sạn
 export const getAllHotelNames = () => {
-    return https.get("/api/admin/getAllHotelNames");
+    return https.get("/api/admin/getAllHotelNames", { noLoading: true });
 }
 export const getAllImagesHotel = (hotelId?: number | null, page: number = 1) => {
     const params: any = { page };
@@ -137,7 +136,7 @@ export const getAllImagesHotel = (hotelId?: number | null, page: number = 1) => 
         params.hotelId = hotelId;
     }
 
-    return https.get(`/api/admin/getHotelImages`, { params });
+    return https.get(`/api/admin/getHotelImages`, { params, noLoading: true });
 };
 export const postCreateImagesHotel = (hotelId: number, data: FormData) => {
     return https.post(`/api/admin/addHotelImage/${hotelId}`, data)
@@ -150,7 +149,7 @@ export const deleteImagesHotel = (hotelId: number) => {
 }
 // quản lý ảnh phòng
 export const getAllRoomNames = () => {
-    return https.get("/api/admin/getAllRoomName");
+    return https.get("/api/admin/getAllRoomName", { noLoading: true });
 }
 export const getAllImagesRoom = (roomId?: number | null, page: number = 1) => {
     const params: any = { page };
@@ -159,7 +158,7 @@ export const getAllImagesRoom = (roomId?: number | null, page: number = 1) => {
         params.roomId = roomId;
     }
 
-    return https.get(`/api/admin/getRoomImages`, { params });
+    return https.get(`/api/admin/getRoomImages`, { params, noLoading: true });
 };
 export const postCreateImagesRoom = (roomId: number, data: FormData) => {
     return https.post(`/api/admin/addRoomImage/${roomId}`, data)
@@ -172,7 +171,7 @@ export const deleteImagesRoom = (roomId: number) => {
 }
 // quản lý voucher 
 export const getAllVoucher = (page: number, codeName: string) => {
-    return https.get(`/api/admin/getAllVouchers?page=${page}&codeName=${codeName}`)
+    return https.get(`/api/admin/getAllVouchers?page=${page}&codeName=${codeName}`, { noLoading: true })
 }
 export const postVoucher = (data: {
     code: string;
