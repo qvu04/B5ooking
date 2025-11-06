@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { FaSun, FaMoon, FaUserAlt, FaBars } from "react-icons/fa";
 import { MdTranslate } from "react-icons/md";
-import { Drawer, Select } from "antd";
+import { Drawer, Select, theme } from "antd";
 import { useTheme } from "next-themes";
 import { useTranslation } from "react-i18next";
 import { usePathname, useRouter } from "next/navigation";
@@ -120,9 +120,24 @@ const NavBarOnly = () => {
                         placement="right"
                         open={open}
                         onClose={() => setOpen(false)}
-                        width={280}
-                        title="Menu"
-                        className="dark:bg-black"
+                        width={220}
+                        title="Cài đặt"
+                        styles={{
+                            body: {
+                                backgroundColor: "#fffffe", // nền sáng
+                                color: "#2b2c34",           // chữ chính
+                                padding: "16px",
+                            },
+                            header: {
+                                backgroundColor: "#6246ea", // header nổi bật
+                                color: "#fffffe",            // chữ trắng
+                                borderBottom: "1px solid #d1d1e9",
+                            },
+                            footer: {
+                                backgroundColor: "#d1d1e9", // footer nhẹ
+                                borderTop: "1px solid #6246ea",
+                            },
+                        }}
                     >
                         <div className="flex flex-col gap-4">
                             {user ? (

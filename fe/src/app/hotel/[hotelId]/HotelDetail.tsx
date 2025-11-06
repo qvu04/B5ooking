@@ -15,7 +15,7 @@ import { FaUserAlt } from 'react-icons/fa';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/lib/store';
 import toast from 'react-hot-toast';
-import { postReviewHotel } from '@/app/api/hotelService';
+import { getHotelsbyHotelId, postReviewHotel } from '@/app/api/hotelService';
 import { ReviewType } from '@/app/types/reviewType';
 import { fetchSearchHotel } from '@/app/api/roomService';
 import { DatePicker } from "antd";
@@ -33,9 +33,10 @@ import {
 } from "@/components/ui/carousel"
 type Props = {
     hotel: Hotels;
+    onRefetch: () => void
 };
 
-export default function HotelDetailClient({ hotel }: Props) {
+export default function HotelDetailClient({ hotel, onRefetch }: Props) {
     const [thumbsSwiper, setThumbsSwiper] = useState<SwiperType | null>(null);
     const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(null);
     const [showAllReviews, setShowAllReviews] = useState(false);
@@ -50,7 +51,6 @@ export default function HotelDetailClient({ hotel }: Props) {
     const [availableRooms, setAvailableRooms] = useState<RoomAvailable[]>([]);
     const [selectedRoom, setSelectedRoom] = useState<RoomAvailable | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [isClient, setIsClient] = useState(false);
     const { t, i18n } = useTranslation();
 
     useEffect(() => {
@@ -120,32 +120,39 @@ export default function HotelDetailClient({ hotel }: Props) {
                 toast.error("Vui lòng đăng nhập để đánh giá");
                 return;
             }
+
             const res = await postReviewHotel(hotel.id, { rating, comment });
-            console.log('✌️res --->', res);
+            console.log("✌️res --->", res);
+
             const newReview: ReviewType = {
                 comment,
                 rating,
                 user: {
-                    avatar: user?.avatar || '',
-                    fullName: user?.fullName || '',
+                    avatar: user?.avatar || "",
+                    fullName: user?.fullName || "",
                 },
             };
-            setReviews((prev: ReviewType[]) => [newReview, ...prev]);
+
+            setReviews((prev) => [newReview, ...prev]);
             setRating(0);
             setComment("");
-            toast.success("Gửi đánh giá thành công");
+            toast.success("Gửi đánh giá thành công!");
+
+            // ✅ Gọi callback để refetch lại dữ liệu từ backend
+            if (onRefetch) {
+                await onRefetch();
+            }
 
         } catch (error) {
             toast.error("Đánh giá thất bại. Vui lòng thử lại.");
-            console.log('✌️error --->', error);
-
+            console.log("✌️error --->", error);
         }
+    };
 
-    }
+
     useEffect(() => {
         setMounted(true);
     }, []);
-    useEffect(() => setIsClient(true), []);
     const handleOpenRoomDetail = (room: RoomAvailable) => {
         setSelectedRoom(room);
         console.log('✌️room --->', room);
@@ -165,23 +172,6 @@ export default function HotelDetailClient({ hotel }: Props) {
                 <h1 className="text-2xl text-center md:text-xl font-semibold mb-6 leading-snug">
                     {hotel.name} - {t("hotelId.title")}
                 </h1>
-                <CheckMobilePhone>
-                    <Carousel>
-                        <CarouselContent>
-                            {hotel.images.map((img, i) => (
-                                <CarouselItem key={i}>
-                                    <img
-                                        src={img.imageUrl}
-                                        alt={hotel.name}
-                                        className="w-full h-[400px] object-cover"
-                                    />
-                                </CarouselItem>
-                            ))}
-                        </CarouselContent>
-                        <CarouselPrevious />
-                        <CarouselNext />
-                    </Carousel>
-                </CheckMobilePhone>
                 {/* Layout hình ảnh + bản đồ */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     {/* Cột ảnh lớn + thumbnail */}
@@ -301,10 +291,8 @@ export default function HotelDetailClient({ hotel }: Props) {
                         )}
                     </div>
                 </div>
-
-                {/* Mô tả */}
                 <div>
-                    <div className='mt-5'>
+                    <div className='mt-5 lg:mt-0'>
                         <h2 className='font-bold lg:text-xl text-xl '>{t("hotelId.text_4")} - {hotel.address}</h2>
                         <p className='pt-3 dark:text-[#94a1b2]'>
                             {t("hotelId.text_5")} {t("hotelId.text_6")} {t("hotelId.text_7")} {t("hotelId.text_8")}
@@ -412,7 +400,7 @@ export default function HotelDetailClient({ hotel }: Props) {
                                 <div className="flex items-end">
                                     <button
                                         onClick={handleSearch}
-                                        className="w-full bg-purple-600 dark:bg-[#7f5af0] cursor-pointer hover:bg-purple-700 text-white py-2 px-4 rounded-lg font-semibold"
+                                        className="w-full bg-[#6246ea] dark:bg-[#7f5af0] cursor-pointer hover:bg-purple-700 text-white py-2 px-4 rounded-lg font-semibold"
                                     >
                                         {t("hotelId.text_22")}
                                     </button>
@@ -641,17 +629,16 @@ export default function HotelDetailClient({ hotel }: Props) {
                                 </div>
                             )}
                         </CheckTablet>
-
                     </div>
                     <CheckMobilePhone>
                         <div className="space-y-4 mt-5">
                             {availableRooms.map((room, index) => (
                                 <div key={index} className="border border-gray-300 dark:border-gray-700 rounded-lg p-4 shadow-sm bg-white dark:bg-[#1f1f2b]">
                                     <div className="flex justify-between items-center">
-                                        <h3 className="font-semibold text-lg">{room.name}</h3>
+                                        <h3 className="font-semibold text-base">{room.name}</h3>
                                         <button
                                             onClick={() => handleOpenRoomDetail(room)}
-                                            className="text-sm text-purple-600 dark:text-[#7f5af0] underline"
+                                            className="text-sm text-[#6246ea] dark:text-[#7f5af0] underline"
                                         >
                                             {t("hotelId.text_34")}
                                         </button>
@@ -813,7 +800,7 @@ export default function HotelDetailClient({ hotel }: Props) {
                         {hotel.reviews.length > 2 && (
                             <div className="mt-6 text-center">
                                 <button
-                                    className="text-purple-600 dark:text-[#7f5af0] cursor-pointer hover:underline font-medium text-sm"
+                                    className="text-[#6246ea] dark:text-[#7f5af0] cursor-pointer hover:underline font-medium text-sm"
                                     onClick={() => setShowAllReviews(!showAllReviews)}
                                 >
                                     {showAllReviews ? t("hotelId.text_42") : t("hotelId.text_41")}
@@ -876,7 +863,7 @@ export default function HotelDetailClient({ hotel }: Props) {
                                     disabled={!comment || rating === 0}
                                     onClick={handlePostSubmitReview}
                                     className={`px-6 py-2 rounded-full cursor-pointer font-semibold transition duration-300 ${comment && rating
-                                        ? "bg-purple-600 text-white hover:bg-purple-700"
+                                        ? "bg-[#6246ea] dark:bg-[#7f5af0] text-white hover:bg-purple-700"
                                         : "bg-gray-300 text-gray-500 cursor-not-allowed"
                                         }`}
                                 >
