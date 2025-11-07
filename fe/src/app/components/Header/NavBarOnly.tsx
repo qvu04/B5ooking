@@ -279,8 +279,23 @@ const NavBarOnly = () => {
                         open={open}
                         onClose={() => setOpen(false)}
                         width={280}
-                        title="Menu"
-                        className="dark:bg-black"
+                        title="Cài đặt"
+                        styles={{
+                            body: {
+                                backgroundColor: "#fffffe", // nền sáng
+                                color: "#2b2c34",           // chữ chính
+                                padding: "16px",
+                            },
+                            header: {
+                                backgroundColor: "#6246ea", // header nổi bật
+                                color: "#fffffe",            // chữ trắng
+                                borderBottom: "1px solid #d1d1e9",
+                            },
+                            footer: {
+                                backgroundColor: "#d1d1e9", // footer nhẹ
+                                borderTop: "1px solid #6246ea",
+                            },
+                        }}
                     >
                         <div className="flex flex-col gap-4">
                             {user ? (
