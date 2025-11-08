@@ -13,7 +13,7 @@ import toast from 'react-hot-toast';
 import ShowConfirm from '@/app/hotel/[hotelId]/FormConfirmBooking';
 import { useTranslation } from 'react-i18next';
 import { translateText } from "@/lib/translate";
-import { CheckDesktop, CheckMobilePhone, CheckTablet } from '@/app/components/HOC/ResponsiveCustom.';
+import { CheckMobilePhone } from '@/app/components/HOC/ResponsiveCustom.';
 import {
     Carousel,
     CarouselContent,
@@ -34,8 +34,6 @@ type Props = {
 
 
 export default function RoomDetailModal({ open, onClose, room, checkIn, checkOut }: Props) {
-    console.log('✌️checkOut --->', checkOut);
-    console.log('✌️checkIn --->', checkIn);
     const [fullRoom, setFullRoom] = useState<RoomType | null>(null);
     const [thumbsSwiper, setThumbsSwiper] = useState<SwiperType | null>(null);
     const [isBooking, setIsBooking] = useState(false);
@@ -124,6 +122,7 @@ export default function RoomDetailModal({ open, onClose, room, checkIn, checkOut
             }}>
             <div className="grid md:grid-cols-2 gap-6 sm:gap-4 px-2 sm:px-4 md:px-6">
                 {/* BÊN TRÁI: Hình ảnh */}
+                {/* BÊN TRÁI: Hình ảnh */}
                 <div className="space-y-4">
                     {/* 🖼️ Swiper ảnh chính - chỉ hiện ở tablet/desktop */}
                     <div className="hidden sm:block">
@@ -191,8 +190,19 @@ export default function RoomDetailModal({ open, onClose, room, checkIn, checkOut
                                 </Swiper>
                             </>
                         )}
+                        {/* 🧩 Tiện nghi — luôn hiển thị ở mọi kích thước */}
+                        <div className='mt-3'>
+                            <h3 className="text-lg font-semibold">{t("hotelId.text_47")}</h3>
+                            <ul className="grid grid-cols-1 md:grid-cols-2 gap-3 text-gray-700 text-sm">
+                                {room.amenities.map((item, i) => (
+                                    <li key={i} className="flex items-center gap-1">
+                                        <AiOutlineCheck className="text-green-500" />
+                                        {item.amenity.name}
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
                     </div>
-
                     {/* 🖼️ Carousel chỉ dành cho mobile */}
                     <div className="block sm:hidden">
                         <CheckMobilePhone>
@@ -215,6 +225,7 @@ export default function RoomDetailModal({ open, onClose, room, checkIn, checkOut
                     </div>
                 </div>
 
+
                 {/* BÊN PHẢI: Thông tin */}
                 <div className="space-y-6">
                     <div>
@@ -228,10 +239,10 @@ export default function RoomDetailModal({ open, onClose, room, checkIn, checkOut
                         <h3 className="font-semibold text-lg mb-2 text-gray-800">{t("hotelId.text_46")}</h3>
                         <p className="text-sm text-gray-700 leading-relaxed">{fullRoom.description}</p>
                     </div>
-
-                    <div>
+                    {/* 🧩 Tiện nghi — luôn hiển thị ở mọi kích thước */}
+                    <div className='mt-3 md:hidden'>
                         <h3 className="text-lg font-semibold">{t("hotelId.text_47")}</h3>
-                        <ul className="grid grid-cols-1 md:grid-cols-2 gap-2 text-gray-700 text-sm">
+                        <ul className="grid grid-cols-1 md:grid-cols-2 gap-3 text-gray-700 text-sm">
                             {room.amenities.map((item, i) => (
                                 <li key={i} className="flex items-center gap-1">
                                     <AiOutlineCheck className="text-green-500" />
@@ -240,7 +251,6 @@ export default function RoomDetailModal({ open, onClose, room, checkIn, checkOut
                             ))}
                         </ul>
                     </div>
-
                     <div>
                         <h3 className="text-lg font-semibold">{t("hotelId.text_48")}</h3>
                         <ul className="list-disc grid grid-cols-1 md:grid-cols-2 list-inside text-sm text-gray-700 leading-relaxed space-y-1">
@@ -257,7 +267,6 @@ export default function RoomDetailModal({ open, onClose, room, checkIn, checkOut
                             <li>{t("hotelId.text_59")}</li>
                         </ul>
                     </div>
-
                     <div>
                         <h3 className="text-lg font-semibold">{t("hotelId.text_60")}</h3>
                         <p className="text-sm text-gray-700">{t("hotelId.text_61")}</p>

@@ -282,7 +282,7 @@ export default function HotelDetailClient({ hotel, onRefetch }: Props) {
                                                 </button>
                                             </div>
                                         </div>
-                                        <div className='relative z-0 w-full h-[460px] overflow-hidden rounded-lg shadow'>
+                                        <div className='relative z-0 w-full h-[400px] overflow-hidden rounded-lg shadow'>
                                             <MapView lat={coords.lat} lng={coords.lng} name={hotel.name} />
                                         </div>
                                     </div>
@@ -292,7 +292,7 @@ export default function HotelDetailClient({ hotel, onRefetch }: Props) {
                     </div>
                 </div>
                 <div>
-                    <div className='mt-5 lg:mt-0'>
+                    <div className='mt-5'>
                         <h2 className='font-bold lg:text-xl text-xl '>{t("hotelId.text_4")} - {hotel.address}</h2>
                         <p className='pt-3 dark:text-[#94a1b2]'>
                             {t("hotelId.text_5")} {t("hotelId.text_6")} {t("hotelId.text_7")} {t("hotelId.text_8")}
