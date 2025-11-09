@@ -1,13 +1,15 @@
-"use client";
+'use client';
 import { useState } from "react";
-import { BotIcon } from "lucide-react"; // icon từ lucide-react
-import ChatModal from "./ChatBoxModal";
+import { BotIcon } from "lucide-react";
+import ChatBoxModal from "./ChatBoxModal";
 
-export default function ChatBubble() {
+export default function ChatBubble({ visible = true }: { visible?: boolean }) {
     const [open, setOpen] = useState(false);
+
+    if (!visible) return null; // Không render gì khi hidden
+
     return (
         <>
-            {/* Nút bong bóng nổi */}
             <button
                 onClick={() => setOpen(true)}
                 className="fixed bottom-20 right-3 bg-blue-600 hover:bg-blue-700 text-white rounded-full p-4 shadow-lg z-[9998] 
@@ -15,9 +17,7 @@ export default function ChatBubble() {
             >
                 <BotIcon className="w-6 h-6" />
             </button>
-
-            {/* Modal chat */}
-            <ChatModal isOpen={open} onClose={() => setOpen(false)} />
+            <ChatBoxModal isOpen={open} onClose={() => setOpen(false)} />
         </>
     );
 }
