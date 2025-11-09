@@ -123,7 +123,6 @@ export default function VoucherManager() {
                         <table className="min-w-[900px] w-full border-collapse">
                             <thead>
                                 <tr className="bg-gray-100 text-center text-gray-700">
-                                    <th className="border p-2">#</th>
                                     <th className="border p-2">Code</th>
                                     <th className="border p-2">Giảm giá (%)</th>
                                     <th className="border p-2">Số lần người dùng</th>
@@ -134,11 +133,8 @@ export default function VoucherManager() {
                                 </tr>
                             </thead>
                             <tbody>
-                                {voucher.map((v, idx) => (
+                                {voucher.map((v) => (
                                     <tr key={v.id} className="hover:bg-gray-50 transition-colors">
-                                        <td className="border p-2">
-                                            {(page - 1) * (pagination?.limit ?? 5) + idx + 1}
-                                        </td>
                                         <td className="border p-2">{v.code}</td>
                                         <td className="border p-2">{v.discount}</td>
                                         <td className="border p-2">{v.perUserLimit}</td>
@@ -203,38 +199,36 @@ export default function VoucherManager() {
             )}
 
             {/* User tab */}
-            {activeTab === 'user' && (
-                <table className="w-full border border-collapse">
-                    <thead>
-                        <tr className=" bg-gray-100 text-center text-gray-700">
-                            <th className="border p-2">#</th>
-                            <th className="border p-2">Tên người dùng</th>
-                            <th className="border p-2">Email</th>
-                            <th className="border p-2">Role</th>
-                            <th className="border p-2">Voucher đã dùng</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {userVoucher.map((user, idx) => (
-                            <tr key={user.id} className="hover:bg-gray-50 transition-colors">
-                                <td className="border p-2">
-                                    {(page - 1) * (pagination?.limit ?? 5) + idx + 1}
-                                </td>
-                                <td className="border p-2">{user.fullName}</td>
-                                <td className="border p-2">{user.email}</td>
-                                <td className="border p-2">{user.role}</td>
-                                <td className="border p-2">
-                                    {user.bookings.map((b: any) => (
-                                        <div key={b.Voucher.id}>
-                                            {b.Voucher.code} ({b.Voucher.discount}%)
-                                        </div>
-                                    ))}
-                                </td>
+            <div className="overflow-x-auto bg-white shadow-lg rounded-lg border border-gray-100">
+                {activeTab === 'user' && (
+                    <table className="w-full border border-collapse">
+                        <thead>
+                            <tr className=" bg-gray-100 text-center text-gray-700">
+                                <th className="border p-2">Tên người dùng</th>
+                                <th className="border p-2">Email</th>
+                                <th className="border p-2">Role</th>
+                                <th className="border p-2">Voucher đã dùng</th>
                             </tr>
-                        ))}
-                    </tbody>
-                </table>
-            )}
+                        </thead>
+                        <tbody>
+                            {userVoucher.map((user) => (
+                                <tr key={user.id} className="hover:bg-gray-50 transition-colors">
+                                    <td className="border p-2">{user.fullName}</td>
+                                    <td className="border p-2">{user.email}</td>
+                                    <td className="border p-2">{user.role}</td>
+                                    <td className="border p-2">
+                                        {user.bookings.map((b: any) => (
+                                            <div key={b.Voucher.id}>
+                                                {b.Voucher.code} ({b.Voucher.discount}%)
+                                            </div>
+                                        ))}
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                )}
+            </div>
 
             {/* Pagination */}
             {pagination && (
