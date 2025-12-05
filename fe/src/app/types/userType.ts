@@ -5,12 +5,16 @@ export type FormDataUpdateUser = {
     gender: string;
     avatar?: File | null;
 }
-interface User {
-    id: number;
+export interface User {
+    id: string;
     fullName: string;
-    email: string;
-    role: string;
     avatar?: string;
+    role?: string;
+    // Bắt buộc phải có các dòng dưới này:
+    firstName?: string;
+    lastName?: string;
+    phone?: string;
+    gender?: string;
 }
 export interface UserState {
     user: User | null;

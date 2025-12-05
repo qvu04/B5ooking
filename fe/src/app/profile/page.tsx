@@ -55,10 +55,10 @@ export default function Profile() {
                                 isOpen={isEditing}
                                 onClose={() => setIsEditing(false)}
                                 defaultValues={{
-                                    firstName: user.firstName,
-                                    lastName: user.lastName,
-                                    phone: user.phone,
-                                    gender: user.gender,
+                                    firstName: user?.firstName || "", // Thêm ?. và || ""
+                                    lastName: user?.lastName || "",
+                                    phone: user?.phone || "",
+                                    gender: user?.gender || "",
                                 }}
                             />
                         </div>
@@ -119,10 +119,10 @@ export default function Profile() {
                                 isOpen={isEditing}
                                 onClose={() => setIsEditing(false)}
                                 defaultValues={{
-                                    firstName: user.firstName,
-                                    lastName: user.lastName,
-                                    phone: user.phone,
-                                    gender: user.gender,
+                                    firstName: user?.firstName || "", // Thêm ?. và || ""
+                                    lastName: user?.lastName || "",
+                                    phone: user?.phone || "",
+                                    gender: user?.gender || "",
                                 }}
                             />
                         </div>
@@ -203,10 +203,10 @@ export default function Profile() {
                                 isOpen={isEditing}
                                 onClose={() => setIsEditing(false)}
                                 defaultValues={{
-                                    firstName: user.firstName,
-                                    lastName: user.lastName,
-                                    phone: user.phone,
-                                    gender: user.gender,
+                                    firstName: user?.firstName || "", // Thêm ?. và || ""
+                                    lastName: user?.lastName || "",
+                                    phone: user?.phone || "",
+                                    gender: user?.gender || "",
                                 }}
                             />
                         </div>

@@ -1,5 +1,5 @@
 'use client';
-import { DatePicker, Modal, Input, Button, message } from 'antd';
+import { DatePicker, Modal, Input, Button } from 'antd';
 import { useEffect, useState } from 'react';
 import dayjs, { Dayjs } from 'dayjs';
 import { CalendarDays, Users, BedDouble, Wallet } from 'lucide-react';
@@ -76,7 +76,7 @@ export default function ShowConfirm({
         try {
             const userId = user?.id
             const res = await checkVoucherService(
-                userId!,
+                Number(userId!),
                 Number(roomId),
                 selectedDates[0].format("YYYY-MM-DD"),
                 selectedDates[1].format("YYYY-MM-DD"),
