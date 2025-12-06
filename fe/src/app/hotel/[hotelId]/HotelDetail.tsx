@@ -24,13 +24,7 @@ import RoomDetailModal from './RoomDetailModal';
 import { addFavorite } from '@/app/api/favoriteService';
 import { useTranslation } from 'react-i18next';
 import { CheckDesktop, CheckMobilePhone, CheckTablet } from '@/app/components/HOC/ResponsiveCustom.';
-import {
-    Carousel,
-    CarouselContent,
-    CarouselItem,
-    CarouselNext,
-    CarouselPrevious,
-} from "@/components/ui/carousel"
+import Image from 'next/image';
 type Props = {
     hotel: Hotels;
     onRefetch: () => void
@@ -198,9 +192,11 @@ export default function HotelDetailClient({ hotel, onRefetch }: Props) {
                                 >
                                     {hotel.images.map((img, i) => (
                                         <SwiperSlide key={i}>
-                                            <img
-                                                src={img.imageUrl}
+                                            <Image
+                                                src={img.imageUrl ?? ""}
                                                 alt={`Thumbnail ${i}`}
+                                                width={500}
+                                                height={300}
                                                 className="w-full h-full object-cover rounded-md border cursor-pointer hover:opacity-80 transition"
                                             />
                                         </SwiperSlide>
@@ -222,9 +218,11 @@ export default function HotelDetailClient({ hotel, onRefetch }: Props) {
                                 >
                                     {hotel.images.map((img, i) => (
                                         <SwiperSlide key={i}>
-                                            <img
-                                                src={img.imageUrl}
+                                            <Image
+                                                src={img.imageUrl ?? ""}
                                                 alt={`Slide ${i}`}
+                                                width={500}
+                                                height={300}
                                                 className="w-full h-full object-cover"
                                             />
                                         </SwiperSlide>
@@ -326,7 +324,12 @@ export default function HotelDetailClient({ hotel, onRefetch }: Props) {
                     <div className="mt-10 space-y-6">
                         {/* 1 */}
                         <div className="flex items-start gap-4 border-b border-gray-300 pb-6">
-                            <img src="/images/door.png" alt="check" className="w-10 h-10 object-contain" />
+                            <Image
+                                src="/images/door.png"
+                                alt="check"
+                                width={500}
+                                height={300}
+                                className="w-10 h-10 object-contain" />
                             <div>
                                 <h3 className="text-lg font-semibold dark:text-[#fffffe] text-gray-900">{t("hotelId.text_12")}</h3>
                                 <p className="text-gray-600 dark:text-[#94a1b2]">{t("hotelId.text_13")}</p>
@@ -335,7 +338,12 @@ export default function HotelDetailClient({ hotel, onRefetch }: Props) {
 
                         {/* 2 */}
                         <div className="flex items-start gap-4 border-b border-gray-200 pb-6">
-                            <img src="/images/check_room.png" alt="check" className="w-10 h-10 object-contain" />
+                            <Image
+                                src="/images/check_room.png"
+                                alt="check"
+                                width={500}
+                                height={300}
+                                className="w-10 h-10 object-contain" />
                             <div>
                                 <h3 className="text-lg font-semibold dark:text-[#fffffe] text-gray-900">{t("hotelId.text_14")}</h3>
                                 <p className="text-gray-600 dark:text-[#94a1b2]">{t("hotelId.text_15")}</p>
@@ -344,7 +352,12 @@ export default function HotelDetailClient({ hotel, onRefetch }: Props) {
 
                         {/* 3 */}
                         <div className="flex items-start gap-4">
-                            <img src="/images/star.png" alt="check" className="w-10 h-10 object-contain" />
+                            <Image
+                                src="/images/star.png"
+                                alt="check"
+                                width={500}
+                                height={300}
+                                className="w-10 h-10 object-contain" />
                             <div>
                                 <h3 className="text-lg font-semibold  text-gray-900 dark:text-[#fffffe]">{t("hotelId.text_11")}</h3>
                                 <p className="text-gray-600 dark:text-[#94a1b2]">{t("hotelId.text_16")}</p>
@@ -767,9 +780,11 @@ export default function HotelDetailClient({ hotel, onRefetch }: Props) {
                                 >
                                     <div className="flex items-center gap-4 mb-3">
                                         {review.user?.avatar ? (
-                                            <img
-                                                src={review.user.avatar}
+                                            <Image
+                                                src={review.user.avatar ?? ""}
                                                 alt="avatar"
+                                                width={500}
+                                                height={300}
                                                 className="w-12 h-12 rounded-full object-cover border"
                                             />
                                         ) : (
@@ -820,9 +835,11 @@ export default function HotelDetailClient({ hotel, onRefetch }: Props) {
                                     <div className="flex items-center gap-3">
                                         {user?.avatar ? (
                                             <div className='flex gap-3 font-bold items-center justify-center'>
-                                                <img
-                                                    src={user.avatar}
+                                                <Image
+                                                    src={user.avatar ?? ""}
                                                     alt="Avatar"
+                                                    width={500}
+                                                    height={300}
                                                     className="w-12 h-12 rounded-full object-cover shadow-md"
                                                 />
                                                 <p>{user.fullName}</p>

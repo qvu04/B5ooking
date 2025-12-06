@@ -21,6 +21,7 @@ import {
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { AmenityType } from "@/app/types/amenityType";
+import Image from 'next/image';
 export default function HotelsManager() {
     const [page, setPage] = useState(1);
     const [locationId, setLocationId] = useState<number | null>(null);
@@ -144,9 +145,11 @@ export default function HotelsManager() {
                             {hotel.map((h) => (
                                 <tr key={h.id} className="hover:bg-gray-50 text-center">
                                     <td className="p-3 border">
-                                        <img
-                                            src={h.image}
+                                        <Image
+                                            src={h.image ?? ""}
                                             alt={h.name}
+                                            width={500}
+                                            height={300}
                                             className="w-48 h-20 object-cover rounded"
                                         />
                                     </td>

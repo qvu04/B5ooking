@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next';
 import { TiTick } from 'react-icons/ti';
+import Image from 'next/image';
 
 const TravelDealCard = () => {
     const { t } = useTranslation();
@@ -47,8 +48,10 @@ const TravelDealCard = () => {
                     <div className="flex flex-col md:flex-row items-center md:items-start justify-between gap-4 h-full">
                         {/* Ảnh trên mobile (ẩn ở md trở lên) */}
                         <div className="md:hidden mb-4">
-                            <img
+                            <Image
                                 className="w-full h-[150px] object-cover rounded-md shadow-sm"
+                                width={500}
+                                height={300}
                                 src="/images/discount.jpg"
                                 alt="Ưu đãi du lịch"
                             />
@@ -73,8 +76,10 @@ const TravelDealCard = () => {
 
                         {/* Ảnh bên phải ở desktop */}
                         <div className="hidden md:block flex-shrink-0">
-                            <img
+                            <Image
                                 className="w-[180px] h-[100px] object-cover rounded-md shadow-sm"
+                                width={500}
+                                height={300}
                                 src="/images/discount.jpg"
                                 alt="Ưu đãi du lịch"
                             />

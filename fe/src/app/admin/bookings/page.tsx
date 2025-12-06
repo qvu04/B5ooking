@@ -11,6 +11,7 @@ import {
     SelectContent,
     SelectItem,
 } from "@/components/ui/select";
+import Image from 'next/image';
 
 export default function BookingsManager() {
     const [page, setPage] = useState(1);
@@ -79,9 +80,11 @@ export default function BookingsManager() {
                         {booking.map((b) => (
                             <tr key={b.id} className="hover:bg-gray-50 transition-colors">
                                 <td className="p-3 border">
-                                    <img
-                                        src={b.room.image}
+                                    <Image
+                                        src={b.room.image ?? ""}
                                         alt={b.room.name}
+                                        width={500}
+                                        height={300}
                                         className="w-40 h-28 object-cover rounded-lg shadow-md transition-transform hover:scale-105"
                                     />
                                 </td>

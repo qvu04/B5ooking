@@ -24,6 +24,7 @@ import {
 import { useRouter } from 'next/navigation';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/lib/store';
+import Image from 'next/image';
 type Props = {
     open: boolean;
     onClose: () => void;
@@ -138,18 +139,22 @@ export default function RoomDetailModal({ open, onClose, room, checkIn, checkOut
                                     className="rounded-lg overflow-hidden mb-2 h-[250px] sm:h-[320px] md:h-[400px]"
                                 >
                                     <SwiperSlide>
-                                        <img
-                                            src={fullRoom.image}
+                                        <Image
+                                            src={fullRoom.image ?? ""}
                                             alt="main-room"
+                                            width={500}
+                                            height={300}
                                             className="w-full h-full object-cover"
                                         />
                                     </SwiperSlide>
                                     {Array.isArray(fullRoom.images) &&
                                         fullRoom.images.map((img, i) => (
                                             <SwiperSlide key={i}>
-                                                <img
-                                                    src={img.imageUrl}
+                                                <Image
+                                                    src={img.imageUrl ?? ""}
                                                     alt={`room-${i}`}
+                                                    width={500}
+                                                    height={300}
                                                     className="w-full h-full object-cover"
                                                 />
                                             </SwiperSlide>
@@ -171,18 +176,22 @@ export default function RoomDetailModal({ open, onClose, room, checkIn, checkOut
                                     className="h-[70px] sm:h-[80px]"
                                 >
                                     <SwiperSlide>
-                                        <img
-                                            src={fullRoom.image}
+                                        <Image
+                                            src={fullRoom.image ?? ""}
                                             alt="thumb-main"
+                                            width={500}
+                                            height={300}
                                             className="w-full h-full object-cover rounded border cursor-pointer hover:opacity-80 transition"
                                         />
                                     </SwiperSlide>
                                     {Array.isArray(fullRoom.images) &&
                                         fullRoom.images.map((img, i) => (
                                             <SwiperSlide key={i}>
-                                                <img
-                                                    src={img.imageUrl}
+                                                <Image
+                                                    src={img.imageUrl ?? ""}
                                                     alt={`thumb-${i}`}
+                                                    width={500}
+                                                    height={300}
                                                     className="w-full h-full object-cover rounded border cursor-pointer hover:opacity-80 transition"
                                                 />
                                             </SwiperSlide>
@@ -210,9 +219,11 @@ export default function RoomDetailModal({ open, onClose, room, checkIn, checkOut
                                 <CarouselContent>
                                     {fullRoom.images.map((img, i) => (
                                         <CarouselItem key={i}>
-                                            <img
-                                                src={img.imageUrl}
+                                            <Image
+                                                src={img.imageUrl ?? ""}
                                                 alt={`room-${i}`}
+                                                width={500}
+                                                height={300}
                                                 className="w-full h-[350px] object-cover"
                                             />
                                         </CarouselItem>
@@ -224,8 +235,6 @@ export default function RoomDetailModal({ open, onClose, room, checkIn, checkOut
                         </CheckMobilePhone>
                     </div>
                 </div>
-
-
                 {/* BÊN PHẢI: Thông tin */}
                 <div className="space-y-6">
                     <div>

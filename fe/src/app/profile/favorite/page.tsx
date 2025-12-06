@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import toast from "react-hot-toast";
 import { translateText } from "@/lib/translate";
+import Image from 'next/image';
 
 export default function Favorite() {
     const [favorites, setFavorites] = useState<FavoriteItem[]>([]);
@@ -93,9 +94,11 @@ export default function Favorite() {
                                 className="bg-white rounded-2xl overflow-hidden dark:bg-[#242629] shadow-lg hover:shadow-xl transition-shadow duration-300"
                             >
                                 <div className="relative w-full h-48">
-                                    <img
-                                        src={hotel.image}
+                                    <Image
+                                        src={hotel.image ?? ""}
                                         alt={hotel.name}
+                                        width={500}
+                                        height={300}
                                         className="w-full h-48 object-cover rounded-lg"
                                     />
                                     <AlertDialog>

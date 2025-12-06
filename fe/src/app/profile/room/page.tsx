@@ -5,6 +5,7 @@ import { getBookedRoom } from "@/app/api/bookingService";
 import { BookedRoom } from "@/app/types/roomType";
 import { useTranslation } from "react-i18next";
 import { translateText } from "@/lib/translate";
+import Image from 'next/image';
 
 export default function Room() {
     const [rooms, setRooms] = useState<BookedRoom[]>([]);
@@ -72,9 +73,11 @@ export default function Room() {
                             className="border border-gray-200 dark:bg-[#242629] rounded-xl p-4 shadow-sm grid grid-cols-1 md:grid-cols-3 gap-4 bg-white"
                         >
                             {/* Ảnh phòng */}
-                            <img
-                                src={booking.room.image}
+                            <Image
+                                src={booking.room.image ?? ""}
                                 alt={booking.room.name}
+                                width={500}
+                                height={300}
                                 className="w-full h-48 object-cover rounded-lg col-span-1"
                             />
 
@@ -103,9 +106,11 @@ export default function Room() {
 
                                 {/* Thông tin khách sạn */}
                                 <div className="flex items-start gap-3 mt-3 border-t pt-3">
-                                    <img
-                                        src={booking.room.hotel.image}
+                                    <Image
+                                        src={booking.room.hotel.image ?? ""}
                                         alt={booking.room.hotel.name}
+                                        width={500}
+                                        height={300}
                                         className="w-16 h-16 object-cover rounded"
                                     />
                                     <div className="text-sm text-gray-700 dark:text-[#94a1b2]">

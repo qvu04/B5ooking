@@ -5,6 +5,7 @@ import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
 import { translateText } from "@/lib/translate";
 import { useTranslation } from 'react-i18next';
+import Image from 'next/image';
 const PopularBlog = () => {
     const [blogs, setBlogs] = useState<Blogs[] | null>(null);
     const { i18n, t } = useTranslation();
@@ -51,8 +52,10 @@ const PopularBlog = () => {
                         key={blog.id}
                         className="min-w-[300px] max-w-sm flex-shrink-0 bg-white dark:bg-[#242629] border dark:border-gray-300 rounded-xl shadow-md snap-start"
                     >
-                        <img
+                        <Image
                             src={blog.image}
+                            width={500}
+                            height={300}
                             className="w-full h-48 object-cover rounded-t-xl"
                             alt={blog.title}
                         />

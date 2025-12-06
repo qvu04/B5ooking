@@ -2,7 +2,7 @@
 import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-
+import Image from 'next/image';
 const PopularTravel = () => {
     const { t } = useTranslation();
     const [mounted, setMounted] = useState(false);
@@ -51,7 +51,12 @@ const PopularTravel = () => {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {/* Item 1 */}
                 <div className="bg-[#d1d1e9] dark:bg-[#242629] border border-gray-300 rounded-xl p-6 shadow-sm text-center ">
-                    <img src="/images/calendar.png" alt="calendar" className="w-15 h-15 mx-auto mb-4" />
+                    <Image
+                        src="/images/calendar.png"
+                        alt="calendar"
+                        width={500}
+                        height={300}
+                        className="w-15 h-15 mx-auto mb-4" />
                     <h4 className="font-semibold text-[#2b2c34] dark:text-[#fffffe] text-base mb-2">{t("home.popular_travel_text_3")}</h4>
                     <p className="text-sm text-[#2b2c34] dark:text-[#94a1b2]">
                         <span className="text-[#e45858] dark:text-[#7f5af0] font-semibold">{t("home.popular_travel_free")}</span> {t("home.popular_travel_text_4")}
@@ -60,14 +65,24 @@ const PopularTravel = () => {
 
                 {/* Item 2 */}
                 <div className="bg-[#d1d1e9] dark:bg-[#242629] border border-gray-300 rounded-xl p-6 shadow-sm text-center ">
-                    <img src="/images/world.png" alt="world" className="w-12 h-15 mx-auto mb-4" />
+                    <Image
+                        src="/images/world.png"
+                        alt="world"
+                        width={500}
+                        height={300}
+                        className="w-12 h-15 mx-auto mb-4" />
                     <h4 className="font-semibold text-[#2b2c34] dark:text-[#fffffe] text-base mb-2">{t("home.popular_travel_text_5")}</h4>
                     <p className="text-sm text-[#2b2c34] dark:text-[#94a1b2]">{t("home.popular_travel_text_6")}</p>
                 </div>
 
                 {/* Item 3 */}
                 <div className="bg-[#d1d1e9] dark:bg-[#242629] border border-gray-300 rounded-xl p-6 shadow-sm text-center ">
-                    <img src="/images/hotline.png" alt="hotline" className="w-15 h-15 mx-auto mb-4" />
+                    <Image
+                        src="/images/hotline.png"
+                        alt="hotline"
+                        width={500}
+                        height={300}
+                        className="w-15 h-15 mx-auto mb-4" />
                     <h4 className="font-semibold text-[#2b2c34] dark:text-[#fffffe] text-base mb-2">{t("home.popular_travel_text_7")}</h4>
                     <p className="text-sm text-[#2b2c34] dark:text-[#94a1b2]">{t("home.popular_travel_text_8")}</p>
                 </div>

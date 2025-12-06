@@ -11,6 +11,7 @@ import { FaCamera, FaUserAlt } from "react-icons/fa";
 import { RootState } from "@/lib/store";
 import { useTranslation } from "react-i18next";
 import { CheckDesktop, CheckMobilePhone, CheckTablet } from "../components/HOC/ResponsiveCustom.";
+import Image from 'next/image';
 
 export default function EditProfileUser({
     defaultValues,
@@ -118,9 +119,17 @@ export default function EditProfileUser({
                             <div className="flex flex-col items-center space-y-4">
                                 <div className="relative w-32 h-32">
                                     {previewAvatar ? (
-                                        <img src={previewAvatar} alt="preview" className="w-full h-full rounded-full object-cover border" />
+                                        <Image
+                                            src={previewAvatar ?? ""}
+                                            alt="preview"
+                                            width={500}
+                                            height={300}
+                                            className="w-full h-full rounded-full object-cover border" />
                                     ) : defaultValues.avatar ? (
-                                        <img src={defaultValues.avatar} alt="avatar" className="w-full h-full rounded-full object-cover border" />
+                                        <img
+                                            src={defaultValues.avatar}
+                                            alt="avatar"
+                                            className="w-full h-full rounded-full object-cover border" />
                                     ) : (
                                         <div className="w-full h-full bg-gray-300 rounded-full flex items-center justify-center text-white">
                                             <FaUserAlt className="text-3xl" />
@@ -220,9 +229,17 @@ export default function EditProfileUser({
                             <div className="flex flex-col items-center space-y-4">
                                 <div className="relative w-32 h-32">
                                     {previewAvatar ? (
-                                        <img src={previewAvatar} alt="preview" className="w-full h-full rounded-full object-cover border" />
+                                        <Image
+                                            src={previewAvatar ?? ""}
+                                            alt="preview"
+                                            width={500}
+                                            height={300}
+                                            className="w-full h-full rounded-full object-cover border" />
                                     ) : defaultValues.avatar ? (
-                                        <img src={defaultValues.avatar} alt="avatar" className="w-full h-full rounded-full object-cover border" />
+                                        <img
+                                            src={defaultValues.avatar}
+                                            alt="avatar"
+                                            className="w-full h-full rounded-full object-cover border" />
                                     ) : (
                                         <div className="w-full h-full bg-gray-300 rounded-full flex items-center justify-center text-white">
                                             <FaUserAlt className="text-3xl" />

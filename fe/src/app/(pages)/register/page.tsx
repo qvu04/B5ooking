@@ -69,6 +69,8 @@ export default function RegisterPage() {
                 autoPlay
                 muted
                 loop
+                preload="none"
+                poster="/images/logo-b5ooking.png"
                 playsInline
             />
 

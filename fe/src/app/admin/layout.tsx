@@ -19,7 +19,7 @@ import {
 import { setUserLogoutAction } from '@/redux/features/userSlice';
 import toast from 'react-hot-toast';
 import { hideLoading, showLoading } from '@/redux/features/loadingSlice';
-
+import Image from 'next/image';
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
     const { user } = useSelector((state: RootState) => state.userSlice);
     const dispatch = useDispatch();
@@ -47,7 +47,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                     <div className="flex items-center justify-between w-full">
                         <div className="flex items-center gap-1 basis-1/3">
                             <Link href="/" className="flex items-center gap-1">
-                                <img src="/images/logo-b5ooking.png" alt="logo" className="w-20 h-20 object-contain" />
+                                <Image
+                                    src="/images/logo-b5ooking.png"
+                                    alt="logo"
+                                    width={500}
+                                    height={300}
+                                    className="w-20 h-20 object-contain" />
                                 <span className="text-xl font-bold text-[#6246ea]">B5ooking</span>
                             </Link>
                         </div>
@@ -59,9 +64,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                                     className="flex items-center gap-3 hover:opacity-90 transition"
                                 >
                                     {user?.avatar ? (
-                                        <img
-                                            src={user.avatar}
+                                        <Image
+                                            src={user.avatar ?? ""}
                                             alt="avatar"
+                                            width={500}
+                                            height={300}
                                             className="w-10 h-10 rounded-full object-cover border-2 border-[#6246ea]"
                                         />
                                     ) : (

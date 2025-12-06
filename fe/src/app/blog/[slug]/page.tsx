@@ -8,6 +8,7 @@ import { useTranslation } from 'react-i18next';
 import { translateText } from "@/lib/translate";
 import parse from "html-react-parser";
 import { translateHTMLContent } from "@/utils/translateHTMLContent";
+import Image from 'next/image';
 export default function BlogDetail() {
     const { slug } = useParams();
     const [blog, setBlog] = useState<Blogs | null>(null);
@@ -54,9 +55,11 @@ export default function BlogDetail() {
             <p className="text-sm text-gray-400 dark:text-[#94a1b2] mb-4">
                 {t("blogId.text_3")} {new Date(blog.create_At).toLocaleDateString()}
             </p>
-            <img
-                src={blog.image}
+            <Image
+                src={blog.image ?? ""}
                 alt={blog.title}
+                width={500}
+                height={300}
                 className="w-full h-auto mb-6 rounded shadow"
             />
             <div className="prose max-w-none">

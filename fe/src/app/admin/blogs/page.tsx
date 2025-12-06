@@ -20,6 +20,7 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import Image from 'next/image';
 
 export default function Blogs() {
     const [page, setPage] = useState(1);
@@ -131,9 +132,11 @@ export default function Blogs() {
                             {blog.map((b) => (
                                 <tr key={b.id} className="hover:bg-gray-50 text-center">
                                     <td className="p-3 border">
-                                        <img
-                                            src={b.image}
+                                        <Image
+                                            src={b.image ?? ""}
                                             alt={b.title}
+                                            width={500}
+                                            height={300}
                                             className="w-48 h-20 object-cover rounded"
                                         />
                                     </td>

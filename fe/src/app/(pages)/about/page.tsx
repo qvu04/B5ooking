@@ -4,6 +4,7 @@ import { useAppDispatch } from '@/redux/hook';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import Image from 'next/image';
 // app/about/page.tsx
 export default function AboutPage() {
     const { t } = useTranslation();
@@ -44,9 +45,11 @@ export default function AboutPage() {
             {/* tên và logo */}
             <div className="pt-10 text-center ">
                 <Link href="/" className="flex items-center justify-start">
-                    <img
+                    <Image
                         src="/images/logo-b5ooking.png"
                         alt="logo"
+                        width={500}
+                        height={300}
                         className="w-[150px] h-[80px] object-contain mb-2"
                     />
                     <span className="text-3xl md:text-4xl font-bold ">

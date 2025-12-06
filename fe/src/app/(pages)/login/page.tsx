@@ -67,6 +67,8 @@ export default function LoginPage() {
                     muted
                     loop
                     playsInline
+                    preload="none"
+                    poster="/images/logo-b5ooking.png"
                     className="absolute inset-0 w-full h-full object-cover z-0"
                 />
             </div>

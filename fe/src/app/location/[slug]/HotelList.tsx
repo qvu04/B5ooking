@@ -4,6 +4,7 @@ import { Carousel } from 'antd';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import Image from 'next/image';
 type Props = {
     hotels: Hotels[];
 };
@@ -31,9 +32,11 @@ export default function HotelListClient({ hotels }: Props) {
                         >
                             {/* Ảnh chính */}
                             <div>
-                                <img
+                                <Image
                                     src={hotel.image}
                                     alt={hotel.name}
+                                    width={500}
+                                    height={300}
                                     className="w-full h-[200px] object-cover rounded-t-2xl"
                                 />
                             </div>
@@ -41,9 +44,11 @@ export default function HotelListClient({ hotels }: Props) {
                             {/* Các ảnh phụ */}
                             {hotel.images.map((img, index) => (
                                 <div key={index}>
-                                    <img
-                                        src={img.imageUrl}
+                                    <Image
+                                        src={img.imageUrl ?? ""}
                                         alt={`Ảnh phụ ${index + 1}`}
+                                        width={500}
+                                        height={300}
                                         className="w-full h-[200px] object-cover rounded-t-2xl"
                                     />
                                 </div>

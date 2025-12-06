@@ -74,7 +74,14 @@ export default function HeaderBanner() {
         <>
             <CheckDesktop>
                 <header className="relative w-full h-[600px] overflow-hidden text-white">
-                    <video autoPlay muted loop className="absolute inset-0 w-full h-full object-cover z-0" src="/videos/header.mp4" />
+                    <video
+                        autoPlay
+                        muted
+                        loop
+                        preload="none"
+                        poster="/images/logo-b5ooking.png"
+                        className="absolute inset-0 w-full h-full object-cover z-0"
+                        src="/videos/header.mp4" />
                     <div className="absolute inset-0 bg-black/40 z-10" />
                     <div className="relative z-20 mt-28 px-10 flex flex-col items-start justify-center h-[150px] text-white">
                         <h1 className="text-5xl font-extrabold mb-3">
@@ -154,7 +161,14 @@ export default function HeaderBanner() {
             </CheckDesktop>
             <CheckTablet>
                 <header className="relative w-full h-[600px] overflow-hidden text-white">
-                    <video autoPlay muted loop className="absolute inset-0 w-full h-full object-cover z-0" src="/videos/header.mp4" />
+                    <video
+                        autoPlay
+                        muted
+                        loop
+                        preload="none"
+                        poster="/images/logo-b5ooking.png"
+                        className="absolute inset-0 w-full h-full object-cover z-0"
+                        src="/videos/header.mp4" />
                     <div className="absolute inset-0 bg-black/40 z-10" />
                     <div className="relative z-20 mt-28 px-10 flex flex-col items-start justify-center h-[150px] text-white">
                         <h1 className="text-5xl font-extrabold mb-3">
@@ -234,7 +248,14 @@ export default function HeaderBanner() {
             </CheckTablet>
             <CheckMobilePhone>
                 <header className="relative w-full h-[600px] overflow-hidden text-white">
-                    <video autoPlay muted loop className="absolute inset-0 w-full h-full object-cover z-0" src="/videos/header.mp4" />
+                    <video
+                        autoPlay
+                        muted
+                        loop
+                        preload="none"
+                        poster="/images/logo-b5ooking.png"
+                        className="absolute inset-0 w-full h-full object-cover z-0"
+                        src="/videos/header.mp4" />
                     <div className="absolute inset-0 bg-black/40 z-10" />
                     <div className="relative z-20 mt-28 px-6 flex flex-col items-start justify-center h-[150px] text-white">
                         <h1 className="text-4xl font-extrabold mb-2">

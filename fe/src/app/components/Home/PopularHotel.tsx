@@ -7,7 +7,7 @@ import { Carousel, Rate } from "antd";
 import { useTranslation } from "react-i18next";
 import { fetchTranslateLocation } from "@/app/api/locationService";
 import Link from "next/link";
-
+import Image from "next/image";
 const PopularHotel = () => {
     const [locations, setLocations] = useState<Locations[] | null>(null);
     const [hotels, setHotels] = useState<Hotels[] | null>(null);
@@ -81,9 +81,11 @@ const PopularHotel = () => {
                 {hotels?.map((hotel) => (
                     <Link href={`/hotel/${hotel.id}`} key={hotel.id} className="px-2">
                         <div className="border rounded-xl text-black hover:text-gray-500 transition overflow-hidden flex flex-col h-full dark:bg-[#16161a] dark:border dark:border-gray-300">
-                            <img
+                            <Image
                                 src={hotel.image}
                                 alt={hotel.name}
+                                width={500}
+                                height={300}
                                 className="w-full h-48 object-cover"
                             />
                             <div className="p-4 flex flex-col justify-between flex-1">

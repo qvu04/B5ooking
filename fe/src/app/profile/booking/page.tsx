@@ -19,6 +19,7 @@ import {
 import toast from "react-hot-toast";
 import { CheckDesktop, CheckMobilePhone, CheckTablet } from "@/app/components/HOC/ResponsiveCustom.";
 import { paymentOnlineService } from '@/app/api/payment-onlineService';
+import Image from 'next/image';
 
 export default function Booking() {
     const [bookings, setBookings] = useState<BookingItem[]>([]);
@@ -124,9 +125,11 @@ export default function Booking() {
                 <ul className="space-y-6">
                     {filteredBookings.map((item) => (
                         <li key={item.id} className="p-5 border dark:bg-[#242629] rounded-xl shadow-md flex gap-4">
-                            <img
-                                src={item.room.image}
+                            <Image
+                                src={item.room.image ?? ""}
                                 alt={item.room.name}
+                                width={500}
+                                height={300}
                                 className="w-36 h-28 object-cover rounded-lg"
                             />
                             <div className="flex-1">
@@ -291,9 +294,11 @@ export default function Booking() {
                                     key={item.id}
                                     className="p-4 border dark:bg-[#242629] rounded-lg shadow-sm flex flex-col"
                                 >
-                                    <img
-                                        src={item.room.image}
+                                    <Image
+                                        src={item.room.image ?? ""}
                                         alt={item.room.name}
+                                        width={500}
+                                        height={300}
                                         className="w-full h-40 object-cover rounded-md mb-3"
                                     />
                                     <p className="text-lg font-bold text-[#333] dark:text-[#94a1b2]">{item.room.hotel.name}</p>

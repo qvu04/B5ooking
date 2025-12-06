@@ -8,6 +8,7 @@ import { hideLoading, showLoading } from '@/redux/features/loadingSlice';
 import { useAppDispatch } from '@/redux/hook';
 import { useTranslation } from "react-i18next";
 import { CheckDesktop, CheckMobilePhone, CheckTablet } from "../components/HOC/ResponsiveCustom.";
+import Image from 'next/image';
 
 export default function Profile() {
     const { user } = useSelector((state: RootState) => state.userSlice);
@@ -67,9 +68,11 @@ export default function Profile() {
                     {/* Thông tin người dùng */}
                     <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6 bg-white dark:bg-[#242629] p-6 rounded-xl shadow-md">
                         {user?.avatar ? (
-                            <img
-                                src={user.avatar}
+                            <Image
+                                src={user.avatar ?? ""}
                                 alt="avatar"
+                                width={500}
+                                height={300}
                                 className="w-20 h-20 rounded-full object-cover border"
                             />
                         ) : (
@@ -131,9 +134,11 @@ export default function Profile() {
                     {/* Thông tin người dùng */}
                     <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6 bg-white dark:bg-[#242629] p-6 rounded-xl shadow-md">
                         {user?.avatar ? (
-                            <img
-                                src={user.avatar}
+                            <Image
+                                src={user.avatar ?? ""}
                                 alt="avatar"
+                                width={500}
+                                height={300}
                                 className="w-20 h-20 rounded-full object-cover border"
                             />
                         ) : (
@@ -166,9 +171,11 @@ export default function Profile() {
                     {/* Avatar + Tên */}
                     <div className="flex flex-col items-center dark:bg-[#242629] text-center space-y-3">
                         {user?.avatar ? (
-                            <img
-                                src={user.avatar}
+                            <Image
+                                src={user.avatar ?? ""}
                                 alt="avatar"
+                                width={500}
+                                height={300}
                                 className="w-24 h-24 rounded-full object-cover border shadow-md"
                             />
                         ) : (

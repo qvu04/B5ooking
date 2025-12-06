@@ -11,6 +11,7 @@ import toast from "react-hot-toast";
 import { FaDoorOpen, FaEdit, FaTrash, FaPlus } from "react-icons/fa";
 import { AmenityType } from "@/app/types/amenityType";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
+import Image from 'next/image';
 
 export default function RoomsManager() {
     const [page, setPage] = useState(1);
@@ -138,9 +139,11 @@ export default function RoomsManager() {
                                     className="hover:bg-gray-50 text-center transition"
                                 >
                                     <td className="p-3 border">
-                                        <img
-                                            src={r.image}
+                                        <Image
+                                            src={r.image ?? ""}
                                             alt={r.name}
+                                            width={500}
+                                            height={300}
                                             className="w-32 h-20 object-cover rounded shadow-sm"
                                         />
                                     </td>
