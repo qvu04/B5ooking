@@ -5,6 +5,7 @@ import router from "./routers/index.js";
 import { errorHandler } from "./middleware/errorHandler.js";
 import {startBookingStatusCron } from "./cron/bookingStatus.cron.js";
 import { startActiveVoucherCron } from "./cron/startActiveVoucherCron.js";
+import { startStatusBooking } from "./cron/statusBooking.js";
 
 dotenv.config();
 
@@ -17,6 +18,7 @@ app.use(cors());
 
 startBookingStatusCron()
 startActiveVoucherCron()
+startStatusBooking()
 app.get("/", (req, res) => {
     res.send("hello")
 })

@@ -633,6 +633,23 @@ export const userService = {
         return {
             reviewsUser: reviewsUser
         }
+    },
+    statusBooking: async () => {
+        const now = new Date();
+        const expiredTime = new Date(now.getTime() - 1 * 60 * 1000);
+
+        const statusBooking =  await prisma.booking.updateMany({
+            where : {
+                status: "PENDING",
+                create_At: { lt: expiredTime }
+            },
+            data : {
+                status: "CANCELED"
+            }
+        })
+        if (statusBooking.count > 0) {
+            console.log(`Đã hủy ${statusBooking.count} đơn đặt chờ quá hạn.`);
+        }
     }
 
 }
