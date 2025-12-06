@@ -7,6 +7,7 @@ import { Locations } from '@/app/types/locationTypes';
 import Link from 'next/link';
 import { useTranslation } from 'react-i18next';
 import { translateText } from "@/lib/translate";
+import Image from 'next/image';
 export default function Article() {
     const [page, setPage] = useState(1);
     const [blogs, setBlogs] = useState<BlogsByPage[]>([]);
@@ -118,7 +119,12 @@ export default function Article() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {blogs.map((blog) => (
                     <Link href={`/blog/${blog.slug}`} key={blog.id} className="border rounded p-4 shadow">
-                        <img src={blog.image} alt={blog.title} className="w-full h-48 object-cover rounded" />
+                        <Image
+                            src={blog.image ?? ""}
+                            alt={blog.title}
+                            width={500}
+                            height={300}
+                            className="w-full h-48 object-cover rounded" />
                         <h2 className="text-xl font-semibold dark:text-[#fffffe] mt-2">{blog.title}</h2>
                         <p className="text-gray-600 dark:text-[#94a1b2] text-sm mt-1">{blog.summary}</p>
                         <p className="text-gray-400 dark:text-[#94a1b2] text-xs mt-1">

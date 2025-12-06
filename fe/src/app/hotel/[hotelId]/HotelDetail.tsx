@@ -1,22 +1,21 @@
 'use client';
 import { Hotels, RoomAvailable } from '@/app/types/hotelTypes';
+import 'swiper/css';
+import 'swiper/css/thumbs';
 import { useEffect, useState } from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay, Thumbs } from 'swiper/modules';
-import 'swiper/css';
-import 'swiper/css/thumbs';
 import { Swiper as SwiperType } from 'swiper/types';
 import { geocodeAddress } from '@/lib/geocode';
 import { FiShare } from "react-icons/fi";
 import { AiOutlineHeart, AiFillStar, AiOutlineCheckCircle, AiOutlineUser, AiOutlineCheck } from "react-icons/ai";
 import type { RangePickerProps } from "antd/es/date-picker";
-import Link from 'next/link';
 import MapView from '@/app/components/Map/MapViewWrapper';
 import { FaUserAlt } from 'react-icons/fa';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/lib/store';
 import toast from 'react-hot-toast';
-import { postReviewHotel } from '@/app/api/hotelService';
+import { getHotelsbyHotelId, postReviewHotel } from '@/app/api/hotelService';
 import { ReviewType } from '@/app/types/reviewType';
 import { fetchSearchHotel } from '@/app/api/roomService';
 import { DatePicker } from "antd";
@@ -25,18 +24,13 @@ import RoomDetailModal from './RoomDetailModal';
 import { addFavorite } from '@/app/api/favoriteService';
 import { useTranslation } from 'react-i18next';
 import { CheckDesktop, CheckMobilePhone, CheckTablet } from '@/app/components/HOC/ResponsiveCustom.';
-import {
-    Carousel,
-    CarouselContent,
-    CarouselItem,
-    CarouselNext,
-    CarouselPrevious,
-} from "@/components/ui/carousel"
+import Image from 'next/image';
 type Props = {
     hotel: Hotels;
+    onRefetch: () => void
 };
 
-export default function HotelDetailClient({ hotel }: Props) {
+export default function HotelDetailClient({ hotel, onRefetch }: Props) {
     const [thumbsSwiper, setThumbsSwiper] = useState<SwiperType | null>(null);
     const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(null);
     const [showAllReviews, setShowAllReviews] = useState(false);
@@ -120,32 +114,39 @@ export default function HotelDetailClient({ hotel }: Props) {
                 toast.error("Vui lòng đăng nhập để đánh giá");
                 return;
             }
+
             const res = await postReviewHotel(hotel.id, { rating, comment });
-            console.log('✌️res --->', res);
+            console.log("✌️res --->", res);
+
             const newReview: ReviewType = {
                 comment,
                 rating,
                 user: {
-                    avatar: user?.avatar || '',
-                    fullName: user?.fullName || '',
+                    avatar: user?.avatar || "",
+                    fullName: user?.fullName || "",
                 },
             };
-            setReviews((prev: ReviewType[]) => [newReview, ...prev]);
+
+            setReviews((prev) => [newReview, ...prev]);
             setRating(0);
             setComment("");
-            toast.success("Gửi đánh giá thành công");
+            toast.success("Gửi đánh giá thành công!");
+
+            // ✅ Gọi callback để refetch lại dữ liệu từ backend
+            if (onRefetch) {
+                await onRefetch();
+            }
 
         } catch (error) {
             toast.error("Đánh giá thất bại. Vui lòng thử lại.");
-            console.log('✌️error --->', error);
-
+            console.log("✌️error --->", error);
         }
+    };
 
-    }
+
     useEffect(() => {
         setMounted(true);
     }, []);
-
     const handleOpenRoomDetail = (room: RoomAvailable) => {
         setSelectedRoom(room);
         console.log('✌️room --->', room);
@@ -165,118 +166,13 @@ export default function HotelDetailClient({ hotel }: Props) {
                 <h1 className="text-2xl text-center md:text-xl font-semibold mb-6 leading-snug">
                     {hotel.name} - {t("hotelId.title")}
                 </h1>
-                <CheckMobilePhone>
-                    <Carousel>
-                        <CarouselContent>
-                            {hotel.images.map((img, i) => (
-                                <CarouselItem key={i}>
-                                    <img
-                                        src={img.imageUrl}
-                                        alt={hotel.name}
-                                        className="w-full h-[400px] object-cover"
-                                    />
-                                </CarouselItem>
-                            ))}
-                        </CarouselContent>
-                        <CarouselPrevious />
-                        <CarouselNext />
-                    </Carousel>
-                </CheckMobilePhone>
                 {/* Layout hình ảnh + bản đồ */}
-                <div className="grid md:grid-cols-3 gap-4">
-                    {/* Ảnh lớn + thumbnail */}
-                    <div className="col-span-2 space-y-4">
-                        <CheckDesktop>
-                            <div className="w-full h-[360px] rounded-lg overflow-hidden">
-                                {hotel?.images?.length > 0 && (
-                                    <div className="w-full h-[200px] sm:h-[300px] md:h-[360px] rounded-lg overflow-hidden">
-                                        <Swiper
-                                            modules={[Autoplay, Thumbs]}
-                                            autoplay={{ delay: 4000, disableOnInteraction: false }}
-                                            loop={true}
-                                            thumbs={{ swiper: thumbsSwiper && !thumbsSwiper.destroyed ? thumbsSwiper : null }}
-                                            slidesPerView={1}
-                                            className="w-full h-full"
-                                        >
-                                            {hotel.images.map((img, i) => (
-                                                <SwiperSlide key={i}>
-                                                    <img
-                                                        src={img.imageUrl}
-                                                        alt={`Slide ${i}`}
-                                                        className="w-full h-full object-cover"
-                                                    />
-                                                </SwiperSlide>
-                                            ))}
-                                        </Swiper>
-                                    </div>
-                                )}
-                            </div>
-
-                            <div className="w-full overflow-hidden">
-                                <Swiper
-                                    onSwiper={(swiper) => {
-                                        if (!swiper.destroyed && swiper !== thumbsSwiper) {
-                                            setThumbsSwiper(swiper);
-                                        }
-                                    }}
-                                    modules={[Thumbs]}
-                                    watchSlidesProgress
-                                    spaceBetween={10}
-                                    breakpoints={{
-                                        0: {
-                                            slidesPerView: 2,
-                                            spaceBetween: 4,
-                                        },
-                                        600: {
-                                            slidesPerView: 4,
-                                            spaceBetween: 10,
-                                        },
-                                        1025: {
-                                            slidesPerView: 5,
-                                            spaceBetween: 12,
-                                        },
-                                    }}
-                                    className="w-full h-[64px] sm:h-[72px] md:h-[80px] lg:h-[88px]"
-                                >
-                                    {hotel.images.map((img, i) => (
-                                        <SwiperSlide key={i}>
-                                            <img
-                                                src={img.imageUrl}
-                                                alt={`Thumbnail ${i}`}
-                                                className="w-full h-full object-cover rounded-md border"
-                                            />
-                                        </SwiperSlide>
-                                    ))}
-                                </Swiper>
-                            </div>
-                        </CheckDesktop>
-                        <CheckTablet>
-                            <div className="w-full h-[360px] rounded-lg overflow-hidden">
-                                {hotel?.images?.length > 0 && (
-                                    <div className="w-full h-[200px] sm:h-[300px] md:h-[360px] rounded-lg overflow-hidden">
-                                        <Swiper
-                                            modules={[Autoplay, Thumbs]}
-                                            autoplay={{ delay: 4000, disableOnInteraction: false }}
-                                            loop={true}
-                                            thumbs={{ swiper: thumbsSwiper && !thumbsSwiper.destroyed ? thumbsSwiper : null }}
-                                            slidesPerView={1}
-                                            className="w-full h-full"
-                                        >
-                                            {hotel.images.map((img, i) => (
-                                                <SwiperSlide key={i}>
-                                                    <img
-                                                        src={img.imageUrl}
-                                                        alt={`Slide ${i}`}
-                                                        className="w-full h-full object-cover"
-                                                    />
-                                                </SwiperSlide>
-                                            ))}
-                                        </Swiper>
-                                    </div>
-                                )}
-                            </div>
-
-                            <div className="w-full overflow-hidden">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    {/* Cột ảnh lớn + thumbnail */}
+                    <div className="col-span-2">
+                        <div className="flex flex-col-reverse space-y-4 space-y-reverse">
+                            {/* 🖼️ Thumbnail - render trước để tránh lỗi */}
+                            {hotel?.images?.length > 1 && (
                                 <Swiper
                                     modules={[Thumbs]}
                                     onSwiper={(swiper) => {
@@ -284,96 +180,118 @@ export default function HotelDetailClient({ hotel }: Props) {
                                             setThumbsSwiper(swiper);
                                         }
                                     }}
-
                                     watchSlidesProgress
-                                    spaceBetween={10}
+                                    loop={false}
+                                    spaceBetween={8}
                                     breakpoints={{
-                                        0: {
-                                            slidesPerView: 2,
-                                            spaceBetween: 4,
-                                        },
-                                        600: {
-                                            slidesPerView: 4,
-                                            spaceBetween: 10,
-                                        },
-                                        1025: {
-                                            slidesPerView: 5,
-                                            spaceBetween: 12,
-                                        },
+                                        0: { slidesPerView: 3, spaceBetween: 6 },
+                                        640: { slidesPerView: 4, spaceBetween: 8 },
+                                        1024: { slidesPerView: 5, spaceBetween: 10 },
                                     }}
-                                    className="w-full h-[64px] sm:h-[72px] md:h-[80px] lg:h-[88px]"
+                                    className="w-full h-[60px] sm:h-[72px] md:h-[80px] mt-3"
                                 >
                                     {hotel.images.map((img, i) => (
                                         <SwiperSlide key={i}>
-                                            <img
-                                                src={img.imageUrl}
+                                            <Image
+                                                src={img.imageUrl ?? ""}
                                                 alt={`Thumbnail ${i}`}
-                                                className="w-full h-full object-cover rounded-md border"
+                                                width={500}
+                                                height={300}
+                                                className="w-full h-full object-cover rounded-md border cursor-pointer hover:opacity-80 transition"
                                             />
                                         </SwiperSlide>
                                     ))}
                                 </Swiper>
-                            </div>
-                        </CheckTablet>
+                            )}
+
+                            {/* 🖼️ Swiper ảnh lớn */}
+                            {hotel?.images?.length > 0 && (
+                                <Swiper
+                                    modules={[Autoplay, Thumbs]}
+                                    autoplay={{ delay: 4000, disableOnInteraction: false }}
+                                    loop={true}
+                                    thumbs={{
+                                        swiper: thumbsSwiper && !thumbsSwiper.destroyed ? thumbsSwiper : null,
+                                    }}
+                                    slidesPerView={1}
+                                    className="w-full rounded-lg overflow-hidden h-[220px] sm:h-[300px] md:h-[360px]"
+                                >
+                                    {hotel.images.map((img, i) => (
+                                        <SwiperSlide key={i}>
+                                            <Image
+                                                src={img.imageUrl ?? ""}
+                                                alt={`Slide ${i}`}
+                                                width={500}
+                                                height={300}
+                                                className="w-full h-full object-cover"
+                                            />
+                                        </SwiperSlide>
+                                    ))}
+                                </Swiper>
+                            )}
+                        </div>
                     </div>
-                    <CheckTablet>
+
+                    {/* MapView responsive */}
+                    <div className="col-span-1 md:mt-0 mt-4">
                         {coords && (
-                            <div className="block h-[400px] w-full mt-6">
-                                <div className="flex flex-col mb-4">
-                                    <h2 className="text-lg font-medium mb-2">{t("hotelId.text_1")}</h2>
-                                    <div className="flex items-center gap-6 text-gray-700">
-                                        <button className="flex items-center gap-1 cursor-pointer">
-                                            <FiShare size={20} />
-                                            <span className='dark:text-[#94a1b2]'>{t("hotelId.text_2")}</span>
-                                        </button>
+                            <>
+                                {/* Tablet */}
+                                <CheckTablet>
+                                    <div>
+                                        <div className="flex flex-col mb-4">
+                                            <h2 className="text-lg font-medium mb-2">{t("hotelId.text_1")}</h2>
+                                            <div className="flex items-center gap-6 text-gray-700">
+                                                <button className="flex items-center gap-1 cursor-pointer">
+                                                    <FiShare size={20} />
+                                                    <span className='dark:text-[#94a1b2]'>{t("hotelId.text_2")}</span>
+                                                </button>
 
-                                        <button
-                                            onClick={handleAddFavoriteHotel}
-                                            className="flex items-center gap-1 cursor-pointer">
-                                            <AiOutlineHeart className="text-gray-600 hover:text-red-500 transition-colors duration-300" size={20} />
-                                            <span className='dark:text-[#94a1b2]'>{t("hotelId.text_3")}</span>
-                                        </button>
+                                                <button
+                                                    onClick={handleAddFavoriteHotel}
+                                                    className="flex items-center gap-1 cursor-pointer">
+                                                    <AiOutlineHeart className="text-gray-600 hover:text-red-500 transition-colors duration-300" size={20} />
+                                                    <span className='dark:text-[#94a1b2]'>{t("hotelId.text_3")}</span>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div className='relative z-0 w-full h-[360px] overflow-hidden rounded-lg shadow'>
+                                            <MapView lat={coords.lat} lng={coords.lng} name={hotel.name} />
+                                        </div>
                                     </div>
-                                </div>
-                                <div className='relative z-0 w-full h-[460px] overflow-hidden rounded-lg shadow'>
-                                    <MapView lat={coords.lat} lng={coords.lng} name={hotel.name} />
-                                </div>
-                            </div>
-                        )}
-                    </CheckTablet>
+                                </CheckTablet>
 
-                    {/* Hiển thị bên phải cho desktop */}
-                    <CheckDesktop>
-                        {coords && (
-                            <div className="block h-[460px] w-full mt-6">
-                                <div className="flex justify-between items-center mb-4">
-                                    <h2 className="text-lg font-medium mb-2">{t("hotelId.text_1")}</h2>
-                                    <div className="flex items-center gap-6 text-gray-700">
-                                        <button className="flex items-center gap-1 cursor-pointer">
-                                            <FiShare size={20} />
-                                            <span className='dark:text-[#94a1b2]'>{t("hotelId.text_2")}</span>
-                                        </button>
+                                {/* Desktop */}
+                                <CheckDesktop>
+                                    <div>
+                                        <div className="flex justify-between items-center mb-4">
+                                            <h2 className="text-lg font-medium mb-2">{t("hotelId.text_1")}</h2>
+                                            <div className="flex items-center gap-6 text-gray-700">
+                                                <button className="flex items-center gap-1 cursor-pointer">
+                                                    <FiShare size={20} />
+                                                    <span className='dark:text-[#94a1b2]'>{t("hotelId.text_2")}</span>
+                                                </button>
 
-                                        <button
-                                            onClick={handleAddFavoriteHotel}
-                                            className="flex items-center gap-1 cursor-pointer">
-                                            <AiOutlineHeart className="text-gray-600 hover:text-red-500 transition-colors duration-300" size={20} />
-                                            <span className='dark:text-[#94a1b2]'>{t("hotelId.text_3")}</span>
-                                        </button>
+                                                <button
+                                                    onClick={handleAddFavoriteHotel}
+                                                    className="flex items-center gap-1 cursor-pointer">
+                                                    <AiOutlineHeart className="text-gray-600 hover:text-red-500 transition-colors duration-300" size={20} />
+                                                    <span className='dark:text-[#94a1b2]'>{t("hotelId.text_3")}</span>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div className='relative z-0 w-full h-[400px] overflow-hidden rounded-lg shadow'>
+                                            <MapView lat={coords.lat} lng={coords.lng} name={hotel.name} />
+                                        </div>
                                     </div>
-                                </div>
-                                <div className='relative z-0 w-full h-[460px] overflow-hidden rounded-lg shadow'>
-                                    <MapView lat={coords.lat} lng={coords.lng} name={hotel.name} />
-                                </div>
-                            </div>
+                                </CheckDesktop>
+                            </>
                         )}
-                    </CheckDesktop>
+                    </div>
                 </div>
-
-                {/* Mô tả */}
                 <div>
                     <div className='mt-5'>
-                        <h2 className='font-bold lg:text-2xl text-xl '>{t("hotelId.text_4")} - {hotel.address}</h2>
+                        <h2 className='font-bold lg:text-xl text-xl '>{t("hotelId.text_4")} - {hotel.address}</h2>
                         <p className='pt-3 dark:text-[#94a1b2]'>
                             {t("hotelId.text_5")} {t("hotelId.text_6")} {t("hotelId.text_7")} {t("hotelId.text_8")}
                         </p>
@@ -406,7 +324,12 @@ export default function HotelDetailClient({ hotel }: Props) {
                     <div className="mt-10 space-y-6">
                         {/* 1 */}
                         <div className="flex items-start gap-4 border-b border-gray-300 pb-6">
-                            <img src="/images/door.png" alt="check" className="w-10 h-10 object-contain" />
+                            <Image
+                                src="/images/door.png"
+                                alt="check"
+                                width={500}
+                                height={300}
+                                className="w-10 h-10 object-contain" />
                             <div>
                                 <h3 className="text-lg font-semibold dark:text-[#fffffe] text-gray-900">{t("hotelId.text_12")}</h3>
                                 <p className="text-gray-600 dark:text-[#94a1b2]">{t("hotelId.text_13")}</p>
@@ -415,7 +338,12 @@ export default function HotelDetailClient({ hotel }: Props) {
 
                         {/* 2 */}
                         <div className="flex items-start gap-4 border-b border-gray-200 pb-6">
-                            <img src="/images/check_room.png" alt="check" className="w-10 h-10 object-contain" />
+                            <Image
+                                src="/images/check_room.png"
+                                alt="check"
+                                width={500}
+                                height={300}
+                                className="w-10 h-10 object-contain" />
                             <div>
                                 <h3 className="text-lg font-semibold dark:text-[#fffffe] text-gray-900">{t("hotelId.text_14")}</h3>
                                 <p className="text-gray-600 dark:text-[#94a1b2]">{t("hotelId.text_15")}</p>
@@ -424,7 +352,12 @@ export default function HotelDetailClient({ hotel }: Props) {
 
                         {/* 3 */}
                         <div className="flex items-start gap-4">
-                            <img src="/images/star.png" alt="check" className="w-10 h-10 object-contain" />
+                            <Image
+                                src="/images/star.png"
+                                alt="check"
+                                width={500}
+                                height={300}
+                                className="w-10 h-10 object-contain" />
                             <div>
                                 <h3 className="text-lg font-semibold  text-gray-900 dark:text-[#fffffe]">{t("hotelId.text_11")}</h3>
                                 <p className="text-gray-600 dark:text-[#94a1b2]">{t("hotelId.text_16")}</p>
@@ -480,7 +413,7 @@ export default function HotelDetailClient({ hotel }: Props) {
                                 <div className="flex items-end">
                                     <button
                                         onClick={handleSearch}
-                                        className="w-full bg-purple-600 dark:bg-[#7f5af0] cursor-pointer hover:bg-purple-700 text-white py-2 px-4 rounded-lg font-semibold"
+                                        className="w-full bg-[#6246ea] dark:bg-[#7f5af0] cursor-pointer hover:bg-purple-700 text-white py-2 px-4 rounded-lg font-semibold"
                                     >
                                         {t("hotelId.text_22")}
                                     </button>
@@ -489,96 +422,99 @@ export default function HotelDetailClient({ hotel }: Props) {
                         </div>
                         <CheckDesktop>
                             {availableRooms.length > 0 ? (
-                                <table className="w-full border-t border-gray-300 table-fixed mt-5">
-                                    <thead>
-                                        <tr className="bg-[#d1d1e9] border-r dark:bg-[#242629] text-left">
-                                            <th className="w-[30%] border-r border-gray-300 p-4 font-semibold text-lg dark:text-">{t("hotelId.text_23")}</th>
-                                            <th className="w-[10%] border-r border-gray-300 p-4 font-semibold text-lg text-center">{t("hotelId.text_24")}</th>
-                                            <th className="w-[15%] border-r border-gray-300 p-4 font-semibold text-lg text-center">{t("hotelId.text_25")}</th>
-                                            <th className="w-[45%] p-4 font-semibold text-lg text-center">{t("hotelId.text_26")}</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {availableRooms.map((room, index) => (
-                                            <tr key={index} className="border-t border-gray-300">
-                                                {/* Cột loại phòng */}
-                                                <td className="align-top border-r border-gray-300 p-4">
-                                                    <button
-                                                        className="font-bold hover:text-[#6246ea] cursor-pointer text-lg"
-                                                        onClick={() => handleOpenRoomDetail(room)}
-                                                    >{room.name}</button>
-                                                    <p className="text-red-500 font-bold dark:text-[#7f5af0] text-sm mt-1">{t("hotelId.text_27")}</p>
-                                                    <p className="mt-2 dark:text-[#94a1b2]">{t("hotelId.text_28")} 🛏️</p>
-                                                    <div className="flex flex-wrap gap-x-4 gap-y-2 mt-3 text-sm text-gray-700">
-                                                        {room.amenities.map((item, i) => (
-                                                            <div key={i} className="flex items-center gap-1 dark:text-[#94a1b2] ">
-                                                                <AiOutlineCheck className="text-green-500" size={14} />
-                                                                <span>{item.amenity.name}</span>
+                                <div className="w-full mt-5 overflow-x-auto">
+                                    <table className="w-full border border-gray-300 overflow-hidden">
+
+                                        <thead>
+                                            <tr className="bg-gray-50 border dark:bg-[#242629] text-left">
+                                                <th className="w-[30%] border border-gray-300 p-4 font-semibold text-lg dark:text-">{t("hotelId.text_23")}</th>
+                                                <th className="w-[10%] border border-gray-300 p-4 font-semibold text-lg text-center">{t("hotelId.text_24")}</th>
+                                                <th className="w-[15%] border border-gray-300 p-4 font-semibold text-lg text-center">{t("hotelId.text_25")}</th>
+                                                <th className="w-[45%] border border-gray-300 p-4 font-semibold text-lg text-center">{t("hotelId.text_26")}</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {availableRooms.map((room, index) => (
+                                                <tr key={index} className="border border-gray-300">
+                                                    {/* Cột loại phòng */}
+                                                    <td className="align-top border border-gray-300 p-4">
+                                                        <button
+                                                            className="font-bold hover:text-[#6246ea] cursor-pointer text-lg"
+                                                            onClick={() => handleOpenRoomDetail(room)}
+                                                        >{room.name}</button>
+                                                        <p className="text-red-500 font-bold dark:text-[#7f5af0] text-sm mt-1">{t("hotelId.text_27")}</p>
+                                                        <p className="mt-2 dark:text-[#94a1b2]">{t("hotelId.text_28")} 🛏️</p>
+                                                        <div className="flex flex-wrap gap-x-4 gap-y-2 mt-3 text-sm text-gray-700">
+                                                            {room.amenities.map((item, i) => (
+                                                                <div key={i} className="flex items-center gap-1 dark:text-[#94a1b2] ">
+                                                                    <AiOutlineCheck className="text-green-500" size={14} />
+                                                                    <span>{item.amenity.name}</span>
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    </td>
+
+                                                    {/* Cột lượng khách */}
+                                                    <td className="align-top border border-gray-300 p-4 text-center">
+                                                        <div className="flex justify-center gap-1 mt-2">
+                                                            {Array.from({ length: room.maxGuests }).map((_, i) => (
+                                                                <AiOutlineUser key={i} size={18} />
+                                                            ))}
+                                                        </div>
+                                                    </td>
+
+                                                    {/* Cột giá */}
+                                                    <td className="align-top border border-gray-300 p-4 text-center">
+                                                        {room.discount > 0 ? (
+                                                            <div className="mt-2 space-y-1">
+                                                                <p className="text-gray-400 line-through text-sm">
+                                                                    {room.price.toLocaleString()} VND
+                                                                </p>
+                                                                <p className="text-green-600 text-xs font-medium">
+                                                                    Giảm {room.discount}%
+                                                                </p>
+                                                                <p className="text-pink-600 text-lg font-semibold">
+                                                                    {(room.price * (1 - room.discount / 100)).toLocaleString()} VND
+                                                                </p>
                                                             </div>
-                                                        ))}
-                                                    </div>
-                                                </td>
-
-                                                {/* Cột lượng khách */}
-                                                <td className="align-top border-r border-gray-300 p-4 text-center">
-                                                    <div className="flex justify-center gap-1 mt-2">
-                                                        {Array.from({ length: room.maxGuests }).map((_, i) => (
-                                                            <AiOutlineUser key={i} size={18} />
-                                                        ))}
-                                                    </div>
-                                                </td>
-
-                                                {/* Cột giá */}
-                                                <td className="align-top border-r border-gray-300 p-4 text-center">
-                                                    {room.discount > 0 ? (
-                                                        <div className="mt-2 space-y-1">
-                                                            <p className="text-gray-400 line-through text-sm">
+                                                        ) : (
+                                                            <p className="text-pink-600 text-lg font-semibold mt-2">
                                                                 {room.price.toLocaleString()} VND
                                                             </p>
-                                                            <p className="text-green-600 text-xs font-medium">
-                                                                Giảm {room.discount}%
-                                                            </p>
-                                                            <p className="text-pink-600 text-lg font-semibold">
-                                                                {(room.price * (1 - room.discount / 100)).toLocaleString()} VND
-                                                            </p>
-                                                        </div>
-                                                    ) : (
-                                                        <p className="text-pink-600 text-lg font-semibold mt-2">
-                                                            {room.price.toLocaleString()} VND
-                                                        </p>
-                                                    )}
-                                                </td>
+                                                        )}
+                                                    </td>
 
-                                                {/* Cột ưu đãi */}
-                                                <td className="align-top p-4 space-y-2">
-                                                    <ul className="text-sm text-gray-700 dark:text-[#94a1b2] space-y-1">
-                                                        <li className="flex items-start gap-2">
-                                                            <AiOutlineCheck className="text-green-500 mt-1" size={16} />
-                                                            <span>{t("hotelId.text_29")}</span>
-                                                        </li>
-                                                        <li className="flex items-start gap-2">
-                                                            <AiOutlineCheck className="text-green-500 mt-1" size={16} />
-                                                            <span>{t("hotelId.text_30")}</span>
-                                                        </li>
-                                                        <li className="flex items-start gap-2">
-                                                            <AiOutlineCheck className="text-green-500 mt-1" size={16} />
-                                                            <span>{t("hotelId.text_31")}</span>
-                                                        </li>
-                                                        <li className="flex items-start gap-2">
-                                                            <AiOutlineCheck className="text-green-500 mt-1" size={16} />
-                                                            <span><strong className='dark:text-[#7f5af0]'>{t("hotelId.text_32")} {t("hotelId.text_discount")}</strong> {t("hotelId.text_33")}</span>
-                                                        </li>
-                                                    </ul>
-                                                    <button
-                                                        onClick={() => handleOpenRoomDetail(room)}
-                                                        className="mt-4 bg-purple-500 dark:bg-[#7f5af0] cursor-pointer hover:bg-purple-600 text-white px-6 py-2 rounded-full font-semibold">
-                                                        {t("hotelId.text_34")}
-                                                    </button>
-                                                </td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
+                                                    {/* Cột ưu đãi */}
+                                                    <td className="align-top border border-gray-300 p-4 space-y-2">
+                                                        <ul className="text-sm text-gray-700 dark:text-[#94a1b2] space-y-1">
+                                                            <li className="flex items-start gap-2">
+                                                                <AiOutlineCheck className="text-green-500 mt-1" size={16} />
+                                                                <span>{t("hotelId.text_29")}</span>
+                                                            </li>
+                                                            <li className="flex items-start gap-2">
+                                                                <AiOutlineCheck className="text-green-500 mt-1" size={16} />
+                                                                <span>{t("hotelId.text_30")}</span>
+                                                            </li>
+                                                            <li className="flex items-start gap-2">
+                                                                <AiOutlineCheck className="text-green-500 mt-1" size={16} />
+                                                                <span>{t("hotelId.text_31")}</span>
+                                                            </li>
+                                                            <li className="flex items-start gap-2">
+                                                                <AiOutlineCheck className="text-green-500 mt-1" size={16} />
+                                                                <span><strong className='dark:text-[#7f5af0]'>{t("hotelId.text_32")} {t("hotelId.text_discount")}</strong> {t("hotelId.text_33")}</span>
+                                                            </li>
+                                                        </ul>
+                                                        <button
+                                                            onClick={() => handleOpenRoomDetail(room)}
+                                                            className="mt-4 bg-purple-500 dark:bg-[#7f5af0] cursor-pointer hover:bg-purple-600 text-white px-6 py-2 rounded-full font-semibold">
+                                                            {t("hotelId.text_34")}
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
                             ) : (
                                 <div className="text-center mt-6 text-red-500 font-medium text-base">
                                     {t("hotelId.text_35")}<br />
@@ -589,28 +525,28 @@ export default function HotelDetailClient({ hotel }: Props) {
                         <CheckTablet>
                             {availableRooms.length > 0 ? (
                                 <div className="w-full mt-5 overflow-x-auto">
-                                    <table className="w-full border border-gray-300 rounded-lg overflow-hidden">
+                                    <table className="w-full border border-gray-300 overflow-hidden">
                                         <thead>
                                             <tr className="bg-[#e0e0f2] dark:bg-[#242629] text-left">
-                                                <th className="w-[40%] border-r border-gray-300 p-3 text-base font-semibold dark:text-white">
+                                                <th className="w-[40%] border border-gray-300 p-3 text-base font-semibold dark:text-white">
                                                     {t("hotelId.text_23")}
                                                 </th>
-                                                <th className="w-[15%] border-r border-gray-300 p-3 text-base font-semibold text-center dark:text-white">
+                                                <th className="w-[15%] border border-gray-300 p-3 text-base font-semibold text-center dark:text-white">
                                                     {t("hotelId.text_24")}
                                                 </th>
-                                                <th className="w-[20%] border-r border-gray-300 p-3 text-base font-semibold text-center dark:text-white">
+                                                <th className="w-[20%] border border-gray-300 p-3 text-base font-semibold text-center dark:text-white">
                                                     {t("hotelId.text_25")}
                                                 </th>
-                                                <th className="w-[25%] p-3 text-base font-semibold text-center dark:text-white">
+                                                <th className="w-[25%] border border-gray-300 p-3 text-base font-semibold text-center dark:text-white">
                                                     {t("hotelId.text_26")}
                                                 </th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             {availableRooms.map((room, index) => (
-                                                <tr key={index} className="border-t border-gray-300">
+                                                <tr key={index} className="border border-gray-300">
                                                     {/* Cột loại phòng */}
-                                                    <td className="p-3 border-r border-gray-300 align-top">
+                                                    <td className="p-3 border border-gray-300 align-top">
                                                         <button
                                                             className="text-base font-semibold text-[#6246ea] hover:underline"
                                                             onClick={() => handleOpenRoomDetail(room)}
@@ -634,7 +570,7 @@ export default function HotelDetailClient({ hotel }: Props) {
                                                     </td>
 
                                                     {/* Cột lượng khách */}
-                                                    <td className="p-3 border-r border-gray-300 text-center align-top">
+                                                    <td className="p-3 border border-gray-300 text-center align-top">
                                                         <div className="flex justify-center gap-1 mt-2">
                                                             {Array.from({ length: room.maxGuests }).map((_, i) => (
                                                                 <AiOutlineUser key={i} size={16} />
@@ -643,7 +579,7 @@ export default function HotelDetailClient({ hotel }: Props) {
                                                     </td>
 
                                                     {/* Cột giá */}
-                                                    <td className="p-3 border-r border-gray-300 text-center align-top">
+                                                    <td className="p-3 border border-gray-300 text-center align-top">
                                                         {room.discount > 0 ? (
                                                             <div className="space-y-1 mt-1">
                                                                 <p className="text-sm line-through text-gray-400">
@@ -664,7 +600,7 @@ export default function HotelDetailClient({ hotel }: Props) {
                                                     </td>
 
                                                     {/* Cột ưu đãi */}
-                                                    <td className="p-3 space-y-2 align-top">
+                                                    <td className="p-3 border space-y-2 align-top">
                                                         <ul className="text-sm text-gray-700 dark:text-[#94a1b2] space-y-1">
                                                             <li className="flex items-start gap-2">
                                                                 <AiOutlineCheck className="text-green-500 mt-1" size={16} />
@@ -706,17 +642,16 @@ export default function HotelDetailClient({ hotel }: Props) {
                                 </div>
                             )}
                         </CheckTablet>
-
                     </div>
                     <CheckMobilePhone>
                         <div className="space-y-4 mt-5">
                             {availableRooms.map((room, index) => (
                                 <div key={index} className="border border-gray-300 dark:border-gray-700 rounded-lg p-4 shadow-sm bg-white dark:bg-[#1f1f2b]">
                                     <div className="flex justify-between items-center">
-                                        <h3 className="font-semibold text-lg">{room.name}</h3>
+                                        <h3 className="font-semibold text-base">{room.name}</h3>
                                         <button
                                             onClick={() => handleOpenRoomDetail(room)}
-                                            className="text-sm text-purple-600 dark:text-[#7f5af0] underline"
+                                            className="text-sm text-[#6246ea] dark:text-[#7f5af0] underline"
                                         >
                                             {t("hotelId.text_34")}
                                         </button>
@@ -789,7 +724,6 @@ export default function HotelDetailClient({ hotel }: Props) {
                         </div>
                     </CheckMobilePhone>
 
-                    {/* Comment */}
                     {/* Đánh giá của khách hàng */}
                     <div className="mt-12">
                         <h2 className="text-2xl font-bold mb-6">{t("hotelId.text_37")}</h2>
@@ -823,7 +757,7 @@ export default function HotelDetailClient({ hotel }: Props) {
                             <div className="space-y-3 mb-8">
                                 {([5, 4, 3, 2, 1] as const).map((i) => (
                                     <div key={i} className="flex items-center gap-4">
-                                        <span className="w-10 text-sm font-medium">{i} {t("hotelId.star")}</span>
+                                        <span className="w-10 text-sm font-medium">{i}<span className='ml-1'>{t("hotelId.star")}</span></span>
                                         <div className="w-full bg-gray-200 rounded h-2 overflow-hidden">
                                             <div
                                                 className="bg-yellow-400 h-full"
@@ -846,9 +780,11 @@ export default function HotelDetailClient({ hotel }: Props) {
                                 >
                                     <div className="flex items-center gap-4 mb-3">
                                         {review.user?.avatar ? (
-                                            <img
-                                                src={review.user.avatar}
+                                            <Image
+                                                src={review.user.avatar ?? ""}
                                                 alt="avatar"
+                                                width={500}
+                                                height={300}
                                                 className="w-12 h-12 rounded-full object-cover border"
                                             />
                                         ) : (
@@ -879,7 +815,7 @@ export default function HotelDetailClient({ hotel }: Props) {
                         {hotel.reviews.length > 2 && (
                             <div className="mt-6 text-center">
                                 <button
-                                    className="text-purple-600 dark:text-[#7f5af0] cursor-pointer hover:underline font-medium text-sm"
+                                    className="text-[#6246ea] dark:text-[#7f5af0] cursor-pointer hover:underline font-medium text-sm"
                                     onClick={() => setShowAllReviews(!showAllReviews)}
                                 >
                                     {showAllReviews ? t("hotelId.text_42") : t("hotelId.text_41")}
@@ -898,19 +834,22 @@ export default function HotelDetailClient({ hotel }: Props) {
                                 <div className="flex flex-col gap-4">
                                     <div className="flex items-center gap-3">
                                         {user?.avatar ? (
-                                            <img
-                                                src={user.avatar}
-                                                alt="Avatar"
-                                                className="w-12 h-12 rounded-full object-cover shadow-md"
-                                            />
-                                        ) : (
-                                            <div className="w-12 h-12 rounded-full bg-gray-300 flex items-center justify-center text-white shadow-md">
-                                                <FaUserAlt className="text-base" />
+                                            <div className='flex gap-3 font-bold items-center justify-center'>
+                                                <Image
+                                                    src={user.avatar ?? ""}
+                                                    alt="Avatar"
+                                                    width={500}
+                                                    height={300}
+                                                    className="w-12 h-12 rounded-full object-cover shadow-md"
+                                                />
+                                                <p>{user.fullName}</p>
                                             </div>
+                                        ) : (
+                                            <p className="font-semibold text-lg text-gray-800 dark:text-[#fffffe]">
+                                                Bạn cần đăng nhập để đánh giá
+                                            </p>
                                         )}
-                                        <p className="font-semibold text-lg text-gray-800 dark:text-[#fffffe]">
-                                            {user?.fullName}
-                                        </p>
+
                                     </div>
 
                                     <div className="flex gap-1">
@@ -941,7 +880,7 @@ export default function HotelDetailClient({ hotel }: Props) {
                                     disabled={!comment || rating === 0}
                                     onClick={handlePostSubmitReview}
                                     className={`px-6 py-2 rounded-full cursor-pointer font-semibold transition duration-300 ${comment && rating
-                                        ? "bg-purple-600 text-white hover:bg-purple-700"
+                                        ? "bg-[#6246ea] dark:bg-[#7f5af0] text-white hover:bg-purple-700"
                                         : "bg-gray-300 text-gray-500 cursor-not-allowed"
                                         }`}
                                 >

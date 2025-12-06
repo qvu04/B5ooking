@@ -2,7 +2,7 @@ import { Hotels } from "../types/hotelTypes";
 import { https } from "./configService"
 import { translateText } from "@/lib/translate";
 export const getHotelsByLocation = (locationId: number) => {
-    return https.get(`/api/hotel/getHotelsByLocation/${locationId}`);
+    return https.get(`/api/hotel/getHotelsByLocation/${locationId}`, { noLoading: true });
 }
 export const fetchHotelByLocation = async (locationId: number, lang: string): Promise<Hotels[]> => {
     try {

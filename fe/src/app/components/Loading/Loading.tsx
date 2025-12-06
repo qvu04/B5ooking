@@ -14,6 +14,7 @@ export default function Loading() {
                         loop
                         muted
                         playsInline
+                        preload="none"
                         className="w-full h-full object-contain"
                     />
                 </div>

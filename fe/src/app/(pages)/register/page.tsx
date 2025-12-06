@@ -69,6 +69,8 @@ export default function RegisterPage() {
                 autoPlay
                 muted
                 loop
+                preload="none"
+                poster="/images/logo-b5ooking.png"
                 playsInline
             />
 
@@ -84,7 +86,7 @@ export default function RegisterPage() {
 
                 {/* FORM */}
                 <div className="bg-white/60 dark:bg-white/10 backdrop-blur-md border border-gray-200 dark:border-white/20 shadow-xl rounded-2xl p-10 w-full max-w-md">
-                    <h2 className="text-3xl font-bold text-center text-gray-800 dark:text-white mb-6">
+                    <h2 className="text-xl font-bold text-center text-gray-800 dark:text-white mb-6">
                         {t("register.form_title")}
                     </h2>
 

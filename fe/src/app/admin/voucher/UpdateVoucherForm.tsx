@@ -114,7 +114,7 @@ export default function UpdateVoucherForm({ voucher, onSuccess }: Props) {
                 disabled={loading}
                 className="bg-[#7f5af0] text-[#fffffe] py-2 rounded hover:opacity-90 disabled:opacity-50"
             >
-                {loading ? "Đang cập nhật..." : "Cập nhật voucher"}
+                {loading ? "Đang cập nhật..." : "Lưu"}
             </button>
         </form>
     );

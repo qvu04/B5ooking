@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { fetchTranslateLocation } from '@/app/api/locationService';
 import { toSlug } from '@/utils/slug';
 import { useTranslation } from 'react-i18next';
-
+import Image from "next/image";
 
 const PopularLocation = () => {
     const [locations, setLocations] = useState<Locations[] | null>(null);
@@ -35,15 +35,19 @@ const PopularLocation = () => {
                         href={`/location/${toSlug(location.city)}`}
                         className="relative group rounded-lg overflow-hidden shadow-md border"
                     >
-                        <img
-                            src={location.imageLocation}
-                            alt={location.city}
+                        <Image
+                            src={location.imageLocation ?? ""}
+                            alt={location.city ?? ""}
+                            width={500}
+                            height={300}
                             className="w-full h-48 object-cover transform duration-300 group-hover:scale-110"
                         />
                         <div className="absolute bottom-0 left-0 w-full h-full flex items-end justify-center bg-gradient-to-t from-black/60 to-transparent translate-y-full group-hover:translate-y-0 transition-transform duration-300">
                             <div className="flex items-center gap-2 mb-4">
-                                <img
+                                <Image
                                     className="w-5 h-5 object-cover rounded-sm"
+                                    width={500}
+                                    height={300}
                                     src="/images/icon_co_VN.png"
                                     alt="co_VN"
                                 />

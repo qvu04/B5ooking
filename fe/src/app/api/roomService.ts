@@ -11,7 +11,8 @@ export type SearchHotelParams = {
 export const getSearchHotel = (params: SearchHotelParams) => {
     return https.get<{ data: { availableRooms: RoomAvailable[] } }>("/api/room/getSearchAvailableHotels", {
         params,
-    });
+        noLoading: true,
+    },);
 };
 export const fetchSearchHotel = async (params: SearchHotelParams, language: string = "vi") => {
     const res = await getSearchHotel(params);
@@ -42,5 +43,5 @@ export const fetchSearchHotel = async (params: SearchHotelParams, language: stri
     return rooms;
 };
 export const getRoomByRoomId = (roomId: number) => {
-    return https.get(`/api/room/getRoomById/${roomId}`)
+    return https.get(`/api/room/getRoomById/${roomId}`, { noLoading: true });
 }

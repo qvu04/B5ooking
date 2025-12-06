@@ -280,5 +280,11 @@
         "CANCELED": "Cancelled",
         "FINISHED": "Completed",
         "PAID": "Paid"
+    },
+    "voucher": {
+        "discount": "Discount Code",
+        "voucherCode": "Enter voucher code",
+        "voucherButton": "Apply",
+        "totalPrice": "Total after discount when applying voucher:"
     }
 }

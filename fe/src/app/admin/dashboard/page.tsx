@@ -14,9 +14,9 @@ export default function DashboardAdmin() {
     };
 
     return (
-        <div className="p-6 space-y-6">
+        <div className="h-200 flex flex-col overflow-hidden p-6 space-y-6">
             {/* Header + chọn ngày + nút xuất PDF */}
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 flex-shrink-0">
                 <h1 className="text-2xl font-semibold text-gray-800">
                     Báo cáo doanh thu
                 </h1>
@@ -44,13 +44,16 @@ export default function DashboardAdmin() {
             </div>
 
             {/* Tổng doanh thu */}
-            <TotalBill />
+            <div className="flex-shrink-0">
+                <TotalBill />
+            </div>
 
-            {/* Biểu đồ */}
-            <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 items-stretch">
+            {/* Biểu đồ (chiếm phần còn lại của màn hình) */}
+            <div className="grid grid-cols-1 xl:grid-cols-2 h-full gap-6 flex-grow">
                 <RevenueBarChart />
                 <RevenuePieChart />
             </div>
         </div>
     );
 }
+

@@ -68,7 +68,7 @@ export default function LocationPage({ params }: Props) {
     if (!mounted) return null;
 
     if (!hotels) {
-        return <div className="p-6 text-red-500">Không tìm thấy địa điểm</div>;
+        return <div className="p-6 text-xl text-red-500">Looking for location! Please wait a few minutes...</div>;
     }
 
     return (

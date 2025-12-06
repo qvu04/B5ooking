@@ -3,7 +3,7 @@ import { Locations } from "../types/locationTypes";
 import { https } from "./configService"
 
 export const getSomeLocation = () => {
-    return https.get("/api/hotel/getSomeLocaltions");
+    return https.get("/api/hotel/getSomeLocaltions", { noLoading: true });
 }
 export const fetchSomeLocation = async () => {
     try {

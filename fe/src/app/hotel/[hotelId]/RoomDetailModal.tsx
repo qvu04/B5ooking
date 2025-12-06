@@ -1,5 +1,4 @@
 'use client';
-
 import { Modal } from 'antd';
 import { RoomAvailable } from '@/app/types/hotelTypes';
 import { AiOutlineCheck } from 'react-icons/ai';
@@ -14,7 +13,7 @@ import toast from 'react-hot-toast';
 import ShowConfirm from '@/app/hotel/[hotelId]/FormConfirmBooking';
 import { useTranslation } from 'react-i18next';
 import { translateText } from "@/lib/translate";
-import { CheckDesktop, CheckMobilePhone, CheckTablet } from '@/app/components/HOC/ResponsiveCustom.';
+import { CheckMobilePhone } from '@/app/components/HOC/ResponsiveCustom.';
 import {
     Carousel,
     CarouselContent,
@@ -23,6 +22,9 @@ import {
     CarouselPrevious,
 } from "@/components/ui/carousel"
 import { useRouter } from 'next/navigation';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/lib/store';
+import Image from 'next/image';
 type Props = {
     open: boolean;
     onClose: () => void;
@@ -31,14 +33,14 @@ type Props = {
     checkOut: string;
 };
 
+
 export default function RoomDetailModal({ open, onClose, room, checkIn, checkOut }: Props) {
-    console.log('✌️checkOut --->', checkOut);
-    console.log('✌️checkIn --->', checkIn);
     const [fullRoom, setFullRoom] = useState<RoomType | null>(null);
     const [thumbsSwiper, setThumbsSwiper] = useState<SwiperType | null>(null);
     const [isBooking, setIsBooking] = useState(false);
     const [showConfirm, setShowConfirm] = useState(false);
     const { t, i18n } = useTranslation();
+    const { user } = useSelector((state: RootState) => state.userSlice);
     const router = useRouter();
     const handleBooking = async (nights: number, checkInDate: string, checkOutDate: string, voucherCode: string, finalPrice: number) => {
         if (!room) return
@@ -101,149 +103,138 @@ export default function RoomDetailModal({ open, onClose, room, checkIn, checkOut
         ? room.price * (1 - room.discount / 100)
         : room.price;
     const handleConfirmBooking = () => {
+        if (user === null) {
+            toast.error("Vui lòng đăng nhập để đặt phòng");
+            return;
+        }
         setShowConfirm(true);
     };
     if (!fullRoom || !fullRoom.images || fullRoom.images.length === 0) {
         return <div>Loading images...</div>;
     }
     return (
-        <Modal open={open} onCancel={onClose} footer={null} width={1000}>
-            <div className="grid md:grid-cols-2 gap-6">
+        <Modal open={open}
+            onCancel={onClose}
+            footer={null}
+            width="80vw"
+            centered
+            style={{
+                top: 20,
+            }}>
+            <div className="grid md:grid-cols-2 gap-6 sm:gap-4 px-2 sm:px-4 md:px-6">
                 {/* BÊN TRÁI: Hình ảnh */}
-                <CheckDesktop>
-                    <div className="space-y-4">
-                        {/* Swiper ảnh chính */}
-                        <Swiper
-                            modules={[Thumbs]}
-                            thumbs={{ swiper: thumbsSwiper && !thumbsSwiper.destroyed ? thumbsSwiper : null }}
-                            loop={true}
-                            spaceBetween={10}
-                            className="rounded-lg overflow-hidden mb-2 h-[300px]"
-                        >
-                            <SwiperSlide>
-                                <img
-                                    src={fullRoom.image}
-                                    alt="main-room"
-                                    className="w-full h-full object-cover"
-                                />
-                            </SwiperSlide>
-                            {Array.isArray(fullRoom.images) &&
-                                fullRoom.images.map((img, i) => (
-                                    <SwiperSlide key={i}>
-                                        <img
-                                            src={img.imageUrl}
-                                            alt={`room-${i}`}
+                {/* BÊN TRÁI: Hình ảnh */}
+                <div className="space-y-4">
+                    {/* 🖼️ Swiper ảnh chính - chỉ hiện ở tablet/desktop */}
+                    <div className="hidden sm:block">
+                        {fullRoom && (
+                            <>
+                                <Swiper
+                                    modules={[Thumbs]}
+                                    thumbs={{
+                                        swiper: thumbsSwiper && !thumbsSwiper.destroyed ? thumbsSwiper : null,
+                                    }}
+                                    loop={true}
+                                    spaceBetween={10}
+                                    className="rounded-lg overflow-hidden mb-2 h-[250px] sm:h-[320px] md:h-[400px]"
+                                >
+                                    <SwiperSlide>
+                                        <Image
+                                            src={fullRoom.image ?? ""}
+                                            alt="main-room"
+                                            width={500}
+                                            height={300}
                                             className="w-full h-full object-cover"
                                         />
                                     </SwiperSlide>
-                                ))}
-                        </Swiper>
+                                    {Array.isArray(fullRoom.images) &&
+                                        fullRoom.images.map((img, i) => (
+                                            <SwiperSlide key={i}>
+                                                <Image
+                                                    src={img.imageUrl ?? ""}
+                                                    alt={`room-${i}`}
+                                                    width={500}
+                                                    height={300}
+                                                    className="w-full h-full object-cover"
+                                                />
+                                            </SwiperSlide>
+                                        ))}
+                                </Swiper>
 
-                        {/* Swiper thumbnail */}
-                        <Swiper
-                            modules={[Thumbs]}
-                            onSwiper={setThumbsSwiper}
-                            thumbs={{ swiper: thumbsSwiper && !thumbsSwiper.destroyed ? thumbsSwiper : null }}
-                            slidesPerView={5}
-                            spaceBetween={10}
-                            watchSlidesProgress
-                            className="h-20"
-                        >
-                            <SwiperSlide>
-                                <img
-                                    src={fullRoom.image}
-                                    alt="thumb-main"
-                                    className="w-full h-full object-cover rounded border"
-                                />
-                            </SwiperSlide>
-                            {Array.isArray(fullRoom.images) &&
-                                fullRoom.images.map((img, i) => (
-                                    <SwiperSlide key={i}>
-                                        <img
-                                            src={img.imageUrl}
-                                            alt={`thumb-${i}`}
-                                            className="w-full h-full object-cover rounded border"
+                                <Swiper
+                                    modules={[Thumbs]}
+                                    onSwiper={(swiper) => {
+                                        if (!swiper.destroyed) setThumbsSwiper(swiper);
+                                    }}
+                                    watchSlidesProgress
+                                    loop={false}
+                                    spaceBetween={8}
+                                    breakpoints={{
+                                        640: { slidesPerView: 4, spaceBetween: 8 },
+                                        1024: { slidesPerView: 5, spaceBetween: 10 },
+                                    }}
+                                    className="h-[70px] sm:h-[80px]"
+                                >
+                                    <SwiperSlide>
+                                        <Image
+                                            src={fullRoom.image ?? ""}
+                                            alt="thumb-main"
+                                            width={500}
+                                            height={300}
+                                            className="w-full h-full object-cover rounded border cursor-pointer hover:opacity-80 transition"
                                         />
                                     </SwiperSlide>
+                                    {Array.isArray(fullRoom.images) &&
+                                        fullRoom.images.map((img, i) => (
+                                            <SwiperSlide key={i}>
+                                                <Image
+                                                    src={img.imageUrl ?? ""}
+                                                    alt={`thumb-${i}`}
+                                                    width={500}
+                                                    height={300}
+                                                    className="w-full h-full object-cover rounded border cursor-pointer hover:opacity-80 transition"
+                                                />
+                                            </SwiperSlide>
+                                        ))}
+                                </Swiper>
+                            </>
+                        )}
+                        {/* 🧩 Tiện nghi — luôn hiển thị ở mọi kích thước */}
+                        <div className='mt-3'>
+                            <h3 className="text-lg font-semibold">{t("hotelId.text_47")}</h3>
+                            <ul className="grid grid-cols-1 md:grid-cols-2 gap-3 text-gray-700 text-sm">
+                                {room.amenities.map((item, i) => (
+                                    <li key={i} className="flex items-center gap-1">
+                                        <AiOutlineCheck className="text-green-500" />
+                                        {item.amenity.name}
+                                    </li>
                                 ))}
-                        </Swiper>
+                            </ul>
+                        </div>
                     </div>
-                </CheckDesktop>
-                <CheckTablet>
-                    <div className="space-y-4">
-                        {/* Swiper ảnh chính */}
-                        <Swiper
-                            modules={[Thumbs]}
-                            thumbs={{ swiper: thumbsSwiper && !thumbsSwiper.destroyed ? thumbsSwiper : null }}
-                            loop={true}
-                            spaceBetween={10}
-                            className="rounded-lg overflow-hidden mb-2 h-[300px]"
-                        >
-                            <SwiperSlide>
-                                <img
-                                    src={fullRoom.image}
-                                    alt="main-room"
-                                    className="mt-5 w-full h-[400px] object-cover"
-                                />
-                            </SwiperSlide>
-                            {Array.isArray(fullRoom.images) &&
-                                fullRoom.images.map((img, i) => (
-                                    <SwiperSlide key={i}>
-                                        <img
-                                            src={img.imageUrl}
-                                            alt={`room-${i}`}
-                                            className="w-full h-full object-cover"
-                                        />
-                                    </SwiperSlide>
-                                ))}
-                        </Swiper>
-
-                        {/* Swiper thumbnail */}
-                        <Swiper
-                            modules={[Thumbs]}
-                            onSwiper={setThumbsSwiper}
-                            slidesPerView={5}
-                            spaceBetween={10}
-                            watchSlidesProgress
-                            className="h-20"
-                        >
-                            <SwiperSlide>
-                                <img
-                                    src={fullRoom.image}
-                                    alt="thumb-main"
-                                    className="w-full h-full object-cover rounded border"
-                                />
-                            </SwiperSlide>
-                            {Array.isArray(fullRoom.images) &&
-                                fullRoom.images.map((img, i) => (
-                                    <SwiperSlide key={i}>
-                                        <img
-                                            src={img.imageUrl}
-                                            alt={`thumb-${i}`}
-                                            className="w-full h-full object-cover rounded border"
-                                        />
-                                    </SwiperSlide>
-                                ))}
-                        </Swiper>
+                    {/* 🖼️ Carousel chỉ dành cho mobile */}
+                    <div className="block sm:hidden">
+                        <CheckMobilePhone>
+                            <Carousel>
+                                <CarouselContent>
+                                    {fullRoom.images.map((img, i) => (
+                                        <CarouselItem key={i}>
+                                            <Image
+                                                src={img.imageUrl ?? ""}
+                                                alt={`room-${i}`}
+                                                width={500}
+                                                height={300}
+                                                className="w-full h-[350px] object-cover"
+                                            />
+                                        </CarouselItem>
+                                    ))}
+                                </CarouselContent>
+                                <CarouselPrevious />
+                                <CarouselNext />
+                            </Carousel>
+                        </CheckMobilePhone>
                     </div>
-                </CheckTablet>
-                <CheckMobilePhone>
-                    <Carousel>
-                        <CarouselContent>
-                            {fullRoom.images.map((img, i) => (
-                                <CarouselItem key={i}>
-                                    <img
-                                        src={img.imageUrl}
-                                        alt={`room-${i}`}
-                                        className="w-full h-[350px] object-cover"
-                                    />
-                                </CarouselItem>
-                            ))}
-                        </CarouselContent>
-                        <CarouselPrevious />
-                        <CarouselNext />
-                    </Carousel>
-                </CheckMobilePhone>
+                </div>
                 {/* BÊN PHẢI: Thông tin */}
                 <div className="space-y-6">
                     <div>
@@ -257,10 +248,10 @@ export default function RoomDetailModal({ open, onClose, room, checkIn, checkOut
                         <h3 className="font-semibold text-lg mb-2 text-gray-800">{t("hotelId.text_46")}</h3>
                         <p className="text-sm text-gray-700 leading-relaxed">{fullRoom.description}</p>
                     </div>
-
-                    <div>
+                    {/* 🧩 Tiện nghi — luôn hiển thị ở mọi kích thước */}
+                    <div className='mt-3 md:hidden'>
                         <h3 className="text-lg font-semibold">{t("hotelId.text_47")}</h3>
-                        <ul className="grid grid-cols-2 gap-2 text-gray-700 text-sm">
+                        <ul className="grid grid-cols-1 md:grid-cols-2 gap-3 text-gray-700 text-sm">
                             {room.amenities.map((item, i) => (
                                 <li key={i} className="flex items-center gap-1">
                                     <AiOutlineCheck className="text-green-500" />
@@ -269,10 +260,9 @@ export default function RoomDetailModal({ open, onClose, room, checkIn, checkOut
                             ))}
                         </ul>
                     </div>
-
                     <div>
                         <h3 className="text-lg font-semibold">{t("hotelId.text_48")}</h3>
-                        <ul className="list-disc grid grid-cols-2 list-inside text-sm text-gray-700 leading-relaxed space-y-1">
+                        <ul className="list-disc grid grid-cols-1 md:grid-cols-2 list-inside text-sm text-gray-700 leading-relaxed space-y-1">
                             <li>{t("hotelId.text_49")}</li>
                             <li>{t("hotelId.text_50")}</li>
                             <li>{t("hotelId.text_51")}</li>
@@ -286,7 +276,6 @@ export default function RoomDetailModal({ open, onClose, room, checkIn, checkOut
                             <li>{t("hotelId.text_59")}</li>
                         </ul>
                     </div>
-
                     <div>
                         <h3 className="text-lg font-semibold">{t("hotelId.text_60")}</h3>
                         <p className="text-sm text-gray-700">{t("hotelId.text_61")}</p>
@@ -340,10 +329,9 @@ export default function RoomDetailModal({ open, onClose, room, checkIn, checkOut
                         roomId={room.id}
                     />
 
+
                 </div>
             </div>
         </Modal>
     );
-
-
 }

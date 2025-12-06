@@ -1,6 +1,7 @@
 "use client"
 import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next';
+import Image from 'next/image';
 const PlanBanner = () => {
     const { t } = useTranslation();
     const [mounted, setMounted] = useState(false);
@@ -28,9 +29,11 @@ const PlanBanner = () => {
 
                 {/* Right image */}
                 <div className="flex justify-center">
-                    <img
+                    <Image
                         src="/images/home_plan.png"
                         alt="home plan"
+                        width={500}
+                        height={300}
                         className="w-full max-w-sm object-contain"
                     />
                 </div>

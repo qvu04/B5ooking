@@ -10,50 +10,36 @@ import { translateText } from "@/lib/translate";
 export default function HotelDetailPage() {
     const { hotelId } = useParams();
     const { i18n } = useTranslation();
-
     const [hotel, setHotel] = useState<Hotels | null>(null);
     const [mounted, setMounted] = useState(false);
 
-    useEffect(() => {
-        const fetchHotel = async () => {
-            try {
-                const res = await getHotelsbyHotelId(Number(hotelId));
-                console.log('✌️res --->', res);
-                let hotelData: Hotels = res.data.data;
+    const fetchHotel = async () => {
+        try {
+            const res = await getHotelsbyHotelId(Number(hotelId));
+            let hotelData: Hotels = res.data.data;
 
-                if (i18n.language !== 'vi') {
-                    const name = await translateText(hotelData.name, "vi", i18n.language);
-                    const description = await translateText(hotelData.description, "vi", i18n.language);
-                    const address = await translateText(hotelData.address, "vi", i18n.language);
+            if (i18n.language !== "vi") {
+                const name = await translateText(hotelData.name, "vi", i18n.language);
+                const description = await translateText(hotelData.description, "vi", i18n.language);
+                const address = await translateText(hotelData.address, "vi", i18n.language);
 
-                    // Dịch từng tiện nghi
-                    const amenities = await Promise.all(
-                        hotelData.amenities.map(async (item) => {
-                            const translatedAmenityName = await translateText(item.amenity.name, "vi", i18n.language);
-                            return {
-                                ...item,
-                                amenity: {
-                                    ...item.amenity,
-                                    name: translatedAmenityName
-                                }
-                            };
-                        })
-                    );
-                    hotelData = {
-                        ...hotelData,
-                        name,
-                        description,
-                        address,
-                        amenities,
-                    };
-                }
+                const amenities = await Promise.all(
+                    hotelData.amenities.map(async (item) => {
+                        const translatedName = await translateText(item.amenity.name, "vi", i18n.language);
+                        return { ...item, amenity: { ...item.amenity, name: translatedName } };
+                    })
+                );
 
-                setHotel(hotelData);
-            } catch (error) {
-                console.error("Error fetching hotel:", error);
+                hotelData = { ...hotelData, name, description, address, amenities };
             }
-        };
 
+            setHotel(hotelData);
+        } catch (error) {
+            console.error("Error fetching hotel:", error);
+        }
+    };
+
+    useEffect(() => {
         fetchHotel();
     }, [hotelId, i18n.language]);
 
@@ -61,7 +47,10 @@ export default function HotelDetailPage() {
         setMounted(true);
     }, []);
 
-    if (!mounted || !hotel) return null;
 
-    return <HotelDetailClient hotel={hotel} />;
+    if (!mounted) return null;
+    if (!hotel) {
+        return <div className="p-6 text-xl text-red-500">Looking for hotel! Please wait a few minutes...</div>;
+    }
+    return <HotelDetailClient hotel={hotel} onRefetch={fetchHotel} />;
 }
