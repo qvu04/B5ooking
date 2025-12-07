@@ -7,7 +7,6 @@ import { useTranslation } from 'react-i18next';
 import { translateText } from '@/lib/translate';
 import {
     AlertDialog,
-    AlertDialogTrigger,
     AlertDialogContent,
     AlertDialogHeader,
     AlertDialogTitle,
@@ -116,6 +115,18 @@ export default function Booking() {
         setMounted(true);
     }, [])
     if (!mounted) return null;
+    const getStatusClasses = (status: BookingStatusEnum) => {
+        switch (status) {
+            case BookingStatusEnum.PENDING:
+                return "bg-[#6246ea] text-white border-[#6246ea]";
+            case BookingStatusEnum.CONFIRMED:
+                return "bg-green-500 text-white border-green-600";
+            case BookingStatusEnum.CANCELED:
+                return "bg-red-500 text-white border-red-600";
+            default:
+                return "bg-gray-200 text-gray-700 border-gray-300";
+        }
+    };
 
     const renderBookingList = () => (
         <section className="mt-6">
@@ -145,9 +156,13 @@ export default function Booking() {
                                         {item.totalPrice.toLocaleString()}₫
                                     </span>
                                 </p>
-                                <span className="inline-block mt-2 text-sm px-3 py-1 rounded-full bg-gray-100 border text-[#6246ea] font-semibold">
+                                <span
+                                    className={`inline-block mt-2 text-sm px-3 py-1 rounded-full border font-semibold 
+  ${getStatusClasses(item.status)}`}
+                                >
                                     {t("booking.text_5")} {t(`booking_status.${item.status}`)}
                                 </span>
+
 
                                 {/* 👇 Thêm phần này nếu trạng thái là PENDING */}
                                 {item.status === BookingStatusEnum.PENDING && (
@@ -173,8 +188,6 @@ export default function Booking() {
             )}
         </section>
     );
-
-
     const renderFilterButtons = () => (
         <div className="flex flex-wrap gap-3 mb-6">
             {[
@@ -196,7 +209,6 @@ export default function Booking() {
             ))}
         </div>
     );
-
     return (
         <>
             <CheckDesktop>

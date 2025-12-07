@@ -70,7 +70,6 @@ export default function RegisterPage() {
                 muted
                 loop
                 preload="none"
-                poster="/images/logo-b5ooking.png"
                 playsInline
             />
 

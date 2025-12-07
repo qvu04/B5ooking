@@ -83,9 +83,14 @@ export default function ShowConfirm({
                 voucherCode
             );
             setVoucherInfo(res.data.data);
+            console.log("Áp dụng voucher: ", res);
             toast.success("Áp dụng mã giảm giá thành công!");
         } catch (error: any) {
-            toast.error("Mã voucher không hợp lệ!");
+            const message =
+                error?.response?.data?.message ||
+                "Có lỗi xảy ra khi áp dụng voucher";
+
+            toast.error(message);
             setVoucherInfo(null);
         }
     };
