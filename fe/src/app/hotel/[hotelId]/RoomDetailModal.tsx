@@ -65,7 +65,7 @@ export default function RoomDetailModal({ open, onClose, room, checkIn, checkOut
             onClose();
         } catch (error) {
             console.log('✌️error --->', error);
-            toast.error("Đặt phòng thất bại");
+            toast.error("Phòng đã được đặt trong thời gian này");
         } finally {
             setIsBooking(false);
         }
