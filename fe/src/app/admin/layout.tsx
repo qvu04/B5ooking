@@ -43,7 +43,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             {/* Khu vực chính */}
             <div className="flex-1 flex flex-col">
                 {/* Header */}
-                <header className="sticky top-0 z-40 bg-white dark:bg-zinc-900 border-b dark:border-zinc-800 shadow-sm px-10 py-4">
+                <header className="sticky top-0 z-40 bg-white dark:bg-zinc-900 border-b dark:border-zinc-800 shadow-sm px-10 py-2">
                     <div className="flex items-center justify-between w-full">
                         <div className="flex items-center gap-1 basis-1/3">
                             <Link href="/" className="flex items-center gap-1">

@@ -85,9 +85,15 @@ export default function HotelDetailClient({ hotel, onRefetch }: Props) {
         }
     };
     const handleAddFavoriteHotel = async () => {
-        const res = await addFavorite(hotel.id);
-        console.log('✌️res --->', res);
-        toast.success("Cảm ơn bạn đã yêu thích khách sạn");
+        try {
+            const res = await addFavorite(hotel.id);
+            console.log('✌️res --->', res);
+            toast.success("Cảm ơn bạn đã yêu thích khách sạn");
+        } catch (error) {
+            console.log(error);
+            toast.error("Bạn cần đăng nhập để yêu thích khách sạn này")
+        }
+
     }
     useEffect(() => {
         if (!hotel.id) return;
