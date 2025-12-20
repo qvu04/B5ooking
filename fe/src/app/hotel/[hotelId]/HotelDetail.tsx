@@ -839,23 +839,36 @@ export default function HotelDetailClient({ hotel, onRefetch }: Props) {
                             {mounted && (
                                 <div className="flex flex-col gap-4">
                                     <div className="flex items-center gap-3">
-                                        {user?.avatar ? (
-                                            <div className='flex gap-3 font-bold items-center justify-center'>
-                                                <Image
-                                                    src={user.avatar ?? ""}
-                                                    alt="Avatar"
-                                                    width={500}
-                                                    height={300}
-                                                    className="w-12 h-12 rounded-full object-cover shadow-md"
-                                                />
-                                                <p>{user.fullName}</p>
+                                        {user ? (
+                                            // TRƯỜNG HỢP 1: ĐÃ ĐĂNG NHẬP (Có user)
+                                            <div className="flex items-center gap-2">
+                                                {user.avatar ? (
+                                                    // Nếu có Avatar -> Hiện ảnh
+                                                    <Image
+                                                        src={user.avatar}
+                                                        alt="Avatar"
+                                                        width={50}
+                                                        height={50}
+                                                        className="w-8 h-8 rounded-full object-cover shadow-md"
+                                                    />
+                                                ) : (
+                                                    // Nếu Avatar null/rỗng -> Hiện Icon mặc định
+                                                    <div className="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center text-white shadow-md">
+                                                        <FaUserAlt className="text-sm" />
+                                                    </div>
+                                                )}
+
+                                                {/* Luôn hiện tên khi đã đăng nhập */}
+                                                <p className="text-sm font-medium text-gray-800 dark:text-[#fffffe]">
+                                                    {user.fullName}
+                                                </p>
                                             </div>
                                         ) : (
+                                            // TRƯỜNG HỢP 2: CHƯA ĐĂNG NHẬP (User null)
                                             <p className="font-semibold text-lg text-gray-800 dark:text-[#fffffe]">
                                                 Bạn cần đăng nhập để đánh giá
                                             </p>
                                         )}
-
                                     </div>
 
                                     <div className="flex gap-1">
