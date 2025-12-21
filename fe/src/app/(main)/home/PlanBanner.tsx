@@ -12,7 +12,6 @@ const PlanBanner = () => {
     return (
         <div className="bg-[#d1d1e9] border-gray-300 rounded-2xl shadow-lg p-6 md:p-12 my-10 mx-4 md:mx-auto max-w-6xl">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
-
                 {/* Left bubble-style box */}
                 <div className="bg-[#e0e7ff] rounded-[100px] px-10 py-8 shadow-md text-center">
                     <h2 className="text-xl md:text-2xl font-bold text-[#2b2c34] mb-4 leading-snug">
@@ -26,8 +25,6 @@ const PlanBanner = () => {
                         {t("home.plan_banner_button")}
                     </button>
                 </div>
-
-                {/* Right image */}
                 <div className="flex justify-center">
                     <Image
                         src="/images/home_plan.png"
@@ -41,5 +38,4 @@ const PlanBanner = () => {
         </div>
     )
 }
-
 export default PlanBanner

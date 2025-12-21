@@ -1,9 +1,9 @@
-import PlanBanner from "./components/Home/PlanBanner";
-import PopularBlog from "./components/Home/PopularBlog";
-import PopularHotel from "./components/Home/PopularHotel";
-import PopularLocation from "./components/Home/PopularLocation";
-import PopularTravel from "./components/Home/PopularTravel";
-import TravelDealCard from "./components/Home/TravelDealCard";
+import PlanBanner from "./(main)/home/PlanBanner";
+import PopularBlog from "./(main)/home/PopularBlog";
+import PopularHotel from "./(main)/home/PopularHotel";
+import PopularLocation from "./(main)/home/PopularLocation";
+import PopularTravel from "./(main)/home/PopularTravel";
+import TravelDealCard from "./(main)/home/TravelDealCard";
 
 export default function Home() {
   return (
