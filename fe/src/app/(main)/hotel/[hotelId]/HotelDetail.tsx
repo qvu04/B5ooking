@@ -564,7 +564,7 @@ export default function HotelDetailClient({ hotel, onRefetch }: Props) {
                                                         </p>
                                                         <p className="text-sm mt-1 dark:text-[#94a1b2]">
                                                             {t("hotelId.text_28")} 🛏️
-                                                        </p>
+                                                            ư                               </p>
                                                         <div className="flex flex-wrap gap-2 mt-2 text-sm dark:text-[#94a1b2]">
                                                             {room.amenities.map((item, i) => (
                                                                 <div key={i} className="flex items-center gap-1">
