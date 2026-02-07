@@ -1,6 +1,6 @@
 # 🏨 B5ooking - Hệ thống Đặt phòng Khách sạn
 
-Đồ án xây dựng website đặt phòng khách sạn trực tuyến, cho phép người dùng tìm kiếm, đặt phòng và quản trị viên quản lý khách sạn, phòng ốc.
+Đồ án xây dựng website đặt phòng khách sạn trực tuyến, cho phép người dùng tìm kiếm, đặt phòng, kiểm thử thanh toán và quản trị viên quản lý khách sạn, phòng ốc.
 
 ## 🚀 Công nghệ sử dụng
 
@@ -34,7 +34,7 @@ npx prisma db push
 # Chạy server
 npm start
 # CÀI ĐẶT FRONTEND
-# Di chuyển vào thư mục frontend (ví dụ tên là 'fe' hoặc 'frontend')
+# Di chuyển vào thư mục frontend (ví dụ tên là 'fe')
 cd fe
 
 # Cài đặt thư viện
