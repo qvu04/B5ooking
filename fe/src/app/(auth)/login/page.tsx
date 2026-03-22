@@ -71,23 +71,16 @@ export default function LoginPage() {
                     className="absolute inset-0 w-full h-full object-cover z-0"
                 />
             </div>
-            {/* OVERLAY */}
             <div className="absolute inset-0 bg-black/50 z-10" />
-            {/* LOGIN FORM CENTERED */}
             <div className="relative z-20 flex flex-col items-center justify-center h-full px-4 ">
-                {/* Chào mừng */}
                 <h1 className="text-2xl md:text-3xl font-bold text-white drop-shadow-lg mb-6">
                     {t("login.title")} <span className="text-[#6246ea]">B5ooking</span>
                 </h1>
-
-                {/* FORM LOGIN */}
                 <div className="bg-white/60 dark:bg-white/10 backdrop-blur-md p-10 rounded-2xl shadow-xl w-full max-w-md border border-gray-200 dark:border-white/20">
                     <h2 className="text-xl font-semibold text-center text-gray-800 dark:text-white mb-6">
                         {t("login.form_title")}
                     </h2>
-
                     <form className="space-y-5" onSubmit={handleSubmit(onSubmit)}>
-                        {/* Email */}
                         <div>
                             <label className="block text-sm font-medium text-black">{t("login.form_email")}</label>
                             <input
@@ -100,8 +93,6 @@ export default function LoginPage() {
                                 <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>
                             )}
                         </div>
-
-                        {/* Password */}
                         <div>
                             <label className="block text-sm font-medium text-black">{t("login.form_password")}</label>
                             <div className="relative">
@@ -122,8 +113,6 @@ export default function LoginPage() {
                                 <p className="text-red-500 text-sm mt-1">{errors.password.message}</p>
                             )}
                         </div>
-
-                        {/* Submit */}
                         <button
                             type="submit"
                             className="w-full bg-[#6246ea] cursor-pointer mb-5 hover:bg-blue-700 text-white py-2 rounded-xl font-semibold transition-all duration-200"
