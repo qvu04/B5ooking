@@ -3,16 +3,16 @@ import { isText } from "domutils";
 import render from "dom-serializer";
 import { translateText } from "@/lib/translate";
 
-import { Element, DataNode } from "domhandler";
+import { DataNode, Node } from "domhandler";
 
-function getAllTextNodes(node: any): DataNode[] {
+function getAllTextNodes(node: Node): DataNode[] {
     const result: DataNode[] = [];
 
-    const traverse = (node: any) => {
-        if (isText(node)) {
-            result.push(node);
-        } else if (node.children) {
-            for (const child of node.children) {
+    const traverse = (n: Node) => {
+        if (isText(n)) {
+            result.push(n);
+        } else if ('children' in n) {
+            for (const child of (n as { children: Node[] }).children) {
                 traverse(child);
             }
         }
@@ -29,7 +29,7 @@ export const translateHTMLContent = async (
 ): Promise<string> => {
     const dom = parseDocument(htmlContent);
 
-    const textNodes = getAllTextNodes(dom);
+    const textNodes = getAllTextNodes(dom as unknown as Node);
 
     await Promise.all(
         textNodes.map(async (node) => {

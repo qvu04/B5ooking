@@ -35,7 +35,7 @@ export default function ChatBoxModal({
         setLoading(true);
 
         try {
-            const currentUser = user ? { id: user.id, fullname: user.fullName } : undefined;
+            const currentUser = user ? { id: Number(user.id), fullname: user.fullName } : undefined;
             const res = await chatBoxService({ ask }, currentUser);
             const aiData = res.data.data.data;
 

@@ -1,11 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { verifyPaymentOnlineService } from "@/app/api/payment-onlineService";
 
-export default function BookingSuccess() {
+function BookingSuccessContent() {
     const searchParams = useSearchParams();
     const sessionId = searchParams.get("session_id");
     const router = useRouter();
@@ -22,18 +22,12 @@ export default function BookingSuccess() {
                         setStatus("failed");
                         toast.error("Thanh toán chưa được xác nhận.");
                     }
-
-                    // 👉 Redirect về trang bookings để reload lại list
-                    setTimeout(() => {
-                        router.push("/profile/booking");
-                    }, 2000);
+                    setTimeout(() => { router.push("/profile/booking"); }, 2000);
                 })
                 .catch(() => {
                     setStatus("failed");
                     toast.error("Lỗi xác minh thanh toán.");
-                    setTimeout(() => {
-                        router.push("/profile/booking");
-                    }, 2000);
+                    setTimeout(() => { router.push("/profile/booking"); }, 2000);
                 });
         }
     }, [sessionId, router]);
@@ -49,5 +43,13 @@ export default function BookingSuccess() {
             )}
             <p className="mt-4 text-gray-500">Đang chuyển hướng về danh sách đặt phòng...</p>
         </div>
+    );
+}
+
+export default function BookingSuccess() {
+    return (
+        <Suspense fallback={<p className="text-center mt-10">Đang tải...</p>}>
+            <BookingSuccessContent />
+        </Suspense>
     );
 }

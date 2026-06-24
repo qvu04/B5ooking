@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { FaSun, FaMoon, FaUserAlt, FaBars } from "react-icons/fa";
 import { MdTranslate } from "react-icons/md";
-import { Drawer, Select, theme } from "antd";
+import { Drawer, Select } from "antd";
 import { useTheme } from "next-themes";
 import { useTranslation } from "react-i18next";
 import { usePathname, useRouter } from "next/navigation";
