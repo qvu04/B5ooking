@@ -1,43 +1,31 @@
 "use client";
-
-import { registerService } from "@/app/api/authService";
-import { RegisterUser } from "@/app/types/authType";
+// import { registerService } from "@/app/api/authService";
+// import { RegisterUser } from "@/app/types/authType";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { FiEye, FiEyeOff, FiMail, FiLock, FiUser } from "react-icons/fi";
 import toast from "react-hot-toast";
+import { LoaderCircle } from 'lucide-react';
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
-
-type FormData = {
-    firstName: string;
-    lastName: string;
-    gender: string;
-    email: string;
-    password: string;
-    confirmPassword: string;
-};
-
+import { useRegister } from "@/hooks/mutations";
+import { RegisterPayload, registerSchema } from "@/schemas";
 export default function RegisterPage() {
-    const { register, handleSubmit, watch, formState: { errors, isSubmitting } } = useForm<FormData>();
+    const { register, handleSubmit, formState: { errors } } = useForm<RegisterPayload>({
+        resolver: zodResolver(registerSchema)
+    });
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const router = useRouter();
     const { t } = useTranslation();
     const [mounted, setMounted] = useState(false);
-
-    const fetchUserRegister = async (formValues: FormData) => {
+    const { mutateAsync: registerUser, isPending: isPendingRegisterUser } = useRegister();
+    const onSubmit = async (payload: RegisterPayload) => {
         try {
-            const payload: RegisterUser = {
-                firstName: formValues.firstName,
-                lastName: formValues.lastName,
-                gender: formValues.gender,
-                email: formValues.email,
-                password: formValues.password,
-                confirmPassword: formValues.confirmPassword,
-            };
-            await registerService(payload);
+            // console.log(payload);
+            await registerUser(payload);
             toast.success("Đăng ký thành công");
             router.push("/login");
         } catch (error) {
@@ -45,9 +33,6 @@ export default function RegisterPage() {
             toast.error("Đăng ký thất bại. Vui lòng thử lại.");
         }
     };
-
-    const onSubmit = (data: FormData) => fetchUserRegister(data);
-
     useEffect(() => { setMounted(true); }, []);
     if (!mounted) return null;
 
@@ -79,7 +64,6 @@ export default function RegisterPage() {
                     </h2>
 
                     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-                        {/* Name row */}
                         <div className="flex gap-3">
                             <div className="w-1/2">
                                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t("register.form_text_1")}</label>
@@ -87,7 +71,7 @@ export default function RegisterPage() {
                                     <FiUser className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={15} />
                                     <input
                                         type="text"
-                                        {...register("firstName", { required: "Họ không được để trống" })}
+                                        {...register("firstName")}
                                         className={inputClass(!!errors.firstName)}
                                         placeholder="Nguyen"
                                     />
@@ -100,7 +84,7 @@ export default function RegisterPage() {
                                     <FiUser className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={15} />
                                     <input
                                         type="text"
-                                        {...register("lastName", { required: "Tên không được để trống" })}
+                                        {...register("lastName")}
                                         className={inputClass(!!errors.lastName)}
                                         placeholder="Van A"
                                     />
@@ -108,12 +92,10 @@ export default function RegisterPage() {
                                 {errors.lastName && <p className="text-red-500 text-xs mt-1">{errors.lastName.message}</p>}
                             </div>
                         </div>
-
-                        {/* Gender */}
                         <div>
                             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t("register.form_text_3")}</label>
                             <select
-                                {...register("gender", { required: "Vui lòng chọn giới tính" })}
+                                {...register("gender")}
                                 className={`${inputClass(!!errors.gender)} pl-4`}
                                 defaultValue=""
                             >
@@ -123,8 +105,6 @@ export default function RegisterPage() {
                             </select>
                             {errors.gender && <p className="text-red-500 text-xs mt-1">{errors.gender.message}</p>}
                         </div>
-
-                        {/* Email */}
                         <div>
                             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t("register.form_text_5")}</label>
                             <div className="relative">
@@ -138,8 +118,6 @@ export default function RegisterPage() {
                             </div>
                             {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>}
                         </div>
-
-                        {/* Password */}
                         <div>
                             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t("register.form_text_6")}</label>
                             <div className="relative">
@@ -156,18 +134,13 @@ export default function RegisterPage() {
                             </div>
                             {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password.message}</p>}
                         </div>
-
-                        {/* Confirm Password */}
                         <div>
                             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t("register.form_text_7")}</label>
                             <div className="relative">
                                 <FiLock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={15} />
                                 <input
                                     type={showConfirmPassword ? "text" : "password"}
-                                    {...register("confirmPassword", {
-                                        required: "Vui lòng xác nhận mật khẩu",
-                                        validate: (value) => value === watch("password") || "Mật khẩu xác nhận không khớp",
-                                    })}
+                                    {...register("confirmPassword")}
                                     className={`${inputClass(!!errors.confirmPassword)} pr-10`}
                                     placeholder="••••••••"
                                 />
@@ -180,10 +153,10 @@ export default function RegisterPage() {
 
                         <button
                             type="submit"
-                            disabled={isSubmitting}
+                            disabled={isPendingRegisterUser}
                             className="w-full bg-[#6246ea] hover:bg-[#5135c8] disabled:opacity-70 text-white py-2.5 rounded-xl font-semibold transition-all duration-200 shadow-md hover:shadow-purple-300 dark:hover:shadow-purple-900/30 cursor-pointer mt-2"
                         >
-                            {isSubmitting ? "Đang đăng ký..." : t("register.form_button")}
+                            {isPendingRegisterUser ? <span className="flex items-center justify-center gap-2"><LoaderCircle className="animate-spin size-3" />Đang đăng ký...</span> : t("register.form_button")}
                         </button>
                     </form>
 
