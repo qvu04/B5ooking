@@ -1,6 +1,4 @@
 "use client";
-import { loginService } from "@/app/api/authService";
-import { LoginUser } from "@/app/types/authType";
 import { setUserLoginAction } from "@/redux/features/userSlice";
 import { useAppDispatch } from "@/redux/hook";
 import Link from "next/link";
@@ -12,28 +10,25 @@ import { FiMail, FiLock } from "react-icons/fi";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import LoginWithGoogle from "./google-login/LoginWithGoogle";
-
-type FormData = {
-    email: string;
-    password: string;
-};
-
+import { LoginPayload, loginSchema } from "@/schemas/auth.schema";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useLogin } from "@/hooks/mutations";
+import { LoaderCircle } from 'lucide-react';
 export default function LoginPage() {
-    const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<FormData>();
+    const { register, handleSubmit, formState: { errors } } = useForm<LoginPayload>({
+        resolver: zodResolver(loginSchema),
+    });
     const [showPassword, setShowPassword] = useState(false);
     const { t } = useTranslation();
     const [mounted, setMounted] = useState(false);
     const dispatch = useAppDispatch();
     const router = useRouter();
-
-    const fetchUserLogin = async (formValues: { taiKhoan: string; matKhau: string }) => {
+    const { mutateAsync: loginUser, isPending: isPendingUserLogin } = useLogin();
+    const onSubmit = async (payload: LoginPayload) => {
         try {
-            const payLoad: LoginUser = {
-                email: formValues.taiKhoan,
-                password: formValues.matKhau
-            };
-            const res = await loginService(payLoad);
-            const { User, token_access } = res.data.data;
+            // console.log(payload);
+            const res = await loginUser(payload);
+            const { User, token_access } = res.data;
             const userData = { ...User, token_access };
             localStorage.setItem('user', JSON.stringify(userData));
             dispatch(setUserLoginAction(userData));
@@ -44,11 +39,6 @@ export default function LoginPage() {
             toast.error("Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.");
         }
     };
-
-    const onSubmit = (data: FormData) => {
-        fetchUserLogin({ taiKhoan: data.email, matKhau: data.password });
-    };
-
     useEffect(() => { setMounted(true); }, []);
     if (!mounted) return null;
 
@@ -74,7 +64,6 @@ export default function LoginPage() {
                         {t("login.form_title")}
                     </h2>
                     <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
-                        {/* Email */}
                         <div>
                             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                                 {t("login.form_email")}
@@ -83,7 +72,7 @@ export default function LoginPage() {
                                 <FiMail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
                                 <input
                                     type="email"
-                                    {...register("email", { required: "Email không được để trống" })}
+                                    {...register("email")}
                                     className={`w-full pl-10 pr-4 py-2.5 rounded-xl border text-gray-800 dark:text-white dark:bg-transparent
                                         ${errors.email ? "border-red-500 focus:ring-red-400" : "border-gray-300 dark:border-gray-600 focus:ring-[#6246ea]"}
                                         focus:ring-2 focus:outline-none transition-all duration-200`}
@@ -92,8 +81,6 @@ export default function LoginPage() {
                             </div>
                             {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>}
                         </div>
-
-                        {/* Password */}
                         <div>
                             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                                 {t("login.form_password")}
@@ -102,7 +89,7 @@ export default function LoginPage() {
                                 <FiLock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
                                 <input
                                     type={showPassword ? "text" : "password"}
-                                    {...register("password", { required: "Mật khẩu không được để trống" })}
+                                    {...register("password")}
                                     className={`w-full pl-10 pr-10 py-2.5 rounded-xl border text-gray-800 dark:text-white dark:bg-transparent
                                         ${errors.password ? "border-red-500 focus:ring-red-400" : "border-gray-300 dark:border-gray-600 focus:ring-[#6246ea]"}
                                         focus:ring-2 focus:outline-none transition-all duration-200`}
@@ -121,10 +108,10 @@ export default function LoginPage() {
 
                         <button
                             type="submit"
-                            disabled={isSubmitting}
+                            disabled={isPendingUserLogin}
                             className="w-full bg-[#6246ea] hover:bg-[#5135c8] disabled:opacity-70 text-white py-2.5 rounded-xl font-semibold transition-all duration-200 shadow-md hover:shadow-purple-300 dark:hover:shadow-purple-900/30 mt-2 cursor-pointer"
                         >
-                            {isSubmitting ? "Đang đăng nhập..." : t("login.form_button")}
+                            {isPendingUserLogin ? <span className="flex items-center justify-center gap-2"><LoaderCircle className="animate-spin size-3" />Đang đăng nhập...</span> : t("login.form_button")}
                         </button>
                     </form>
 
