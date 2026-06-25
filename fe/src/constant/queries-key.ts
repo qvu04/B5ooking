@@ -1,0 +1,3 @@
+export const PUBLIC_QUERY_KEYS = {
+    GET_ADDRESS_LIST: "GET_ADDRESS_LIST",
+}
