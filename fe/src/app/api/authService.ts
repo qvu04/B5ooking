@@ -1,6 +1,12 @@
 import { LoginUser, RegisterUser } from "../types/authType";
 import { https } from "./configService"
 
+export const authService = {
+    loginService: (user: LoginUser) => {
+        return https.post("/api/auth/login", user);
+    },
+
+};
 export const loginService = (user: LoginUser) => {
     return https.post("/api/auth/login", user);
 }

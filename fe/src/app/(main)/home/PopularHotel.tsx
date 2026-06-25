@@ -22,7 +22,6 @@ const HotelCardSkeleton = () => (
         </div>
     </div>
 );
-
 const PopularHotel = () => {
     const [locations, setLocations] = useState<Locations[] | null>(null);
     const [hotels, setHotels] = useState<Hotels[] | null>(null);
@@ -64,8 +63,6 @@ const PopularHotel = () => {
                 <h2 className="text-xl md:text-2xl font-bold w-full md:w-auto">
                     {t("home.popularHotels")}
                 </h2>
-
-                {/* Location tabs */}
                 <div className="flex flex-wrap gap-2 items-center">
                     {locations?.map((location) => (
                         <button
@@ -88,8 +85,6 @@ const PopularHotel = () => {
                     </button>
                 </div>
             </div>
-
-            {/* Carousel */}
             {loading ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 px-2">
                     {[1, 2, 3].map((i) => <HotelCardSkeleton key={i} />)}
@@ -117,7 +112,6 @@ const PopularHotel = () => {
                                         height={300}
                                         className="w-full h-52 object-cover transition-transform duration-500 group-hover:scale-110"
                                     />
-                                    {/* Rating badge on image */}
                                     <div className="absolute top-3 right-3 bg-white/90 dark:bg-black/70 backdrop-blur-sm rounded-full px-2.5 py-1 flex items-center gap-1 shadow-md">
                                         <AiFillStar className="text-yellow-400" size={13} />
                                         <span className="text-xs font-bold text-gray-800 dark:text-white">

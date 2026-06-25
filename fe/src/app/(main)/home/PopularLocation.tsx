@@ -1,32 +1,33 @@
 "use client"
 import React from 'react'
 import { useState, useEffect } from 'react';
-import { Locations } from '@/app/types/locationTypes';
+// import { Locations } from '@/app/types/locationTypes';
 import Link from 'next/link';
-import { fetchTranslateLocation } from '@/app/api/locationService';
+// import { fetchTranslateLocation } from '@/app/api/locationService';
 import { toSlug } from '@/utils/slug';
-import { useTranslation } from 'react-i18next';
+// import { useTranslation } from 'react-i18next';
 import Image from "next/image";
+import { useGetListLocation } from '@/hooks/queries';
 
 const LocationSkeleton = () => (
     <div className="relative rounded-xl overflow-hidden animate-pulse bg-gray-200 dark:bg-gray-700 h-52" />
 );
-
 const PopularLocation = () => {
-    const [locations, setLocations] = useState<Locations[] | null>(null);
-    const [loading, setLoading] = useState(true);
-    const { i18n, t } = useTranslation();
+    // const [locations, setLocations] = useState<Locations[] | null>(null);
+    // const [loading, setLoading] = useState(true);
+    // const { i18n, t } = useTranslation();
     const [mounted, setMounted] = useState(false);
-
-    useEffect(() => {
-        const fetchData = async () => {
-            setLoading(true);
-            const translatedLocations = await fetchTranslateLocation(i18n.language);
-            setLocations(translatedLocations);
-            setLoading(false);
-        };
-        fetchData();
-    }, [i18n.language]);
+    const { data: listLocationData, isLoading: isLoadingListLocation } = useGetListLocation();
+    const locationListSlice = listLocationData?.slice(0, 6);
+    // useEffect(() => {
+    //     const fetchData = async () => {
+    //         setLoading(true);
+    //         const translatedLocations = await fetchTranslateLocation(i18n.language);
+    //         setLocations(translatedLocations);
+    //         setLoading(false);
+    //     };
+    //     fetchData();
+    // }, [i18n.language]);
 
     useEffect(() => {
         setMounted(true);
@@ -38,13 +39,13 @@ const PopularLocation = () => {
         <div>
             <div className="flex items-center justify-between mb-5">
                 <h2 className="text-2xl font-bold text-black dark:text-white">
-                    {t("home.popular_location")}
+                    Điểm đến đang thịnh hành
                 </h2>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                {loading
+                {isLoadingListLocation
                     ? [1, 2, 3, 4, 5, 6].map((i) => <LocationSkeleton key={i} />)
-                    : locations?.map((location) => (
+                    : locationListSlice?.map((location) => (
                         <Link
                             key={location.id}
                             href={`/location/${toSlug(location.city)}`}
@@ -57,7 +58,6 @@ const PopularLocation = () => {
                                 height={300}
                                 className="w-full h-52 object-cover transition-transform duration-500 group-hover:scale-110"
                             />
-                            {/* Always-visible gradient + name */}
                             <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
                             <div className="absolute bottom-0 left-0 right-0 p-3 flex items-center gap-2">
                                 <Image
@@ -71,7 +71,6 @@ const PopularLocation = () => {
                                     {location.city}
                                 </h3>
                             </div>
-                            {/* Hover overlay */}
                             <div className="absolute inset-0 bg-[#6246ea]/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                         </Link>
                     ))

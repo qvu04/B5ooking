@@ -10,6 +10,7 @@ import { ReduxProvider } from '@/redux/provider'
 import { Toaster } from "react-hot-toast";
 import Loading from "./components/Loading/Loading";
 import { ChatBox } from "./components/ChatBox";
+import { QueryProvider } from "@/providers/QueryProviders";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -36,16 +37,18 @@ export default function RootLayout({
   return (
     <html lang="vi" className='dark' suppressHydrationWarning={true}>
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID ?? ""}>
-          <ReduxProvider>
-            <Providers>
-              <Loading />
-              <Toaster position="top-center" />
-              <ClientLayout>{children}</ClientLayout>
-              <ChatBox />
-            </Providers>
-          </ReduxProvider>
-        </GoogleOAuthProvider>
+        <QueryProvider>
+          <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID ?? ""}>
+            <ReduxProvider>
+              <Providers>
+                <Loading />
+                <Toaster position="top-center" />
+                <ClientLayout>{children}</ClientLayout>
+                <ChatBox />
+              </Providers>
+            </ReduxProvider>
+          </GoogleOAuthProvider>
+        </QueryProvider>
       </body>
     </html>
   );
